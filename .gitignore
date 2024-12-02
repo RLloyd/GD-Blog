@@ -39,4 +39,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-public/notes
+public/notes/*

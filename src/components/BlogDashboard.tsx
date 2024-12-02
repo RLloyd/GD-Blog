@@ -131,20 +131,20 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
         </div>
       ) : (
         <>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="featuredBogsContainer grid md:grid-cols-1 gap-8">
             <FeaturedCard
               post={latestTechPost}
               category={categories[0]}
             />
-            <FeaturedCard
+            {/* <FeaturedCard
               post={latestMediaPost}
               category={categories[1]}
-            />
+            /> */}
           </div>
 
           <div>
             <h2 className="text-2xl font-bold mb-6">All Posts</h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {filteredPosts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
