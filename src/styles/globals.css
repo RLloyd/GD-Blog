@@ -6,22 +6,21 @@
 
 /* Only include core styles that don't depend on theme */
 html {
-  scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 body {
-  min-height: 100vh;
+	min-height: 100vh;
 }
 
 /* Use CSS variables for theme values */
 :root {
-  --nav-height: 80px;
+	--nav-height: 80px;
 }
 
 /* Remove default styles that might conflict */
 button,
 input,
 textarea {
-  all: unset;
+	all: unset;
 }
-
