@@ -187,59 +187,72 @@ This is a file of the type: SVG Image
 # public/notes/misc.tsx
 
 ```tsx
-// src/lib/portfolio-theme.ts
-import 'styled-components'
+// src/components/BlogDashboard.tsx
 
-// First, import your existing types
-export type {
-  ThemeMode,
-  ColorWithShades,
-  ColorShades,
-  BorderColors,
-  ColorPalette,
-  Typography,
-  Theme
-} from './types'  // Move types to separate file
+// Inside BlogDashboard component:
+export default function BlogDashboard({ posts, featuredSetup = defaultFeatures }: BlogDashboardProps) {
+   const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
-// Add Styled Components declaration
-declare module 'styled-components' {
-  export interface DefaultTheme extends Theme {}
-}
+   // Debug logs
+   console.log('Posts:', posts);
+   console.log('Featured Setup:', featuredSetup);
 
-// Export everything from your existing theme
-export {
-  colors,
-  baseTheme,
-  lightTheme,
-  darkTheme,
-  theme,
-  getColor,
-  getBackgroundColor,
-  getTextColor,
-  getBorderColor,
-  getFontFamily,
-  getFontWeight,
-  getFontSize,
-  applyFontStyle
-} from './theme-config'  // Move theme configuration to separate file
+   // Get featured posts based on setup
+   const featuredPosts = featuredSetup
+     .sort((a, b) => a.order - b.order)
+     .map(feature => {
+       const foundPost = posts.find(post => post.category === feature.category);
+       console.log('Looking for category:', feature.category, 'Found post:', foundPost);
+
+       return {
+         post: foundPost,
+         category: categories.find(c => c.id === feature.category)!,
+         size: feature.size,
+         title: feature.title,
+         description: feature.description
+       };
+     });
+
+   console.log('Featured Posts:', featuredPosts);
+
+   // Simplified grid layout
+   return (
+     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+       {/* Categories section */}
+
+       {activeCategory ? (
+         // Category view
+       ) : (
+         <>
+           <div className="featuredBlogsContainer grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+             {featuredPosts.map(({ post, category, size, title, description }, index) => (
+               <div
+                 key={post?.id || index}
+                 className={size === 'large' ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1'}
+               >
+                 <FeaturedCard
+                   post={post}
+                   category={category}
+                   size={size}
+                   title={title}
+                   description={description}
+                 />
+               </div>
+             ))}
+           </div>
+
+           {/* All Posts section */}
+         </>
+       )}
+     </div>
+   );
+ }
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
-I need to open another chat. What do I need to bring?EditFor the next chat, bring:
 
-theme.ts file from your portfolio
-Updated files we created:
-
-src/lib/registry.tsx
-src/lib/portfolio-theme.ts
-src/lib/types.ts
-src/lib/theme-config.ts
-
-
-
-This will help continue resolving the hydration and styling issues.
 ```
 
 # public/notes/project-structure.md
@@ -664,60 +677,13 @@ strong {
 # public/notes/To-Do.md
 
 ```md
-# To Do
-
-
-## Lists
-### Date: 12.01.2024
-- Claude timed me out: 5:45am - 8:am
-- Use the same theme as portfolio-2025
-   - Fonts: family, colors, sizes
-   - Color Palette
-   -
-- Light & Dark theme
-- Integrate Styled-Components with TailwindCSS
-- Able to show code in content
-- Can we show who liked and commented on a post
-- Blog Posts Dashboard:
-   - Create a different category of posts
-      - Tech Articles
-      - Other Medias
-      - Fusion Food
-      - Personal
-   - Show two large cards of favorite category and show all the posts underneath in cards format as well
-   - Similar to this design: https://www.loopple.com/preview-sample/dashboard-blogs-asteria?hide-banner=true&buttons=true
-
-- Does readers have to be logged in to read, comment, like
-- Fix <img to <Image in src/components/BlogDashboard.tsx line: 71, 97
-
-- Changed: BlogDashboard.tsx : All posts container +to display 4 columns instead of 3
-   - <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-
-### Codeblock:
-\`\`\`javascript
-/* Code blocks */
-code {
-  font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
-  font-size: 0.9em;
-  background-color: #F7FAFC;
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  border: 1px solid #E2E8F0;
-}
-\`\`\`
-\`\`\`javascript
-const greet = (name) => {
-  console.log(`Hello, ${name}!`);
-};
-greet("World");
-\`\`\`
-<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
   font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
   line-height: 1.8;
   color: #2D3748;
   max-width: 50rem;
@@ -876,7 +842,187 @@ strong {
 }
 </style>
 
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
 
+# To Do
+
+
+## Lists
+### Date: 12.01.2024
+- Claude timed me out: 5:45am - 8:am
+- Use the same theme as portfolio-2025
+   - Fonts: family, colors, sizes
+   - Color Palette
+   -
+- Light & Dark theme
+- Integrate Styled-Components with TailwindCSS
+- Able to show code in content
+- Can we show who liked and commented on a post
+- Blog Posts Dashboard:
+   - Create a different category of posts
+      - Tech Articles
+      - Other Medias
+      - Fusion Food
+      - Personal
+   - Show two large cards of favorite category and show all the posts underneath in cards format as well
+   - Similar to this design: https://www.loopple.com/preview-sample/dashboard-blogs-asteria?hide-banner=true&buttons=true
+
+- Does readers have to be logged in to read, comment, like
+- Fix <img to <Image in src/components/BlogDashboard.tsx line: 71, 97
+
+- Changed: BlogDashboard.tsx : All posts container +to display 4 columns instead of 3
+   - <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+### Codeblock:
+\`\`\`javascript
+/* Code blocks */
+code {
+  font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 0.9em;
+  background-color: #F7FAFC;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border: 1px solid #E2E8F0;
+}
+\`\`\`
+\`\`\`javascript
+const greet = (name) => {
+  console.log(`Hello, ${name}!`);
+};
+greet("World");
+\`\`\`
+
+
+## Refactor
+### Date: 12.02.2024
+> - Claude timed me out: 6am - 9am **#😭**
+- Add category assignment for New Post and Edit form. ✅ Fixed!
+- Do we still need src/app/providers.tsx
+- Add ARIA to the pages that readers will interact with. Don't need it for the admin.
+
+### Date: 12.02.2024 @ 1:50pm
+> ### - Claude timed me out again: 1:50pm - 3:00pm **#😭**
+```
+
+# public/project-summaries/BlogDashboard Category Fix.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+# BlogDashboard Category Fix
+
+## Issue
+The BlogDashboard component was incorrectly handling posts in the "media" category, causing the latest media post to be one post behind in the display.
+
+## Root Cause
+The original implementation tried to handle both tech and media posts as "featured" posts, which created complexities in the filtering logic. This dual-featured approach caused media posts to be filtered incorrectly from the main display.
+
+## Solution
+Simplified the post filtering logic by:
+1. Only keeping tech posts as featured
+2. Removing the latestMediaPost handling
+3. Implementing a cleaner filtering approach that:
+   - Shows all posts of a category when selected
+   - Only excludes the featured tech post from the main list
+
+## Code Changes
+\`\`\`typescript
+// Before
+const latestMediaPost = posts.find(post => post.category === 'media');
+const remainingPosts = posts.filter(post => {
+  const isFeaturedTech = post.id === latestTechPost?.id;
+  const isFeaturedMedia = post.id === latestMediaPost?.id;
+  return !isFeaturedTech && !isFeaturedMedia;
+});
+
+// After
+const filteredPosts = activeCategory
+  ? posts.filter(post => post.category === activeCategory)
+  : posts.filter(post => post.id !== latestTechPost?.id);
+\`\`\`
+
+## Testing
+Test the fix by:
+1. Creating new posts in the media category
+2. Verifying posts appear immediately after creation
+3. Checking category filtering works correctly
+4. Ensuring featured tech post displays properly
+```
+
+# public/project-summaries/Resolving-Hydration-Styling-Issues.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+# Resolving Hydration and Styling Issues
+### Here's what we've implemented in the blog codebase:
+#### Date: 12.02.2024 : 10:30am
+
+1. Theme Integration
+- Set up styled-components with Next.js 13+ App Router
+- Created proper theme types and configuration
+- Implemented dark/light mode detection
+- Added global styles with proper theme support
+
+2. Component Architecture
+- Split server/client components appropriately
+- Created BlogPostContent as client component
+- Added BlogPost.styles with styled-components
+- Implemented ClientOnly wrapper for hydration fixes
+
+3. Fixed Hydration Issues
+- Added proper mounting checks
+- Used suppressHydrationWarning where needed
+- Separated client-side functionality
+- Fixed async client component error
+
+4. Styling System
+- Created type-safe theme utilities
+- Set up proper font loading
+- Implemented responsive styles
+- Added proper CSS organization
+
+Outstanding tasks:
+1. Complete dark mode toggle implementation
+2. Add more category-specific styling
+3. Enhance loading states
+4. Improve error boundaries
+5. Add image optimization
+6. Implement proper metadata
+
+Would you like to proceed with any of these tasks?
 ```
 
 # public/vercel.svg
@@ -928,6 +1074,19 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 # GD-Blog
 
+```
+
+# src/app/api/revalidate/route.ts
+
+```ts
+// src/app/api/revalidate/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
+
+export async function POST(request: NextRequest) {
+  revalidatePath('/blog')
+  return NextResponse.json({ revalidated: true, now: Date.now() })
+}
 ```
 
 # src/app/auth-test/page.tsx
@@ -1009,18 +1168,12 @@ export async function GET(request: Request) {
 # src/app/blog/[slug]/page.tsx
 
 ```tsx
-// src/app/blog/[slug]/page.tsx
-import { Article, Title, Metadata, Content } from '@/components/BlogPost.styles'
-import { MarkdownContent } from '@/components/MarkdownContent'
-import { ImageWithFallback } from '@/components/ImageWithFallback'
-import { Reactions } from '@/components/Reactions'
-import { Comments } from '@/components/Comments'
-import Link from 'next/link'
-import { DeletePost } from '@/components/DeletePost'
+// src/app/blog/[slug]/page.tsx - Server Component
 import { supabaseClient } from '@/lib/auth'
 import { notFound } from 'next/navigation'
+import BlogPostContent from '@/components/BlogPostContent'
 
-export default async function BlogPost({
+export default async function BlogPostPage({
   params: { slug }
 }: {
   params: { slug: string }
@@ -1033,364 +1186,9 @@ export default async function BlogPost({
 
   if (!post) notFound()
 
-  return (
-    <Article>
-      <div className="flex justify-between items-center mb-8">
-        <Link href="/blog" className="text-blue-400 hover:text-blue-300">
-          ← Back to posts
-        </Link>
-        <div className="space-x-4">
-          <Link href={`/blog/edit/${slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Edit Post
-          </Link>
-          <DeletePost postId={post.id} />
-        </div>
-      </div>
-
-      {post.cover_image && (
-        <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-          <ImageWithFallback
-            src={post.cover_image}
-            alt={post.title}
-            className="w-full h-full"
-            priority
-          />
-        </div>
-      )}
-
-      <header>
-        <Title>{post.title}</Title>
-        <Metadata>
-          {new Date(post.created_at).toLocaleDateString()} •
-          {post.profiles?.username || 'Anonymous'}
-        </Metadata>
-      </header>
-
-      {post.excerpt && (
-        <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>
-      )}
-
-      <Content>
-        <MarkdownContent content={post.content} />
-        <div className="mt-8 border-t border-gray-700 pt-8">
-          <Reactions postId={post.id} />
-        </div>
-      </Content>
-
-      <Comments postId={post.id} />
-    </Article>
-  )
+  return <BlogPostContent post={post} />
 }
-// // src/app/blog/[slug]/page.tsx
-// import { supabaseClient } from "@/lib/auth";
-// import { notFound } from "next/navigation";
-// import Link from "next/link";
-// import { MarkdownContent } from "@/components/MarkdownContent";
-// import { DeletePost } from "@/components/DeletePost";
-// import { Comments } from "@/components/Comments";
-// import { Reactions } from "@/components/Reactions";
-// import { ImageWithFallback } from "@/components/ImageWithFallback";
 
-// export default async function BlogPost({ params: { slug } }: { params: { slug: string } }) {
-// 	const { data: post } = await supabaseClient.from("posts").select("*, profiles(username)").eq("slug", slug).single();
-
-// 	if (!post) notFound();
-
-// 	return (
-// 		<article className="max-w-3xl mx-auto">
-// 			<div className="flex justify-between items-center mb-8">
-// 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
-// 					← Back to posts
-// 				</Link>
-// 				<div className="space-x-4">
-// 					<Link href={`/blog/edit/${slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// 						Edit Post
-// 					</Link>
-// 					<DeletePost postId={post.id} />
-// 				</div>
-// 			</div>
-
-// 			{post.cover_image && (
-// 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-// 					<ImageWithFallback
-// 						src={post.cover_image}
-// 						alt={post.title}
-// 						className="w-full h-full"
-// 						// Use priority since this is the main post image
-// 						priority
-// 					/>
-// 				</div>
-// 			)}
-
-// 			<header className="mb-8">
-// 				<h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// 				<div className="text-gray-400">
-// 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-// 				</div>
-// 			</header>
-
-// 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
-
-// 			<div className="prose prose-lg max-w-none">
-// 				<MarkdownContent content={post.content} />
-// 			</div>
-
-// 			<div className="mt-8 border-t border-gray-700 pt-8">
-// 				<Reactions postId={post.id} />
-// 			</div>
-
-// 			<Comments postId={post.id} />
-// 		</article>
-// 	);
-// }
-// // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-// // // src/app/blog/[slug]/page.tsx
-// // import { supabaseClient } from '@/lib/auth'
-// // import { notFound } from 'next/navigation'
-// // import Link from 'next/link'
-// // import { MarkdownContent } from '@/components/MarkdownContent'
-// // import { DeletePost } from '@/components/DeletePost'
-// // import { Comments } from '@/components/Comments'
-// // import { Reactions } from '@/components/Reactions'
-
-// // export default async function BlogPost({
-// //   params: { slug }
-// // }: {
-// //   params: { slug: string }
-// // }) {
-// //   const { data: post } = await supabaseClient
-// //     .from('posts')
-// //     .select('*, profiles(username)')
-// //     .eq('slug', slug)
-// //     .single()
-
-// //   if (!post) notFound()
-
-// //   return (
-// //     <article className="max-w-3xl mx-auto">
-// //       <div className="flex justify-between items-center mb-8">
-// //         <Link href="/blog" className="text-blue-500 hover:text-blue-600">
-// //           ← Back to posts
-// //         </Link>
-// //         <div className="space-x-4">
-// //           <Link
-// //             href={`/blog/edit/${slug}`}
-// //             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-// //           >
-// //             Edit Post
-// //           </Link>
-// //           <DeletePost postId={post.id} />
-// //         </div>
-// //       </div>
-
-// //       <header className="mb-8">
-// //         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// //         <div className="text-gray-600">
-// //           {new Date(post.created_at).toLocaleDateString()}
-// //         </div>
-// //       </header>
-
-// //       {post.excerpt && (
-// //         <p className="text-xl text-gray-600 mb-8">{post.excerpt}</p>
-// //       )}
-
-// //       <div className="prose prose-lg max-w-none">
-// //         <MarkdownContent content={post.content} />
-
-// //         {/*---= Reactions =---*/}
-// //         <div className="mt-8">
-// //             <Reactions postId={post.id} />
-// //          </div>
-// //       </div>
-// //       <Comments postId={post.id} />
-// //     </article>
-// //   )
-// // }
-
-// // // // src/app/blog/[slug]/page.tsx
-// // // import { supabaseClient } from '@/lib/auth'
-// // // import { notFound } from 'next/navigation'
-// // // import Link from 'next/link'
-// // // import { MarkdownContent } from '@/components/MarkdownContent'
-
-// // // export default async function BlogPost({
-// // //   params: { slug }
-// // // }: {
-// // //   params: { slug: string }
-// // // }) {
-// // //   const { data: post } = await supabaseClient
-// // //     .from('posts')
-// // //     .select('*, profiles(username)')
-// // //     .eq('slug', slug)
-// // //     .single()
-
-// // //   if (!post) notFound()
-
-// // //   return (
-// // //     <article className="max-w-3xl mx-auto">
-// // //       <div className="flex justify-between items-center mb-8">
-// // //         <Link href="/blog" className="text-blue-500 hover:text-blue-600">
-// // //           ← Back to posts
-// // //         </Link>
-// // //         <Link
-// // //           href={`/blog/edit/${slug}`}
-// // //           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-// // //         >
-// // //           Edit Post
-// // //         </Link>
-// // //       </div>
-
-// // //       <header className="mb-8">
-// // //         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// // //         <div className="text-gray-600">
-// // //           {new Date(post.created_at).toLocaleDateString()}
-// // //         </div>
-// // //       </header>
-
-// // //       {post.excerpt && (
-// // //         <p className="text-xl text-gray-600 mb-8">{post.excerpt}</p>
-// // //       )}
-
-// // //       <div className="prose prose-lg max-w-none">
-// // //         <MarkdownContent content={post.content} />
-// // //       </div>
-// // //     </article>
-// // //   )
-// // // }
-// // // // // src/app/blog/[slug]/page.tsx
-// // // // import { supabaseClient } from '@/lib/auth'
-// // // // import { notFound } from 'next/navigation'
-// // // // import Link from 'next/link'
-// // // // import { MarkdownContent } from '@/components/MarkdownContent'
-
-// // // // export default async function BlogPost({
-// // // //   params
-// // // // }: {
-// // // //   params: { slug: string }
-// // // // }) {
-// // // //   const slug = await Promise.resolve(params.slug)
-
-// // // //   const { data: post } = await supabaseClient
-// // // //     .from('posts')
-// // // //     .select('*, profiles(username)')
-// // // //     .eq('slug', slug)
-// // // //     .single()
-
-// // // //   if (!post) {
-// // // //     notFound()
-// // // //   }
-
-// // // //   console.log('Post data:', post)
-
-// // // //   return (
-// // // //     <article className="max-w-3xl mx-auto">
-// // // //       <Link href="/blog" className="text-blue-500 hover:text-blue-600 mb-8 inline-block">
-// // // //         ← Back to posts
-// // // //       </Link>
-
-// // // //       <header className="mb-8">
-// // // //         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// // // //         <div className="text-gray-600">
-// // // //           {new Date(post.created_at).toLocaleDateString()}
-// // // //         </div>
-// // // //       </header>
-
-// // // //       {post.excerpt && (
-// // // //         <p className="text-xl text-gray-600 mb-8">{post.excerpt}</p>
-// // // //       )}
-
-// // // //       <div className="prose prose-lg max-w-none">
-// // // //         <MarkdownContent content={post.content} />
-// // // //       </div>
-// // // //     </article>
-// // // //   )
-// // // // }
-
-// // // // // // src/app/blog/[slug]/page.tsx
-// // // // // import { supabaseClient } from '@/lib/auth'
-// // // // // import { notFound } from 'next/navigation'
-// // // // // import Link from 'next/link'
-// // // // // import { MarkdownContent } from '@/components/MarkdownContent'
-
-// // // // // export default async function BlogPost({
-// // // // //   params: { slug }
-// // // // // }: {
-// // // // //   params: { slug: string }
-// // // // // }) {
-// // // // //   const { data: post } = await supabaseClient
-// // // // //     .from('posts')
-// // // // //     .select('*, profiles(username)')
-// // // // //     .eq('slug', slug)
-// // // // //     .single()
-
-// // // // //   if (!post) {
-// // // // //     notFound()
-// // // // //   }
-
-// // // // //   return (
-// // // // //     <article className="max-w-3xl mx-auto">
-// // // // //       <Link
-// // // // //         href="/blog"
-// // // // //         className="text-blue-500 hover:text-blue-600 mb-8 inline-block"
-// // // // //       >
-// // // // //         ← Back to posts
-// // // // //       </Link>
-
-// // // // //       <header className="mb-8">
-// // // // //         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// // // // //         <div className="text-gray-600">
-// // // // //           {new Date(post.created_at).toLocaleDateString()} ·
-// // // // //           {post.profiles?.username || 'Anonymous'}
-// // // // //         </div>
-// // // // //       </header>
-
-// // // // //       {post.excerpt && (
-// // // // //         <p className="text-xl text-gray-600 mb-8">
-// // // // //           {post.excerpt}
-// // // // //         </p>
-// // // // //       )}
-
-// // // // //       <div className="prose max-w-none">
-// // // // //          <MarkdownContent content={post.content} />
-// // // // //       </div>
-// // // // //     </article>
-// // // // //   )
-// // // // // }
-
-// // // // // // // src/app/blog/[slug]/page.tsx
-// // // // // // import { blogApi } from '@/lib/supabase'
-// // // // // // import { notFound } from 'next/navigation'
-
-// // // // // // export default async function BlogPost({
-// // // // // //   params: { slug }
-// // // // // // }: {
-// // // // // //   params: { slug: string }
-// // // // // // }) {
-// // // // // //   try {
-// // // // // //     const post = await blogApi.getPostBySlug(slug)
-
-// // // // // //     if (!post) {
-// // // // // //       notFound()
-// // // // // //     }
-
-// // // // // //     return (
-// // // // // //       <article className="max-w-3xl mx-auto">
-// // // // // //         <header className="mb-8">
-// // // // // //           <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-// // // // // //           <div className="text-gray-600">
-// // // // // //             {new Date(post.created_at).toLocaleDateString()}
-// // // // // //           </div>
-// // // // // //         </header>
-
-// // // // // //         <div className="prose max-w-none">
-// // // // // //           {post.content}
-// // // // // //         </div>
-// // // // // //       </article>
-// // // // // //     )
-// // // // // //   } catch (error) {
-// // // // // //     notFound()
-// // // // // //   }
-// // // // // // }
 
 ```
 
@@ -1448,33 +1246,58 @@ export default function NewPost() {
 
 ```tsx
 // src/app/blog/page.tsx
-
 import Link from 'next/link';
 import { supabaseClient } from '@/lib/auth';
 import BlogDashboard from '@/components/BlogDashboard';
+import { CategoryId } from '@/data/categories';
+import { GridSize } from '@/components/BlogDashboard';
+
+// Define featured setup type
+type FeaturedSetup = {
+  category: CategoryId;
+  size: GridSize;
+  order: number;
+  title?: string;
+  description?: string;
+}[];
+
+// Featured setup configuration
+const featuredSetup: FeaturedSetup = [
+  {
+    category: 'tech',
+    size: 'large',
+    order: 0,
+    title: 'Latest in Tech',
+    description: 'Latest tech insights and tutorials'
+  },
+  {
+    category: 'media',
+    size: 'medium',
+    order: 1,
+    title: 'Media & Reviews'
+  }
+];
 
 export default async function BlogList() {
   const { data: posts, error } = await supabaseClient
     .from('posts')
     .select('*')
-    .eq('published', true)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Supabase error:', error)
-    return <div>Error loading posts</div>
+    console.error('Supabase error:', error);
+    return <div>Error loading posts</div>;
   }
 
-  // Transform the posts data
   const formattedPosts = posts?.map(post => ({
     id: post.id,
     title: post.title,
     excerpt: post.excerpt || '',
-    category: post.category || 'tech',
+    category: (post.category || 'tech') as CategoryId,
     date: new Date(post.created_at).toLocaleDateString(),
     slug: post.slug,
     cover_image: post.cover_image
-  })) || []
+  })) || [];
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -1488,194 +1311,176 @@ export default async function BlogList() {
         </Link>
       </div>
 
-      <BlogDashboard posts={formattedPosts} />
+      <BlogDashboard
+        posts={formattedPosts}
+        featuredSetup={featuredSetup}
+      />
     </div>
-  )
+  );
 }
+
 // // src/app/blog/page.tsx
-// import Link from 'next/link'
-// import { supabaseClient } from '@/lib/auth'
-// import { ImageWithFallback } from '@/components/ImageWithFallback'
+// import Link from "next/link";
+// import { supabaseClient } from "@/lib/auth";
+// import BlogDashboard from "@/components/BlogDashboard";
+// import { CategoryId } from "@/data/categories";
+// import { headers } from "next/headers";
+
+// // Force dynamic rendering
+// export const dynamic = "force-dynamic";
+// export const revalidate = 0;
 
 // export default async function BlogList() {
-//   const { data: posts, error } = await supabaseClient
-//     .from('posts')
-//     .select('*')
-//     .eq('published', true)
-//     .order('created_at', { ascending: false })
+// 	// Force unique requests
+// 	headers();
 
-//   if (error) {
-//     console.error('Supabase error:', error)
-//     return <div>Error loading posts</div>
-//   }
+// 	const { data: posts, error } = await supabaseClient.from("posts").select("*").order("created_at", { ascending: false });
 
-//   return (
-//     <div className="max-w-4xl mx-auto">
-//       <div className="flex justify-between items-center mb-8">
-//         <h1 className="text-3xl font-bold">Blog Posts</h1>
-//         <Link
-//           href="/blog/new"
-//           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-//         >
-//           Write PostXXX
-//         </Link>
-//       </div>
+// 	if (error) {
+// 		console.error("Supabase error:", error);
+// 		return <div>Error loading posts</div>;
+// 	}
 
-//       <div className="grid gap-8 md:grid-cols-2">
-//         {posts?.map((post, index) => (
-//           <article
-//             key={post.id}
-//             className="cardContainer
-//                border
-//                border-gray-700
-//                rounded-3xl
-//                overflow-hidden
-//                hover:shadow-lg
-//                transition-shadow
-//                bg-gray-700
-//                p-4
-//                ">
-//             {/* border: 1rem solid #4f4f4f;
-//     border-radius: 1rem;
-//     background: #4f4f4f; */}
-//             {post.cover_image && (
-//               <div className="aspect-video w-full relative rounded-2xl overflow-hidden">
-//                 <ImageWithFallback
-//                   src={post.cover_image}
-//                   alt={post.title}
-//                   className="object-cover w-full h-full"
-//                   priority={index < 2} // Prioritize loading first two images
-//                 />
-//               </div>
-//             )}
-//             <div className="p-6">
-//               <h2 className="text-xl font-semibold mb-2">
-//                 <Link
-//                   href={`/blog/${post.slug}`}
-//                   className="hover:text-blue-400 transition-colors"
-//                 >
-//                   {post.title}
-//                 </Link>
-//               </h2>
-//               {post.excerpt && (
-//                 <p className="text-gray-300 mb-4 line-clamp-2">{post.excerpt}</p>
-//               )}
-//               <div className="text-sm text-gray-400">
-//                 {new Date(post.created_at).toLocaleDateString()}
-//               </div>
-//             </div>
-//           </article>
-//         ))}
-//       </div>
+// 	const formattedPosts =
+// 		posts?.map((post) => ({
+// 			id: post.id,
+// 			title: post.title,
+// 			excerpt: post.excerpt || "",
+// 			category: (post.category || "tech") as CategoryId,
+// 			date: new Date(post.created_at).toLocaleDateString(),
+// 			slug: post.slug,
+// 			cover_image: post.cover_image,
+// 			published: post.published,
+//    })) || [];
 
-//       {!posts?.length && (
-//         <p className="text-center text-gray-400">No posts yet. Be the first to write one!</p>
-//       )}
-//     </div>
-//   )
+// 	const customFeatures = [
+// 		{
+// 			category: "food",
+// 			size: "large",
+// 			order: 0,
+// 			title: "Featured Recipe",
+// 			description: "Our latest culinary creation",
+// 		},
+// 		{
+// 			category: "tech",
+// 			size: "medium",
+// 			order: 1,
+// 			title: "Tech Update",
+// 		},
+// 	];
+
+// 	return (
+// 		<div className="max-w-7xl mx-auto">
+// 			<div className="flex justify-between items-center mb-8 px-4">
+// 				<h1 className="text-3xl font-bold">Blog Posts</h1>
+// 				<Link href="/blog/new" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// 					Write Post
+// 				</Link>
+// 			</div>
+
+// 			{/* <BlogDashboard posts={formattedPosts} /> */}
+// 			<BlogDashboard posts={posts} featuredSetup={customFeatures} />
+// 		</div>
+// 	);
 // }
 // // // src/app/blog/page.tsx
-// // import Link from "next/link";
-// // import { supabaseClient } from "@/lib/auth";
-// // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // import Link from 'next/link';
+// // import { supabaseClient } from '@/lib/auth';
+// // import BlogDashboard from '@/components/BlogDashboard';
+// // import { CategoryId } from '@/data/categories';
+// // import { unstable_noStore } from 'next/cache';
 
 // // export default async function BlogList() {
-// // 	const { data: posts, error } = await supabaseClient.from("posts").select("*").eq("published", true).order("created_at", { ascending: false });
+// //   // Disable caching for this route
+// //   unstable_noStore();
 
-// // 	if (error) {
-// // 		console.error("Supabase error:", error);
-// // 		return <div>Error loading posts</div>;
-// // 	}
+// //   const { data: posts, error } = await supabaseClient
+// //     .from('posts')
+// //     .select('*')
+// //     .order('created_at', { ascending: false })
 
-// // 	return (
-// // 		<div className="max-w-4xl mx-auto">
-// // 			<div className="flex justify-between items-center mb-8">
-// // 				<h1 className="text-3xl font-bold">Blog Posts</h1>
-// // 				<Link href="/blog/new" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// // 					Write Post
-// // 				</Link>
-// // 			</div>
+// //   if (error) {
+// //     console.error('Supabase error:', error)
+// //     return <div>Error loading posts</div>
+// //   }
 
-// // 			<div className="grid gap-8 md:grid-cols-2">
-// // 				{posts?.map((post) => (
-// // 					<article key={post.id} className="border border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-gray-800">
-// // 						{post.cover_image && (
-// // 							<div className="relative aspect-video w-full">
-// // 								<ImageWithFallback
-// // 									src={post.cover_image}
-// // 									alt={post.title}
-// // 									className="w-full h-full"
-// // 									// Use priority for images above the fold
-// // 									priority={index === 0}
-// // 								/>
-// // 							</div>
-// // 						)}
+// //   const formattedPosts = posts?.map(post => ({
+// //     id: post.id,
+// //     title: post.title,
+// //     excerpt: post.excerpt || '',
+// //     category: (post.category || 'tech') as CategoryId,
+// //     date: new Date(post.created_at).toLocaleDateString(),
+// //     slug: post.slug,
+// //     cover_image: post.cover_image,
+// //     published: post.published
+// //   })) || []
 
-// // 						<div className="p-6">
-// // 							<h2 className="text-xl font-semibold mb-2">
-// // 								<Link href={`/blog/${post.slug}`} className="hover:text-blue-400 transition-colors">
-// // 									{post.title}
-// // 								</Link>
-// // 							</h2>
-// // 							{post.excerpt && <p className="text-gray-300 mb-4 line-clamp-2">{post.excerpt}</p>}
-// // 							<div className="text-sm text-gray-400">{new Date(post.created_at).toLocaleDateString()}</div>
-// // 						</div>
-// // 					</article>
-// // 				))}
-// // 			</div>
+// //   return (
+// //     <div className="max-w-7xl mx-auto">
+// //       <div className="flex justify-between items-center mb-8 px-4">
+// //         <h1 className="text-3xl font-bold">Blog Posts</h1>
+// //         <Link
+// //           href="/blog/new"
+// //           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+// //         >
+// //           Write Post
+// //         </Link>
+// //       </div>
 
-// // 			{!posts?.length && <p className="text-center text-gray-400">No posts yet. Be the first to write one!</p>}
-// // 		</div>
-// // 	);
+// //       <BlogDashboard posts={formattedPosts} />
+// //     </div>
+// //   )
 // // }
 // // // // src/app/blog/page.tsx
 
-// // // import Link from 'next/link'
-// // // import { supabaseClient } from '@/lib/auth'
-// // // import BlogDashboard from '@/components/BlogDashboard'
+// // // import Link from 'next/link';
+// // // import { supabaseClient } from '@/lib/auth';
+// // // import BlogDashboard from '@/components/BlogDashboard';
+// // // import { CategoryId } from '@/data/categories';
 
-// // // export default async function BlogList() {
-// // //   const { data: posts, error } = await supabaseClient
-// // //     .from('posts')
-// // //     .select('*')
-// // //     .eq('published', true)
-// // //     .order('created_at', { ascending: false })
+// // // /*---==============================================================
+// // // This is a React functional component named BlogList that fetches
+// // // and displays a list of published blog posts from a Supabase database.
+// // // It handles errors, transforms the post data, and renders a
+// // // dashboard with a "Write Post" link and a list of posts.
+// // //  ==============================================================---*/
+// // //  export default async function BlogList() {
+// // //    const { data: posts, error } = await supabaseClient
+// // //      .from('posts')
+// // //      .select('*')
+// // //      .order('created_at', { ascending: false })
 
-// // //   if (error) {
-// // //     console.error('Supabase error:', error)
-// // //     return <div>Error loading posts</div>
-// // //   }
+// // //    if (error) {
+// // //      console.error('Supabase error:', error)
+// // //      return <div>Error loading posts</div>
+// // //    }
 
-// // //   // Transform the posts data to match the dashboard requirements
-// // //   const formattedPosts = posts?.map(post => ({
-// // //     id: post.id,
-// // //     title: post.title,
-// // //     excerpt: post.excerpt || '',
-// // //     category: post.category || 'tech', // You'll need to add category to your posts table
-// // //     date: new Date(post.created_at).toLocaleDateString(),
-// // //     slug: post.slug,
-// // //   })) || []
+// // //    const formattedPosts = posts?.map(post => ({
+// // //      id: post.id,
+// // //      title: post.title,
+// // //      excerpt: post.excerpt || '',
+// // //      category: (post.category || 'tech') as CategoryId,
+// // //      date: new Date(post.created_at).toLocaleDateString(),
+// // //      slug: post.slug,
+// // //      cover_image: post.cover_image
+// // //    })) || []
 
-// // //   return (
-// // //     <div className="max-w-7xl mx-auto">
-// // //       <div className="flex justify-between items-center mb-8 px-4">
-// // //         <h1 className="text-3xl font-bold">Blog Posts</h1>
-// // //         <Link
-// // //           href="/blog/new"
-// // //           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-// // //         >
-// // //           Write Post
-// // //         </Link>
-// // //       </div>
+// // //    return (
+// // //      <div className="max-w-7xl mx-auto">
+// // //        <div className="flex justify-between items-center mb-8 px-4">
+// // //          <h1 className="text-3xl font-bold">Blog Posts</h1>
+// // //          <Link
+// // //            href="/blog/new"
+// // //            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+// // //          >
+// // //            Write Post
+// // //          </Link>
+// // //        </div>
 
-// // //       <BlogDashboard posts={formattedPosts} />
-// // //     </div>
-// // //   )
-// // // }
-// // // // // src/app/blog/page.tsx
-// // // // import Link from 'next/link'
-// // // // import { supabaseClient } from '@/lib/auth'
-
+// // //        <BlogDashboard posts={formattedPosts} />
+// // //      </div>
+// // //    )
+// // //  }
 // // // // export default async function BlogList() {
 // // // //   const { data: posts, error } = await supabaseClient
 // // // //     .from('posts')
@@ -1683,30 +1488,25 @@ export default async function BlogList() {
 // // // //     .eq('published', true)
 // // // //     .order('created_at', { ascending: false })
 
-// // // //   console.log('Posts:', posts)
-// // // //   console.log('Error:', error)
-
 // // // //   if (error) {
 // // // //     console.error('Supabase error:', error)
 // // // //     return <div>Error loading posts</div>
 // // // //   }
 
-// // // //   if (!posts?.length) {
-// // // //     return (
-// // // //       <div className="max-w-4xl mx-auto">
-// // // //         <div className="flex justify-between items-center mb-8">
-// // // //           <h1 className="text-3xl font-bold">Blog Posts</h1>
-// // // //           <Link href="/blog/new" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// // // //             Write Post
-// // // //           </Link>
-// // // //         </div>
-// // // //         <p>No posts yet. Be the first to write one!</p>
-// // // //       </div>
-// // // //     )
-// // // //   }
+// // // //   // Transform the posts data
+// // // //   const formattedPosts = posts?.map(post => ({
+// // // //     id: post.id,
+// // // //     title: post.title,
+// // // //     excerpt: post.excerpt || '',
+// // // //     category: post.category || 'tech',
+// // // //     date: new Date(post.created_at).toLocaleDateString(),
+// // // //     slug: post.slug,
+// // // //     cover_image: post.cover_image
+// // // //   })) || []
+
 // // // //   return (
-// // // //     <div className="max-w-4xl mx-auto">
-// // // //       <div className="flex justify-between items-center mb-8">
+// // // //     <div className="max-w-7xl mx-auto">
+// // // //       <div className="flex justify-between items-center mb-8 px-4">
 // // // //         <h1 className="text-3xl font-bold">Blog Posts</h1>
 // // // //         <Link
 // // // //           href="/blog/new"
@@ -1716,66 +1516,10 @@ export default async function BlogList() {
 // // // //         </Link>
 // // // //       </div>
 
-// // // //       <div className="space-y-8">
-// // // //         {posts?.map((post) => (
-// // // //           <article key={post.id} className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
-// // // //             <h2 className="text-2xl font-semibold mb-2">
-// // // //               <Link href={`/blog/${post.slug}`} className="hover:text-blue-600">
-// // // //                 {post.title}
-// // // //               </Link>
-// // // //             </h2>
-// // // //             {post.excerpt && (
-// // // //               <p className="text-gray-600 mb-4">{post.excerpt}</p>
-// // // //             )}
-// // // //             <div className="text-sm text-gray-500">
-// // // //               {new Date(post.created_at).toLocaleDateString()}
-// // // //             </div>
-// // // //           </article>
-// // // //         ))}
-// // // //       </div>
+// // // //       <BlogDashboard posts={formattedPosts} />
 // // // //     </div>
 // // // //   )
 // // // // }
-
-// // // // // // src/app/blog/page.tsx
-// // // // // import Link from 'next/link'
-// // // // // import { blogApi } from '@/lib/supabase'
-
-// // // // // export default async function BlogPage() {
-// // // // //   const posts = await blogApi.getAllPosts()
-
-// // // // //   return (
-// // // // //     <div className="max-w-4xl mx-auto">
-// // // // //       <div className="flex justify-between items-center mb-8">
-// // // // //         <h1 className="text-3xl font-bold">Blog Posts</h1>
-// // // // //         <Link
-// // // // //           href="/blog/new"
-// // // // //           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-// // // // //         >
-// // // // //           New Post
-// // // // //         </Link>
-// // // // //       </div>
-
-// // // // //       <div className="space-y-8">
-// // // // //         {posts.map((post) => (
-// // // // //           <article key={post.id} className="border rounded-lg p-6 hover:shadow-lg transition-shadow">
-// // // // //             <h2 className="text-2xl font-semibold mb-2">
-// // // // //               <Link href={`/blog/${post.slug}`} className="hover:text-blue-600">
-// // // // //                 {post.title}
-// // // // //               </Link>
-// // // // //             </h2>
-// // // // //             {post.excerpt && (
-// // // // //               <p className="text-gray-600 mb-4">{post.excerpt}</p>
-// // // // //             )}
-// // // // //             <div className="text-sm text-gray-500">
-// // // // //               {new Date(post.created_at).toLocaleDateString()}
-// // // // //             </div>
-// // // // //           </article>
-// // // // //         ))}
-// // // // //       </div>
-// // // // //     </div>
-// // // // //   )
-// // // // // }
 
 ```
 
@@ -1925,9 +1669,13 @@ body {
 # src/app/layout.tsx
 
 ```tsx
-// src/app/layout.tsx
+// src/app/layout.tsx - Updated with strict CSR marking
+
+import type { Metadata } from "next"
 import localFont from "next/font/local"
-import StyledComponentsRegistry from '@/lib/registry'
+import { Providers } from './providers'
+import { Navbar } from '@/components/Navbar'
+import "@/styles/globals.css"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -1941,6 +1689,11 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
+export const metadata: Metadata = {
+  title: "My Blog",
+  description: "A personal blog built with Next.js and Styled Components",
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -1948,307 +1701,98 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <StyledComponentsRegistry>
-          <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>
-            {children}
-          </div>
-        </StyledComponentsRegistry>
+      <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   )
 }
 
-
-
-// // src/app/layout.tsx
-// import localFont from "next/font/local"
-// import { Navbar } from '@/components/Navbar'
-// import { ThemeLayout } from '@/components/ThemeLayout'
-
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// })
-
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// })
-
-// export default function RootLayout({
-//   children,
-// }: {
-//   children: React.ReactNode
-// }) {
-//   return (
-//     <html lang="en" suppressHydrationWarning>
-//       <body>
-//         <ThemeLayout>
-//           <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-//             <Navbar />
-//             <main className="container mx-auto px-4 py-8">
-//               {children}
-//             </main>
-//           </div>
-//         </ThemeLayout>
-//       </body>
-//     </html>
-//   )
-// }
-
-
-// // // src/app/layout.tsx
-// // "use client"
-// // import localFont from "next/font/local"
-// // import { Providers } from './providers'
-// // import { ThemeProvider } from 'styled-components'
-// // import { lightTheme } from '@/lib/theme-config'
-// // import { GlobalStyle } from '@/lib/theme'
-// // import StyledComponentsRegistry from '@/lib/registry'
-// // import { Navbar } from '@/components/Navbar'
-
-// // const geistSans = localFont({
-// //   src: "./fonts/GeistVF.woff",
-// //   variable: "--font-geist-sans",
-// //   weight: "100 900",
-// // })
-
-// // const geistMono = localFont({
-// //   src: "./fonts/GeistMonoVF.woff",
-// //   variable: "--font-geist-mono",
-// //   weight: "100 900",
-// // })
-
-// // export default function RootLayout({
-// //   children,
-// // }: {
-// //   children: React.ReactNode
-// // }) {
-// //    return (
-// //       <html lang="en" suppressHydrationWarning>
-// //         <body>
-// //           <Providers>
-// //             <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-// //               <Navbar />
-// //               <main className="container mx-auto px-4 py-8">
-// //                 {children}
-// //               </main>
-// //             </div>
-// //           </Providers>
-// //         </body>
-// //       </html>
-// //     )
-// // //   return (
-// // //     <html lang="en" suppressHydrationWarning>
-// // //       <body>
-// // //         <StyledComponentsRegistry>
-// // //           <ThemeProvider theme={lightTheme}>
-// // //             <GlobalStyle />
-// // //             <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-// // //               <Navbar />
-// // //               <main className="container mx-auto px-4 py-8">
-// // //                 {children}
-// // //               </main>
-// // //             </div>
-// // //           </ThemeProvider>
-// // //         </StyledComponentsRegistry>
-// // //       </body>
-// // //     </html>
-// // //   )
-// // }
-// // // // src/app/layout.tsx
-// // // 'use client'
-// // // import { useState, useEffect } from 'react'
-// // // import 'styled-components'
-// // // import { ThemeProvider } from 'styled-components'
-// // // import { theme, GlobalStyle } from '@/lib/theme'
-// // // import StyledComponentsRegistry from '@/lib/registry'
-
-// // // function ThemeWrapper({ children }: { children: React.ReactNode }) {
-// // //   const [isDarkTheme, setIsDarkTheme] = useState(false)
-
-// // //   useEffect(() => {
-// // //     // Sync with portfolio theme preference
-// // //     const darkMode = localStorage.getItem('darkMode') === 'true'
-// // //     setIsDarkTheme(darkMode)
-// // //   }, [])
-
-// // //   return (
-// // //     <ThemeProvider theme={isDarkTheme ? theme.dark : theme.light}>
-// // //       <GlobalStyle />
-// // //       {children}
-// // //     </ThemeProvider>
-// // //   )
-// // // }
-
-// // // export default function RootLayout({
-// // //   children,
-// // // }: {
-// // //   children: React.ReactNode
-// // // }) {
-// // //   return (
-// // //     <html lang="en" suppressHydrationWarning>
-// // //       <body>
-// // //         <StyledComponentsRegistry>
-// // //           <ThemeWrapper>
-// // //             <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-// // //               <Navbar />
-// // //               <main className="container mx-auto px-4 py-8">
-// // //                 {children}
-// // //               </main>
-// // //             </div>
-// // //           </ThemeWrapper>
-// // //         </StyledComponentsRegistry>
-// // //       </body>
-// // //     </html>
-// // //   )
-// // // }
-
-// // // // // src/app/layout.tsx
-// // // // import type { Metadata } from "next"
-// // // // import localFont from "next/font/local"
-// // // // import "./globals.css"
-// // // // import { Navbar } from '@/components/Navbar'
-
-// // // // const geistSans = localFont({
-// // // //   src: "./fonts/GeistVF.woff",
-// // // //   variable: "--font-geist-sans",
-// // // //   weight: "100 900",
-// // // // })
-
-// // // // const geistMono = localFont({
-// // // //   src: "./fonts/GeistMonoVF.woff",
-// // // //   variable: "--font-geist-mono",
-// // // //   weight: "100 900",
-// // // // })
-
-// // // // export const metadata: Metadata = {
-// // // //   title: "My Blog",
-// // // //   description: "A Next.js blog with Supabase",
-// // // // }
-
-// // // // export default function RootLayout({
-// // // //   children,
-// // // // }: {
-// // // //   children: React.ReactNode
-// // // // }) {
-// // // //   return (
-// // // //     <html lang="en" suppressHydrationWarning>
-// // // //       <body suppressHydrationWarning>
-// // // //         <div className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-// // // //           <Navbar />
-// // // //           <main className="container mx-auto px-4 py-8">
-// // // //             {children}
-// // // //           </main>
-// // // //         </div>
-// // // //       </body>
-// // // //     </html>
-// // // //   )
-// // // // }
 ```
 
 # src/app/page.tsx
 
 ```tsx
 // src/app/page.tsx
-'use client'
-import { ThemeProvider } from 'styled-components'
-import { lightTheme } from '@/lib/theme-config'
-import { Navbar } from '@/components/Navbar'
+"use client";
+import { ThemeProvider } from "styled-components";
+import { lightTheme } from "@/lib/theme-config";
+import { Navbar } from "@/components/Navbar";
 
+/*---==================================================================
+This code snippet defines a functional component named `HomePage`
+that is exported as the default export. When this component is rendered,
+it returns a JSX structure. The JSX structure consists of a
+`ThemeProvider` component from the `styled-components` library,
+which wraps around the `Navbar` component and a `main` element.
+The `ThemeProvider` component receives a `theme` prop,
+which is set to the `lightTheme` variable. Inside the `main` element,
+there is an `h1` element with the text "Welcome to the Blog".
+This code snippet is likely part of a React application and is
+responsible for rendering the home page of the blog.
+==================================================================---*/
 export default function HomePage() {
-  return (
-    <ThemeProvider theme={lightTheme}>
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <h1>Welcome to the Blog</h1>
-      </main>
-    </ThemeProvider>
-  )
+	return (
+		<ThemeProvider theme={lightTheme}>
+			<Navbar />
+			<main className="container mx-auto px-4 py-8">
+				<h1>Welcome to the Blog</h1>
+			</main>
+		</ThemeProvider>
+	);
 }
-// // src/app/page.tsx
-// import Link from 'next/link'
 
-// export default function Home() {
-//   return (
-//     <div className="max-w-4xl mx-auto">
-//       <h1 className="text-4xl font-bold mb-6">Welcome to My Blog</h1>
-//       <p className="text-lg mb-4">
-//         Exploring ideas, sharing knowledge, and documenting my journey.
-//       </p>
-//       <Link
-//         href="/blog"
-//         className="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-//       >
-//         Read Blog Posts
-//       </Link>
-//     </div>
-//   )
-// }
-
-// // // app/page.tsx
-// // import { blogApi } from '@/lib/supabase'
-
-// // export default async function Home() {
-// //   // Fetch posts
-// //   const posts = await blogApi.getAllPosts()
-
-// //   return (
-// //     <main className="max-w-4xl mx-auto py-8 px-4">
-// //       <h1 className="text-3xl font-bold mb-8">Blog Posts</h1>
-
-// //       <div className="space-y-6">
-// //         {posts.map((post) => (
-// //           <article key={post.id} className="border rounded-lg p-6">
-// //             <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-// //             {post.excerpt && (
-// //               <p className="text-gray-600 mb-4">{post.excerpt}</p>
-// //             )}
-// //             <div className="text-sm text-gray-500">
-// //               Published on {new Date(post.created_at).toLocaleDateString()}
-// //             </div>
-// //           </article>
-// //         ))}
-// //       </div>
-// //     </main>
-// //   )
-// // }
 ```
 
 # src/app/providers.tsx
 
 ```tsx
-// src/app/providers.tsx
+// src/app/providers.tsx - Updated to prevent hydration mismatches
 'use client'
+import { useState, useEffect, useCallback } from 'react'
 import { ThemeProvider } from 'styled-components'
-import { lightTheme } from '@/lib/theme-config'
-import { GlobalStyle } from '@/lib/theme'
+import { lightTheme, darkTheme } from '@/lib/theme-config'
 import StyledComponentsRegistry from '@/lib/registry'
-import { useState, useEffect } from 'react'
+import { GlobalStyle } from '@/lib/theme'
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Use null initial state to prevent hydration mismatch
   const [mounted, setMounted] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
 
+  // Move theme detection to a separate effect
+  useEffect(() => {
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    setIsDarkMode(darkModeQuery.matches)
+
+    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
+    darkModeQuery.addEventListener('change', handleChange)
+    return () => darkModeQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  // Separate mount effect to ensure sequential execution
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (!mounted) {
-    return <>{children}</>
+  // Render nothing until mounted and theme is detected
+  if (!mounted || isDarkMode === null) {
+    return null
   }
 
   return (
     <StyledComponentsRegistry>
-      <ThemeProvider theme={lightTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <GlobalStyle />
         {children}
       </ThemeProvider>
     </StyledComponentsRegistry>
   )
 }
+
 ```
 
 # src/components/AuthButton.tsx
@@ -2294,245 +1838,313 @@ export function AuthButton() {
 
 ```tsx
 // src/components/BlogDashboard.tsx
-'use client'
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
+import { categories, CategoryId } from "@/data/categories";
+import { PostCard } from "@/components/PostCard";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeft } from 'lucide-react';
-import { categories, CategoryId } from '@/data/categories';
-import { PostCard } from '@/components/PostCard';
+// Grid size configuration types
+type GridSize = "large" | "medium" | "small";
 
-type Post = {
-  id: string;
-  title: string;
-  excerpt: string;
-  category: CategoryId;
-  date: string;
-  slug: string;
-  cover_image?: string;
+// interface GridConfig {
+//   cols: number;
+//   rows: number;
+//   className: string;
+// }
+
+// const gridSizeConfigs: Record<GridSize, GridConfig> = {
+//   large: {
+//     cols: 2,
+//     rows: 2,
+//     className: 'col-span-2 row-span-2 aspect-[16/9]'
+//   },
+//   medium: {
+//     cols: 1,
+//     rows: 1,
+//     className: 'col-span-1 row-span-1 aspect-[4/3]'
+//   },
+//   small: {
+//     cols: 1,
+//     rows: 1,
+//     className: 'col-span-1 aspect-square'
+//   }
+// };
+
+// type FeaturedSetup = {
+//   category: CategoryId;
+//   size: GridSize;
+//   order: number;
+//   title?: string;
+//   description?: string;
+// }[];
+
+export type Post = {
+	id: string;
+	title: string;
+	excerpt: string;
+	category: CategoryId;
+	date: string;
+	slug: string;
+	cover_image?: string;
 };
 
-export default function BlogDashboard({ posts }: { posts: Post[] }) {
-  const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+export type FeaturedSetup = {
+	category: CategoryId;
+	size: GridSize;
+	order: number;
+	title?: string;
+	description?: string;
+}[];
 
-  const latestTechPost = posts.find(post => post.category === 'tech');
-  const latestMediaPost = posts.find(post => post.category === 'media');
-  const remainingPosts = posts.filter(post =>
-    post.id !== latestTechPost?.id && post.id !== latestMediaPost?.id
-  );
-  const filteredPosts = activeCategory
-    ? remainingPosts.filter(post => post.category === activeCategory)
-    : remainingPosts;
-
-  const FeaturedCard = ({ post, category }: { post?: Post, category: typeof categories[0] }) => (
-    <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800">
-      {post ? (
-        <Link href={`/blog/${post.slug}`} className="group block h-full">
-          {post.cover_image ? (
-            <div className="absolute inset-0">
-              <Image
-                src={post.cover_image}
-                alt={post.title}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-            </div>
-          ) : (
-            <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-          )}
-          <div className="absolute inset-0 p-6 flex flex-col justify-end">
-            <div className={`text-sm font-medium ${category.textColor} mb-2`}>
-              {category.name}
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-              {post.title}
-            </h3>
-            <p className="text-gray-300 line-clamp-2">
-              {post.excerpt}
-            </p>
-          </div>
-        </Link>
-      ) : (
-        <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
-          <div className="absolute inset-0 p-6 flex items-center justify-center">
-            <p className="text-xl text-white/70">No {category.name} posts yet</p>
-          </div>
-        </div>
-      )}
-      <Link
-        href="#"
-        onClick={(e) => {
-          e.preventDefault();
-          setActiveCategory(category.id as CategoryId);
-        }}
-        className={`absolute top-4 right-4 px-3 py-1.5 rounded-full ${category.color}
-          text-white text-sm font-medium hover:opacity-90 transition-opacity`}
-      >
-        {category.name}
-      </Link>
-    </div>
-  );
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {categories.map((category) => {
-          const Icon = category.icon;
-          return (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(
-                activeCategory === category.id ? null : category.id as CategoryId
-              )}
-              className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-                ${activeCategory === category.id
-                  ? category.color + ' text-white'
-                  : 'bg-gray-800 hover:bg-gray-700'}`}
-            >
-              <Icon size={24} />
-              <span className="font-medium">{category.name}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {activeCategory ? (
-        <div className="space-y-8">
-          <div className="flex justify-between items-start">
-            <div>
-              <button
-                onClick={() => setActiveCategory(null)}
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
-              >
-                <ArrowLeft size={20} />
-                <span>Back to all posts</span>
-              </button>
-              <h2 className="text-3xl font-bold mb-2">
-                {categories.find(c => c.id === activeCategory)?.name}
-              </h2>
-              <p className="text-gray-300 max-w-2xl">
-                {categories.find(c => c.id === activeCategory)?.description}
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="featuredBogsContainer grid md:grid-cols-1 gap-8">
-            <FeaturedCard
-              post={latestTechPost}
-              category={categories[0]}
-            />
-            {/* <FeaturedCard
-              post={latestMediaPost}
-              category={categories[1]}
-            /> */}
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-bold mb-6">All Posts</h2>
-            <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {filteredPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
+interface GridConfig {
+	cols: number;
+	rows: number;
+	className: string;
 }
+
+const gridSizeConfigs: Record<GridSize, GridConfig> = {
+	large: {
+		cols: 2,
+		rows: 2,
+		className: "col-span-2 row-span-2 aspect-[16/9]",
+	},
+	medium: {
+		cols: 1,
+		rows: 1,
+		className: "col-span-1 row-span-1 aspect-[4/3]",
+	},
+	small: {
+		cols: 1,
+		rows: 1,
+		className: "col-span-1 aspect-square",
+	},
+};
+
+// Default featured setup - can be overridden via props
+const defaultFeatures: FeaturedSetup = [
+	{
+		category: "tech",
+		size: "large",
+		order: 0,
+		title: "Latest in Tech",
+		description: "Latest tech insights and tutorials",
+	},
+	{
+		category: "media",
+		size: "medium",
+		order: 1,
+		title: "Media & Reviews",
+		description: "Recent media coverage and reviews",
+	},
+	{
+		category: "food",
+		size: "medium",
+		order: 2,
+		title: "Food & Recipes",
+		description: "Latest recipes and culinary adventures",
+	},
+];
+
+interface BlogDashboardProps {
+	posts: Post[];
+	featuredSetup?: FeaturedSetup;
+}
+
+export default function BlogDashboard({ posts, featuredSetup = defaultFeatures }: BlogDashboardProps) {
+	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+	// Calculate grid layout
+	const getFeaturedLayout = () => {
+		const totalCols = 4; // Base grid is 4 columns
+		let usedCols = 0;
+		let gridTemplateAreas = "";
+
+		featuredSetup.forEach((feature, index) => {
+			const config = gridSizeConfigs[feature.size];
+			if (usedCols + config.cols > totalCols) {
+				gridTemplateAreas += `"`;
+				usedCols = 0;
+			}
+			gridTemplateAreas += ` area${index}`;
+			usedCols += config.cols;
+		});
+
+		return gridTemplateAreas;
+	};
+
+	// Get featured posts based on setup
+	const featuredPosts = featuredSetup
+		.sort((a, b) => a.order - b.order)
+		.map((feature) => ({
+			post: posts.find((post) => post.category === feature.category),
+			category: categories.find((c) => c.id === feature.category)!,
+			size: feature.size,
+			title: feature.title,
+			description: feature.description,
+		}));
+
+	// Filter remaining posts, excluding featured ones
+	const featuredPostIds = featuredPosts.map((f) => f.post?.id).filter(Boolean) as string[];
+	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredPostIds.includes(post.id));
+
+	const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[0]; size: GridSize; title?: string; description?: string }) => (
+		<div
+			className={`relative overflow-hidden rounded-xl bg-gray-800
+      ${gridSizeConfigs[size].className}
+      transition-transform duration-300 hover:scale-[1.02]`}
+		>
+			{post ? (
+				<Link href={`/blog/${post.slug}`} className="group block h-full">
+					{post.cover_image ? (
+						<div className="absolute inset-0">
+							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes={size === "large" ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 25vw"} priority={size === "large"} />
+							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+						</div>
+					) : (
+						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+					)}
+					<div className="absolute inset-0 p-6 flex flex-col justify-end">
+						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div>
+						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
+						<p className="text-gray-300 line-clamp-2">{description || post.excerpt}</p>
+					</div>
+				</Link>
+			) : (
+				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+					<div className="absolute inset-0 p-6 flex items-center justify-center">
+						<p className="text-xl text-white/70">No {category.name} posts yet</p>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+
+	return (
+		<div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+			{/* Categories buttons */}
+			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+				{categories.map((category) => {
+					const Icon = category.icon;
+					return (
+						<button
+							key={category.id}
+							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
+                ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
+						>
+							<Icon size={24} />
+							<span className="font-medium">{category.name}</span>
+						</button>
+					);
+				})}
+			</div>
+
+			{activeCategory ? (
+				<div className="space-y-8">
+					<div className="flex justify-between items-start">
+						<div>
+							<button onClick={() => setActiveCategory(null)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4">
+								<ArrowLeft size={20} />
+								<span>Back to all posts</span>
+							</button>
+							<h2 className="text-3xl font-bold mb-2">{categories.find((c) => c.id === activeCategory)?.name}</h2>
+							<p className="text-gray-300 max-w-2xl">{categories.find((c) => c.id === activeCategory)?.description}</p>
+						</div>
+					</div>
+					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+						{filteredPosts.map((post) => (
+							<PostCard key={post.id} post={post} />
+						))}
+					</div>
+				</div>
+			) : (
+				<>
+					<div
+						className="featuredBlogsContainer grid gap-8"
+						style={{
+							gridTemplateColumns: "repeat(4, 1fr)",
+							gridTemplateAreas: getFeaturedLayout(),
+						}}
+					>
+						{featuredPosts.map(({ post, category, size, title, description }, index) => (
+							<div key={post?.id || index} style={{ gridArea: `area${index}` }}>
+								<FeaturedCard post={post} category={category} size={size} title={title} description={description} />
+							</div>
+						))}
+					</div>
+
+					<div>
+						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
+						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+							{filteredPosts.map((post) => (
+								<PostCard key={post.id} post={post} />
+							))}
+						</div>
+					</div>
+				</>
+			)}
+		</div>
+	);
+}
+// // src/components/BlogDashboard.tsx
 // "use client";
 
 // import { useState } from "react";
 // import Link from "next/link";
 // import Image from "next/image";
-// import { Newspaper, Coffee, Laptop, User, ArrowLeft } from "lucide-react";
-// import { CategoryId } from '@/data/categories';
-// import { categories } from "@/data/categories";
+// import { ArrowLeft } from "lucide-react";
+// import { categories, CategoryId } from "@/data/categories";
 // import { PostCard } from "@/components/PostCard";
 
 // type Post = {
 // 	id: string;
 // 	title: string;
 // 	excerpt: string;
-// 	category: CategoryId;  // This enforces the proper category types
+// 	category: CategoryId;
 // 	date: string;
 // 	slug: string;
 // 	cover_image?: string;
 // };
 
 // export default function BlogDashboard({ posts }: { posts: Post[] }) {
-// 	const [activeCategory, setActiveCategory] = useState<string | null>(null);
+// 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
+// 	// Find featured posts before any filtering
 // 	const latestTechPost = posts.find((post) => post.category === "tech");
-// 	const latestMediaPost = posts.find((post) => post.category === "media");
-// 	const remainingPosts = posts.filter((post) => post.id !== latestTechPost?.id && post.id !== latestMediaPost?.id);
-// 	const filteredPosts = activeCategory ? remainingPosts.filter((post) => post.category === activeCategory) : remainingPosts;
+// 	const latestMediaPost = posts.find(post => post.category === 'media');
 
-// 	//   const categories = [
-// 	//     {
-// 	//       id: 'tech',
-// 	//       name: 'Tech Articles',
-// 	//       icon: Laptop,
-// 	//       color: 'bg-blue-500',
-// 	//       gradient: 'from-blue-500 to-blue-700',
-// 	//       description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
-// 	//     },
-// 	//     {
-// 	//       id: 'media',
-// 	//       name: 'Other Media',
-// 	//       icon: Newspaper,
-// 	//       color: 'bg-purple-500',
-// 	//       gradient: 'from-purple-500 to-purple-700',
-// 	//       description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
-// 	//     },
-// 	//     {
-// 	//       id: 'food',
-// 	//       name: 'Fusion Food',
-// 	//       icon: Coffee,
-// 	//       color: 'bg-orange-500',
-// 	//       gradient: 'from-orange-500 to-orange-700',
-// 	//       description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
-// 	//     },
-// 	//     {
-// 	//       id: 'personal',
-// 	//       name: 'Personal',
-// 	//       icon: User,
-// 	//       color: 'bg-green-500',
-// 	//       gradient: 'from-green-500 to-green-700',
-// 	//       description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
-// 	//     }
-// 	//   ];
+// 	// Get remaining posts AFTER removing both featured posts
+// 	// const remainingPosts = posts.filter(post => {
+// 	//   const isFeaturedTech = post.id === latestTechPost?.id;
+// 	//   const isFeaturedMedia = post.id === latestMediaPost?.id;
+// 	//   return !isFeaturedTech && !isFeaturedMedia;
+// 	// });
+
+// 	// Get filtered posts based on active category
+// 	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => post.id !== latestTechPost?.id);
 
 // 	const FeaturedCard = ({ post, category }: { post?: Post; category: (typeof categories)[0] }) => (
 // 		<div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800">
 // 			{post ? (
-// 				<PostCard post={post} />
+// 				<Link href={`/blog/${post.slug}`} className="group block h-full">
+// 					{post.cover_image ? (
+// 						<div className="absolute inset-0">
+// 							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" />
+// 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+// 						</div>
+// 					) : (
+// 						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// 					)}
+// 					<div className="absolute inset-0 p-6 flex flex-col justify-end">
+// 						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{category.name}</div>
+// 						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
+// 						<p className="text-gray-300 line-clamp-2">{post.excerpt}</p>
+// 					</div>
+// 				</Link>
 // 			) : (
-// 				// <Link href={`/blog/${post.slug}`} className="group block h-full">
-// 				// 	{post.cover_image ? (
-// 				// 		<div className="absolute inset-0">
-// 				// 			<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" />
-// 				// 			<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-// 				// 		</div>
-// 				// 	) : (
-// 				// 		<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-// 				// 	)}
-// 				// 	<div className="absolute inset-0 p-6 flex flex-col justify-end">
-// 				// 		<div className="text-sm font-medium text-blue-400 mb-2">Latest in {category.name}</div>
-// 				// 		<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
-// 				// 		<p className="text-gray-300 line-clamp-2">{post.excerpt}</p>
-// 				// 	</div>
-// 				// </Link>
 // 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
 // 					<div className="absolute inset-0 p-6 flex items-center justify-center">
 // 						<p className="text-xl text-white/70">No {category.name} posts yet</p>
@@ -2543,7 +2155,7 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 // 				href="#"
 // 				onClick={(e) => {
 // 					e.preventDefault();
-// 					setActiveCategory(category.id);
+// 					setActiveCategory(category.id as CategoryId);
 // 				}}
 // 				className={`absolute top-4 right-4 px-3 py-1.5 rounded-full ${category.color}
 //           text-white text-sm font-medium hover:opacity-90 transition-opacity`}
@@ -2561,7 +2173,7 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 // 					return (
 // 						<button
 // 							key={category.id}
-// 							onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+// 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
 // 							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
 //                 ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
 // 						>
@@ -2588,41 +2200,21 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 // 						{filteredPosts.map((post) => (
 // 							<PostCard key={post.id} post={post} />
 // 						))}
-// 						{/* {filteredPosts.map((post) => (
-// 							<Link href={`/blog/${post.slug}`} key={post.id} className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-// 								<div className="aspect-[16/9] relative bg-gray-900">{post.cover_image ? <Image src={post.cover_image} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" /> : <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800" />}</div>
-// 								<div className="p-4">
-// 									<div className="text-sm text-gray-400 mb-1">{post.date}</div>
-// 									<h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
-// 									<p className="text-gray-300 text-sm line-clamp-2">{post.excerpt}</p>
-// 								</div>
-// 							</Link>
-// 						))} */}
 // 					</div>
 // 				</div>
 // 			) : (
 // 				<>
-// 					<div className="grid md:grid-cols-2 gap-8">
+// 					<div className="featuredBogsContainer grid md:grid-cols-2 gap-8">
 // 						<FeaturedCard post={latestTechPost} category={categories[0]} />
 // 						<FeaturedCard post={latestMediaPost} category={categories[1]} />
 // 					</div>
 
 // 					<div>
 // 						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
-// 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+// 						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 // 							{filteredPosts.map((post) => (
 // 								<PostCard key={post.id} post={post} />
 // 							))}
-// 							{/* {filteredPosts.map((post) => (
-// 								<Link href={`/blog/${post.slug}`} key={post.id} className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-// 									<div className="aspect-[16/9] relative bg-gray-900">{post.cover_image ? <Image src={post.cover_image} alt={post.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" /> : <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800" />}</div>
-// 									<div className="p-4">
-// 										<div className="text-sm text-gray-400 mb-1">{post.date}</div>
-// 										<h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
-// 										<p className="text-gray-300 text-sm line-clamp-2">{post.excerpt}</p>
-// 									</div>
-// 								</Link>
-// 							))} */}
 // 						</div>
 // 					</div>
 // 				</>
@@ -2631,465 +2223,15 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 // 	);
 // }
 
-// // 'use client'
-
-// // import { useState } from 'react';
-// // import Link from 'next/link';
-// // import Image from 'next/image';
-// // import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
-
-// // type Post = {
-// //   id: string;
-// //   title: string;
-// //   excerpt: string;
-// //   category: string;
-// //   date: string;
-// //   slug: string;
-// //   cover_image?: string;
-// // };
-
-// // export default function BlogDashboard({ posts }: { posts: Post[] }) {
-// //   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-// //   const latestTechPost = posts.find(post => post.category === 'tech');
-// //   const latestMediaPost = posts.find(post => post.category === 'media');
-// //   const remainingPosts = posts.filter(post =>
-// //     post.id !== latestTechPost?.id && post.id !== latestMediaPost?.id
-// //   );
-// //   const filteredPosts = activeCategory
-// //     ? remainingPosts.filter(post => post.category === activeCategory)
-// //     : remainingPosts;
-
-// //   const categories = [
-// //     { id: 'tech', name: 'Tech Articles', icon: Laptop, color: 'bg-blue-500', gradient: 'from-blue-500 to-blue-700' },
-// //     { id: 'media', name: 'Other Media', icon: Newspaper, color: 'bg-purple-500', gradient: 'from-purple-500 to-purple-700' },
-// //     { id: 'food', name: 'Fusion Food', icon: Coffee, color: 'bg-orange-500', gradient: 'from-orange-500 to-orange-700' },
-// //     { id: 'personal', name: 'Personal', icon: User, color: 'bg-green-500', gradient: 'from-green-500 to-green-700' }
-// //   ];
-
-// //   const FeaturedCard = ({ post, category }: { post?: Post, category: typeof categories[0] }) => (
-// //     <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800">
-// //       {post ? (
-// //         <Link href={`/blog/${post.slug}`} className="group block h-full">
-// //           {post.cover_image ? (
-// //             <div className="absolute inset-0">
-// //               <Image
-// //                 src={post.cover_image}
-// //                 alt={post.title}
-// //                 fill
-// //                 className="object-cover transition-transform group-hover:scale-105"
-// //                 sizes="(max-width: 768px) 100vw, 50vw"
-// //               />
-// //               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-// //             </div>
-// //           ) : (
-// //             <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-// //           )}
-// //           <div className="absolute inset-0 p-6 flex flex-col justify-end">
-// //             <div className="text-sm font-medium text-blue-400 mb-2">
-// //               Latest in {category.name}
-// //             </div>
-// //             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-// //               {post.title}
-// //             </h3>
-// //             <p className="text-gray-300 line-clamp-2">
-// //               {post.excerpt}
-// //             </p>
-// //           </div>
-// //         </Link>
-// //       ) : (
-// //         <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
-// //           <div className="absolute inset-0 p-6 flex items-center justify-center">
-// //             <p className="text-xl text-white/70">No {category.name} posts yet</p>
-// //           </div>
-// //         </div>
-// //       )}
-// //       <Link
-// //         href="#"
-// //         onClick={(e) => {
-// //           e.preventDefault();
-// //           setActiveCategory(category.id);
-// //         }}
-// //         className={`absolute top-4 right-4 px-3 py-1.5 rounded-full ${category.color}
-// //           text-white text-sm font-medium hover:opacity-90 transition-opacity`}
-// //       >
-// //         {category.name}
-// //       </Link>
-// //     </div>
-// //   );
-
-// //   return (
-// //     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-// //       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-// //         {categories.map((category) => {
-// //           const Icon = category.icon;
-// //           return (
-// //             <button
-// //               key={category.id}
-// //               onClick={() => setActiveCategory(
-// //                 activeCategory === category.id ? null : category.id
-// //               )}
-// //               className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-// //                 ${activeCategory === category.id
-// //                   ? category.color + ' text-white'
-// //                   : 'bg-gray-800 hover:bg-gray-700'}`}
-// //             >
-// //               <Icon size={24} />
-// //               <span className="font-medium">{category.name}</span>
-// //             </button>
-// //           );
-// //         })}
-// //       </div>
-
-// //       {!activeCategory && (
-// //         <div className="grid md:grid-cols-2 gap-8">
-// //           <FeaturedCard
-// //             post={latestTechPost}
-// //             category={categories[0]}
-// //           />
-// //           <FeaturedCard
-// //             post={latestMediaPost}
-// //             category={categories[1]}
-// //           />
-// //         </div>
-// //       )}
-
-// //       <div>
-// //         <h2 className="text-2xl font-bold mb-6">
-// //           {activeCategory
-// //             ? `${categories.find(c => c.id === activeCategory)?.name}`
-// //             : 'All Posts'
-// //           }
-// //         </h2>
-// //         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-// //           {filteredPosts.map((post) => (
-// //             <Link
-// //               href={`/blog/${post.slug}`}
-// //               key={post.id}
-// //               className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-// //             >
-// //               <div className="aspect-[16/9] relative bg-gray-900">
-// //                 {post.cover_image ? (
-// //                   <Image
-// //                     src={post.cover_image}
-// //                     alt={post.title}
-// //                     fill
-// //                     className="object-cover"
-// //                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-// //                   />
-// //                 ) : (
-// //                   <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800" />
-// //                 )}
-// //               </div>
-// //               <div className="p-4">
-// //                 <div className="text-sm text-gray-400 mb-1">{post.date}</div>
-// //                 <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">
-// //                   {post.title}
-// //                 </h3>
-// //                 <p className="text-gray-300 text-sm line-clamp-2">
-// //                   {post.excerpt}
-// //                 </p>
-// //               </div>
-// //             </Link>
-// //           ))}
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-// // 'use client'
-
-// // import { useState } from 'react';
-// // import Link from 'next/link';
-// // import Image from 'next/image';
-// // import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
-
-// // type Post = {
-// //   id: string;
-// //   title: string;
-// //   excerpt: string;
-// //   category: string;
-// //   date: string;
-// //   slug: string;
-// //   cover_image?: string;
-// // };
-
-// // export default function BlogDashboard({ posts }: { posts: Post[] }) {
-// //   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-// //   const latestTechPost = posts.find(post => post.category === 'tech');
-// //   const latestMediaPost = posts.find(post => post.category === 'media');
-// //   const remainingPosts = posts.filter(post =>
-// //     post.id !== latestTechPost?.id && post.id !== latestMediaPost?.id
-// //   );
-// //   const filteredPosts = activeCategory
-// //     ? remainingPosts.filter(post => post.category === activeCategory)
-// //     : remainingPosts;
-
-// //   const categories = [
-// //     { id: 'tech', name: 'Tech Articles', icon: Laptop, color: 'bg-blue-500' },
-// //     { id: 'media', name: 'Other Media', icon: Newspaper, color: 'bg-purple-500' },
-// //     { id: 'food', name: 'Fusion Food', icon: Coffee, color: 'bg-orange-500' },
-// //     { id: 'personal', name: 'Personal', icon: User, color: 'bg-green-500' }
-// //   ];
-
-// //   return (
-// //     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-// //       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-// //         {categories.map((category) => {
-// //           const Icon = category.icon;
-// //           return (
-// //             <button
-// //               key={category.id}
-// //               onClick={() => setActiveCategory(
-// //                 activeCategory === category.id ? null : category.id
-// //               )}
-// //               className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-// //                 ${activeCategory === category.id
-// //                   ? category.color + ' text-white'
-// //                   : 'bg-gray-800 hover:bg-gray-700'}`}
-// //             >
-// //               <Icon size={24} />
-// //               <span className="font-medium">{category.name}</span>
-// //             </button>
-// //           );
-// //         })}
-// //       </div>
-
-// //       {!activeCategory && (
-// //         <div className="grid md:grid-cols-2 gap-8">
-// //           {latestTechPost && (
-// //             <Link
-// //               href={`/blog/${latestTechPost.slug}`}
-// //               className="group relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800"
-// //             >
-// //               {latestTechPost.cover_image ? (
-// //                 <div className="absolute inset-0">
-// //                   <Image
-// //                     src={latestTechPost.cover_image}
-// //                     alt={latestTechPost.title}
-// //                     fill
-// //                     className="object-cover transition-transform group-hover:scale-105"
-// //                     sizes="(max-width: 768px) 100vw, 50vw"
-// //                   />
-// //                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-// //                 </div>
-// //               ) : (
-// //                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700" />
-// //               )}
-// //               <div className="absolute inset-0 p-6 flex flex-col justify-end">
-// //                 <div className="text-sm font-medium text-blue-400 mb-2">
-// //                   Latest in Tech
-// //                 </div>
-// //                 <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-// //                   {latestTechPost.title}
-// //                 </h3>
-// //                 <p className="text-gray-300 line-clamp-2">
-// //                   {latestTechPost.excerpt}
-// //                 </p>
-// //               </div>
-// //             </Link>
-// //           )}
-
-// //           {latestMediaPost && (
-// //             <Link
-// //               href={`/blog/${latestMediaPost.slug}`}
-// //               className="group relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800"
-// //             >
-// //               {latestMediaPost.cover_image ? (
-// //                 <div className="absolute inset-0">
-// //                   <Image
-// //                     src={latestMediaPost.cover_image}
-// //                     alt={latestMediaPost.title}
-// //                     fill
-// //                     className="object-cover transition-transform group-hover:scale-105"
-// //                     sizes="(max-width: 768px) 100vw, 50vw"
-// //                   />
-// //                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-// //                 </div>
-// //               ) : (
-// //                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-700" />
-// //               )}
-// //               <div className="absolute inset-0 p-6 flex flex-col justify-end">
-// //                 <div className="text-sm font-medium text-purple-400 mb-2">
-// //                   Latest in Media
-// //                 </div>
-// //                 <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
-// //                   {latestMediaPost.title}
-// //                 </h3>
-// //                 <p className="text-gray-300 line-clamp-2">
-// //                   {latestMediaPost.excerpt}
-// //                 </p>
-// //               </div>
-// //             </Link>
-// //           )}
-// //         </div>
-// //       )}
-
-// //       <div>
-// //         <h2 className="text-2xl font-bold mb-6">
-// //           {activeCategory
-// //             ? `${categories.find(c => c.id === activeCategory)?.name}`
-// //             : 'All Posts'
-// //           }
-// //         </h2>
-// //         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-// //           {filteredPosts.map((post) => (
-// //             <Link
-// //               href={`/blog/${post.slug}`}
-// //               key={post.id}
-// //               className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-// //             >
-// //               <div className="aspect-[16/9] relative bg-gray-900">
-// //                 {post.cover_image ? (
-// //                   <Image
-// //                     src={post.cover_image}
-// //                     alt={post.title}
-// //                     fill
-// //                     className="object-cover"
-// //                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-// //                   />
-// //                 ) : (
-// //                   <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800" />
-// //                 )}
-// //               </div>
-// //               <div className="p-4">
-// //                 <div className="text-sm text-gray-400 mb-1">{post.date}</div>
-// //                 <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">
-// //                   {post.title}
-// //                 </h3>
-// //                 <p className="text-gray-300 text-sm line-clamp-2">
-// //                   {post.excerpt}
-// //                 </p>
-// //               </div>
-// //             </Link>
-// //           ))}
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-// // 'use client'
-// // import React, { useState } from 'react';
-// // import Link from 'next/link';
-// // import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
-
-// // // Types for our blog posts
-// // type Post = {
-// //   id: string;
-// //   title: string;
-// //   excerpt: string;
-// //   category: string;
-// //   date: string;
-// //   slug: string;
-// //   imageUrl?: string;
-// // };
-
-// // // Categories configuration
-// // const categories = [
-// //   { id: 'tech', name: 'Tech Articles', icon: Laptop, color: 'bg-blue-500' },
-// //   { id: 'food', name: 'Fusion Food', icon: Coffee, color: 'bg-orange-500' },
-// //   { id: 'media', name: 'Other Media', icon: Newspaper, color: 'bg-purple-500' },
-// //   { id: 'personal', name: 'Personal', icon: User, color: 'bg-green-500' }
-// // ];
-
-// // export default function BlogDashboard({ posts }: { posts: Post[] }) {
-// //   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-// //   // Filter posts by category
-// //   const filteredPosts = activeCategory
-// //     ? posts.filter(post => post.category === activeCategory)
-// //     : posts;
-
-// //   // Get featured posts (first two posts from different categories)
-// //   const featuredPosts = posts.reduce((acc: Post[], post) => {
-// //     if (acc.length < 2 && !acc.find(p => p.category === post.category)) {
-// //       acc.push(post);
-// //     }
-// //     return acc;
-// //   }, []);
-
-// //   return (
-// //     <div className="max-w-7xl mx-auto px-4 py-8">
-// //       {/* Categories */}
-// //       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-// //         {categories.map((category) => {
-// //           const Icon = category.icon;
-// //           return (
-// //             <button
-// //               key={category.id}
-// //               onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-// //               className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-// //                 ${activeCategory === category.id ? category.color + ' text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-// //             >
-// //               <Icon size={24} />
-// //               <span className="font-medium">{category.name}</span>
-// //             </button>
-// //           );
-// //         })}
-// //       </div>
-
-// //       {/* Featured Posts */}
-// //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-// //         {featuredPosts.map((post) => (
-// //           <Link
-// //             href={`/blog/${post.slug}`}
-// //             key={post.id}
-// //             className="group relative overflow-hidden rounded-xl shadow-lg"
-// //           >
-// //             <div className="aspect-w-16 aspect-h-9 bg-gray-100">
-// //               <img
-// //                 src="/api/placeholder/800/450"
-// //                 alt={post.title}
-// //                 className="w-full h-full object-cover"
-// //               />
-// //             </div>
-// //             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-// //               <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-// //                 {post.title}
-// //               </h3>
-// //               <p className="text-gray-200 line-clamp-2">{post.excerpt}</p>
-// //             </div>
-// //           </Link>
-// //         ))}
-// //       </div>
-
-// //       {/* All Posts Grid */}
-// //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-// //         {filteredPosts.map((post) => (
-// //           <Link
-// //             href={`/blog/${post.slug}`}
-// //             key={post.id}
-// //             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
-// //           >
-// //             <div className="aspect-w-16 aspect-h-9 bg-gray-100">
-// //               <img
-// //                 src="/api/placeholder/400/225"
-// //                 alt={post.title}
-// //                 className="w-full h-full object-cover"
-// //               />
-// //             </div>
-// //             <div className="p-4">
-// //               <div className="text-sm text-gray-500 mb-1">{post.date}</div>
-// //               <h3 className="text-lg font-semibold mb-2 line-clamp-2">{post.title}</h3>
-// //               <p className="text-gray-600 line-clamp-3">{post.excerpt}</p>
-// //             </div>
-// //           </Link>
-// //         ))}
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
 ```
 
 # src/components/BlogPost.styles.ts
 
 ```ts
 // src/components/BlogPost.styles.ts
+'use client'
 import styled from 'styled-components'
+import type { Theme } from '@/lib/types'
 
 export const Article = styled.article`
   max-width: 65ch;
@@ -3100,46 +2242,148 @@ export const Article = styled.article`
   }
 `
 
-export const Title = styled.h1`
-  ${({ theme }) => `
-    font-family: ${theme.typography.heading.fontFamily};
-    font-size: ${theme.typography.heading.sizes.h1};
-    color: ${theme.isDarkTheme ? theme.colors.text.dark.primary : theme.colors.text.light.primary};
-    margin-bottom: ${theme.typography.heading.sizes.h6};
-  `}
+export const Title = styled.h1<{ theme: Theme }>`
+  font-family: ${({ theme }) => theme.typography.heading.fontFamily};
+  font-size: ${({ theme }) => theme.typography.heading.sizes.h1};
+  color: ${({ theme }) => theme.isDarkTheme ?
+    theme.colors.text.dark.primary :
+    theme.colors.text.light.primary};
+  margin-bottom: ${({ theme }) => theme.typography.heading.sizes.h6};
 `
 
-export const Metadata = styled.div`
-  ${({ theme }) => `
-    font-size: ${theme.typography.body.sizes.sm};
-    color: ${theme.isDarkTheme ? theme.colors.text.dark.secondary : theme.colors.text.light.secondary};
-  `}
+export const Metadata = styled.div<{ theme: Theme }>`
+  font-size: ${({ theme }) => theme.typography.body.sizes.sm};
+  color: ${({ theme }) => theme.isDarkTheme ?
+    theme.colors.text.dark.secondary :
+    theme.colors.text.light.secondary};
 `
 
-export const Content = styled.div`
-  ${({ theme }) => `
-    font-family: ${theme.typography.body.fontFamily};
-    font-size: ${theme.typography.body.sizes.lg};
-    line-height: 1.75;
+export const Content = styled.div<{ theme: Theme }>`
+  font-family: ${({ theme }) => theme.typography.body.fontFamily};
+  font-size: ${({ theme }) => theme.typography.body.sizes.lg};
+  line-height: 1.75;
 
-    h2 {
-      font-family: ${theme.typography.heading.fontFamily};
-      font-size: ${theme.typography.heading.sizes.h2};
-      margin-top: 2em;
-      margin-bottom: 1em;
-    }
+  h2 {
+    font-family: ${({ theme }) => theme.typography.heading.fontFamily};
+    font-size: ${({ theme }) => theme.typography.heading.sizes.h2};
+    margin-top: 2em;
+    margin-bottom: 1em;
+  }
 
-    p {
-      margin-bottom: 1.5em;
-    }
+  p {
+    margin-bottom: 1.5em;
+  }
 
-    a {
-      color: ${theme.colors.primary[500]};
-      text-decoration: none;
-      &:hover { text-decoration: underline; }
-    }
-  `}
+  a {
+    color: ${({ theme }) => theme.colors.primary[500]};
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
 `
+
+```
+
+# src/components/BlogPostContent.tsx
+
+```tsx
+// src/components/BlogPostContent.tsx - Client Component
+'use client'
+import { Article, Title, Metadata, Content } from './BlogPost.styles'
+import { MarkdownContent } from '@/components/MarkdownContent'
+import { ImageWithFallback } from '@/components/ImageWithFallback'
+import { Reactions } from '@/components/Reactions'
+import { Comments } from '@/components/Comments'
+import Link from 'next/link'
+import { DeletePost } from '@/components/DeletePost'
+
+type Post = {
+  id: string
+  title: string
+  content: string
+  excerpt?: string
+  cover_image?: string
+  created_at: string
+  slug: string
+  profiles?: {
+    username?: string
+  }
+}
+
+export default function BlogPostContent({ post }: { post: Post }) {
+  return (
+    <Article>
+      <div className="flex justify-between items-center mb-8">
+        <Link href="/blog" className="text-blue-400 hover:text-blue-300">
+          ← Back to posts
+        </Link>
+        <div className="space-x-4">
+          <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Edit Post
+          </Link>
+          <DeletePost postId={post.id} />
+        </div>
+      </div>
+
+      {post.cover_image && (
+        <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+          <ImageWithFallback
+            src={post.cover_image}
+            alt={post.title}
+            className="w-full h-full"
+            priority
+          />
+        </div>
+      )}
+
+      <header>
+        <Title>{post.title}</Title>
+        <Metadata>
+          {new Date(post.created_at).toLocaleDateString()} •
+          {post.profiles?.username || 'Anonymous'}
+        </Metadata>
+      </header>
+
+      {post.excerpt && (
+        <p className="text-xl text-gray-300 mb-8 font-serif italic">
+          {post.excerpt}
+        </p>
+      )}
+
+      <Content>
+        <MarkdownContent content={post.content} />
+        <div className="mt-8 border-t border-gray-700 pt-8">
+          <Reactions postId={post.id} />
+        </div>
+      </Content>
+
+      <Comments postId={post.id} />
+    </Article>
+  )
+}
+```
+
+# src/components/ClientOnly.tsx
+
+```tsx
+// src/components/ClientOnly.tsx - New component for client-only rendering
+'use client'
+import { useEffect, useState } from 'react'
+
+export function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
+  return <>{children}</>
+}
+
+
 ```
 
 # src/components/Comments.tsx
@@ -3405,8 +2649,9 @@ import { supabaseClient } from '@/lib/auth'
 import { useAuth } from '@/hooks/useAuth'
 import { ImageUpload } from '@/components/ImageUpload'
 import { ImageWithFallback } from '@/components/ImageWithFallback'
-import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'//added Rich editor for edit
+import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
 import { Loader2 } from 'lucide-react'
+import { categories, CategoryId } from '@/data/categories'
 
 type Post = {
   id: string
@@ -3415,6 +2660,7 @@ type Post = {
   excerpt?: string
   cover_image?: string
   slug: string
+  category?: CategoryId
 }
 
 export function EditForm({ post }: { post: Post }) {
@@ -3424,7 +2670,8 @@ export function EditForm({ post }: { post: Post }) {
     title: post.title,
     content: post.content,
     excerpt: post.excerpt || '',
-    cover_image: post.cover_image || ''
+    cover_image: post.cover_image || '',
+    category: post.category || 'tech' as CategoryId
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -3506,6 +2753,22 @@ export function EditForm({ post }: { post: Post }) {
       </div>
 
       <div>
+        <label className="block text-sm font-medium mb-2">Category</label>
+        <select
+          value={formData.category}
+          onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as CategoryId }))}
+          className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+          required
+        >
+          {categories.map(category => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
         <label className="block text-sm font-medium mb-2">Cover Image</label>
         {formData.cover_image ? (
           <div className="space-y-4">
@@ -3572,6 +2835,7 @@ export function EditForm({ post }: { post: Post }) {
     </form>
   )
 }
+
 // 'use client'
 // import { useState } from 'react'
 // import { useRouter } from 'next/navigation'
@@ -3579,7 +2843,7 @@ export function EditForm({ post }: { post: Post }) {
 // import { useAuth } from '@/hooks/useAuth'
 // import { ImageUpload } from '@/components/ImageUpload'
 // import { ImageWithFallback } from '@/components/ImageWithFallback'
-// import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
+// import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'//added Rich editor for edit
 // import { Loader2 } from 'lucide-react'
 
 // type Post = {
@@ -3636,24 +2900,27 @@ export function EditForm({ post }: { post: Post }) {
 
 //     setIsImageDeleting(true)
 //     try {
-//       // Extract the file path from the URL
 //       const path = formData.cover_image.split('/').pop()
 //       if (!path) throw new Error('Invalid image path')
 
-//       // Delete from Supabase Storage
 //       const { error: deleteError } = await supabaseClient.storage
 //         .from('images')
 //         .remove([`blog-images/${path}`])
 
 //       if (deleteError) throw deleteError
 
-//       // Update the post to remove the cover_image
 //       setFormData(prev => ({ ...prev, cover_image: '' }))
 //     } catch (err) {
 //       setError('Failed to delete image')
 //       console.error('Error deleting image:', err)
 //     } finally {
 //       setIsImageDeleting(false)
+//     }
+//   }
+
+//   const handleCancel = () => {
+//     if (window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+//       router.push(`/blog/${post.slug}`)
 //     }
 //   }
 
@@ -3723,178 +2990,27 @@ export function EditForm({ post }: { post: Post }) {
 //         </div>
 //       </div>
 
-//       <button
-//         type="submit"
-//         disabled={isSubmitting}
-//         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
-//       >
-//         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
-//         {isSubmitting ? 'Saving...' : 'Save Changes'}
-//       </button>
+//       <div className="flex gap-4">
+//         <button
+//           type="submit"
+//           disabled={isSubmitting}
+//           className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+//         >
+//           {isSubmitting && <Loader2 className="animate-spin" size={16} />}
+//           {isSubmitting ? 'Saving...' : 'Save Changes'}
+//         </button>
+//         <button
+//           type="button"
+//           onClick={handleCancel}
+//           className="bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
+//         >
+//           Cancel
+//         </button>
+//       </div>
 //     </form>
 //   )
 // }
-// // 'use client'
-// // import { useState } from 'react'
-// // import { useRouter } from 'next/navigation'
-// // import { supabaseClient } from '@/lib/auth'
-// // import { useAuth } from '@/hooks/useAuth'
-// // import { ImageUpload } from '@/components/ImageUpload'
-// // import { ImageWithFallback } from '@/components/ImageWithFallback'
-// // import { Loader2 } from 'lucide-react'
 
-// // type Post = {
-// //   id: string
-// //   title: string
-// //   content: string
-// //   excerpt?: string
-// //   cover_image?: string
-// //   slug: string
-// // }
-
-// // export function EditForm({ post }: { post: Post }) {
-// //   const router = useRouter()
-// //   const { user } = useAuth()
-// //   const [formData, setFormData] = useState({
-// //     title: post.title,
-// //     content: post.content,
-// //     excerpt: post.excerpt || '',
-// //     cover_image: post.cover_image || ''
-// //   })
-// //   const [isSubmitting, setIsSubmitting] = useState(false)
-// //   const [error, setError] = useState('')
-// //   const [isImageDeleting, setIsImageDeleting] = useState(false)
-
-// //   const handleSubmit = async (e: React.FormEvent) => {
-// //     e.preventDefault()
-// //     if (!user) return
-
-// //     setIsSubmitting(true)
-// //     setError('')
-
-// //     try {
-// //       const { error: updateError } = await supabaseClient
-// //         .from('posts')
-// //         .update({
-// //           ...formData,
-// //           updated_at: new Date().toISOString()
-// //         })
-// //         .eq('id', post.id)
-
-// //       if (updateError) throw updateError
-
-// //       router.push(`/blog/${post.slug}`)
-// //       router.refresh()
-// //     } catch (err) {
-// //       setError(err instanceof Error ? err.message : 'Failed to update post')
-// //     } finally {
-// //       setIsSubmitting(false)
-// //     }
-// //   }
-
-// //   const handleImageDelete = async () => {
-// //     if (!formData.cover_image) return
-
-// //     setIsImageDeleting(true)
-// //     try {
-// //       // Extract the file path from the URL
-// //       const path = formData.cover_image.split('/').pop()
-// //       if (!path) throw new Error('Invalid image path')
-
-// //       // Delete from Supabase Storage
-// //       const { error: deleteError } = await supabaseClient.storage
-// //         .from('images')
-// //         .remove([`blog-images/${path}`])
-
-// //       if (deleteError) throw deleteError
-
-// //       // Update the post to remove the cover_image
-// //       setFormData(prev => ({ ...prev, cover_image: '' }))
-// //     } catch (err) {
-// //       setError('Failed to delete image')
-// //       console.error('Error deleting image:', err)
-// //     } finally {
-// //       setIsImageDeleting(false)
-// //     }
-// //   }
-
-// //   return (
-// //     <form onSubmit={handleSubmit} className="space-y-6">
-// //       {error && (
-// //         <div className="bg-red-500/10 text-red-500 p-4 rounded">
-// //           {error}
-// //         </div>
-// //       )}
-
-// //       <div>
-// //         <label className="block text-sm font-medium mb-2">Title</label>
-// //         <input
-// //           type="text"
-// //           value={formData.title}
-// //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-// //           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
-// //           required
-// //         />
-// //       </div>
-
-// //       <div>
-// //         <label className="block text-sm font-medium mb-2">Cover Image</label>
-// //         {formData.cover_image ? (
-// //           <div className="space-y-4">
-// //             <div className="relative aspect-video w-full max-w-2xl rounded-lg overflow-hidden">
-// //               <ImageWithFallback
-// //                 src={formData.cover_image}
-// //                 alt="Cover image"
-// //                 className="w-full h-full"
-// //               />
-// //             </div>
-// //             <button
-// //               type="button"
-// //               onClick={handleImageDelete}
-// //               disabled={isImageDeleting}
-// //               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2"
-// //             >
-// //               {isImageDeleting && <Loader2 className="animate-spin" size={16} />}
-// //               {isImageDeleting ? 'Removing...' : 'Remove Image'}
-// //             </button>
-// //           </div>
-// //         ) : (
-// //           <ImageUpload
-// //             onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
-// //           />
-// //         )}
-// //       </div>
-
-// //       <div>
-// //         <label className="block text-sm font-medium mb-2">Excerpt</label>
-// //         <textarea
-// //           value={formData.excerpt}
-// //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-// //           className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
-// //         />
-// //       </div>
-
-// //       <div>
-// //         <label className="block text-sm font-medium mb-2">Content (Markdown supported)</label>
-// //         <textarea
-// //           value={formData.content}
-// //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
-// //           className="w-full p-2 border rounded h-64 bg-gray-800 border-gray-700 text-gray-100 font-mono"
-// //           required
-// //         />
-// //       </div>
-
-// //       <button
-// //         type="submit"
-// //         disabled={isSubmitting}
-// //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
-// //       >
-// //         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
-// //         {isSubmitting ? 'Saving...' : 'Save Changes'}
-// //       </button>
-// //     </form>
-// //   )
-// // }
 ```
 
 # src/components/ImageUpload.tsx
@@ -4018,268 +3134,7 @@ export function ImageUpload({ onUploadComplete, existingUrl }: ImageUploadProps)
     </div>
   )
 }
-// 'use client'
-// import { useState } from 'react'
-// import { supabaseClient } from '@/lib/auth'
-// import { Upload, Loader2 } from 'lucide-react'
-// import Image from 'next/image'
 
-// type ImageUploadProps = {
-//   onUploadComplete: (url: string) => void
-//   existingUrl?: string
-// }
-
-// export function ImageUpload({ onUploadComplete, existingUrl }: ImageUploadProps) {
-//   const [isUploading, setIsUploading] = useState(false)
-//   const [preview, setPreview] = useState<string | null>(existingUrl || null)
-//   const [error, setError] = useState<string | null>(null)
-
-//   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = e.target.files?.[0]
-//     if (!file) return
-
-//     console.log('Selected file:', file.name, 'Size:', file.size, 'Type:', file.type)
-
-//     // Validate file type
-//     if (!file.type.startsWith('image/')) {
-//       setError('Please select an image file')
-//       return
-//     }
-
-//     // Validate file size (max 5MB)
-//     if (file.size > 5 * 1024 * 1024) {
-//       setError('Image must be less than 5MB')
-//       return
-//     }
-
-//     setIsUploading(true)
-//     setError(null)
-
-//     try {
-//       // Create a unique file name
-//       const fileExt = file.name.split('.').pop()
-//       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-//       const filePath = `${fileName}` // Simplified path
-
-//       console.log('Attempting upload to:', filePath)
-
-//       // First, check if we can access the bucket
-//       const { data: bucketData, error: bucketError } = await supabaseClient
-//         .storage
-//         .getBucket('images')
-
-//       if (bucketError) {
-//         console.error('Bucket access error:', bucketError)
-//         throw new Error('Unable to access storage bucket')
-//       }
-
-//       console.log('Bucket access confirmed:', bucketData)
-
-//       // Attempt the upload
-//       const { error: uploadError, data: uploadData } = await supabaseClient
-//         .storage
-//         .from('images')
-//         .upload(filePath, file, {
-//           cacheControl: '3600',
-//           upsert: false
-//         })
-
-//       if (uploadError) {
-//         console.error('Upload error details:', uploadError)
-//         throw new Error(uploadError.message || 'Failed to upload file')
-//       }
-
-//       console.log('Upload successful:', uploadData)
-
-//       // Get public URL
-//       const { data: { publicUrl } } = supabaseClient
-//         .storage
-//         .from('images')
-//         .getPublicUrl(filePath)
-
-//       console.log('Generated public URL:', publicUrl)
-
-//       setPreview(publicUrl)
-//       onUploadComplete(publicUrl)
-//     } catch (err) {
-//       console.error('Full error details:', err)
-//       setError(err instanceof Error ? err.message : 'Failed to upload image. Please try again.')
-//     } finally {
-//       setIsUploading(false)
-//     }
-//   }
-
-//   return (
-//     <div className="space-y-4">
-//       {error && (
-//         <div className="bg-red-500/10 text-red-500 p-4 rounded">
-//           {error}
-//         </div>
-//       )}
-
-//       <label className="block">
-//         <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-500 cursor-pointer bg-gray-800">
-//           <div className="space-y-2 text-center">
-//             {isUploading ? (
-//               <div className="flex items-center gap-2 text-gray-300">
-//                 <Loader2 className="animate-spin" />
-//                 <span>Uploading...</span>
-//               </div>
-//             ) : (
-//               <>
-//                 <Upload className="mx-auto text-gray-400" />
-//                 <div className="text-gray-400">Click to upload image</div>
-//                 <div className="text-gray-500 text-sm">Max size: 5MB</div>
-//               </>
-//             )}
-//           </div>
-//         </div>
-//         <input
-//           type="file"
-//           className="hidden"
-//           accept="image/*"
-//           onChange={handleFileChange}
-//           disabled={isUploading}
-//         />
-//       </label>
-
-//       {preview && (
-//         <div className="mt-4 relative aspect-video w-full max-w-sm">
-//           <Image
-//             src={preview}
-//             alt="Upload preview"
-//             fill
-//             className="rounded border border-gray-700 object-cover"
-//             sizes="(max-width: 640px) 100vw, 384px"
-//           />
-//         </div>
-//       )}
-//     </div>
-//   )
-// }
-// // 'use client'
-// // import { useState } from 'react'
-// // import { supabaseClient } from '@/lib/auth'
-// // import { Upload, Loader2 } from 'lucide-react'
-// // import Image from 'next/image'
-
-// // type ImageUploadProps = {
-// //   onUploadComplete: (url: string) => void
-// //   existingUrl?: string
-// // }
-
-// // export function ImageUpload({ onUploadComplete, existingUrl }: ImageUploadProps) {
-// //   const [isUploading, setIsUploading] = useState(false)
-// //   const [preview, setPreview] = useState<string | null>(existingUrl || null)
-// //   const [error, setError] = useState<string | null>(null)
-
-// //   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-// //     const file = e.target.files?.[0]
-// //     if (!file) return
-
-// //     console.log('Selected file:', file)
-
-// //     // Validate file type
-// //     if (!file.type.startsWith('image/')) {
-// //       setError('Please select an image file')
-// //       return
-// //     }
-
-// //     // Validate file size (max 5MB)
-// //     if (file.size > 5 * 1024 * 1024) {
-// //       setError('Image must be less than 5MB')
-// //       return
-// //     }
-
-// //     setIsUploading(true)
-// //     setError(null)
-
-// //     try {
-// //       // Create a unique file name
-// //       const fileExt = file.name.split('.').pop()
-// //       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
-// //       const filePath = `blog-images/${fileName}`
-
-// //       console.log('Uploading to path:', filePath)
-
-// //       // Upload to Supabase Storage
-// //       const { error: uploadError, data } = await supabaseClient.storage
-// //         .from('images')
-// //         .upload(filePath, file, {
-// //           cacheControl: '3600',
-// //           upsert: false
-// //         })
-
-// //       if (uploadError) {
-// //         console.error('Upload error:', uploadError)
-// //         throw uploadError
-// //       }
-
-// //       console.log('Upload successful:', data)
-
-// //       // Get public URL
-// //       const { data: { publicUrl } } = supabaseClient.storage
-// //         .from('images')
-// //         .getPublicUrl(filePath)
-
-// //       console.log('Public URL:', publicUrl)
-
-// //       setPreview(publicUrl)
-// //       onUploadComplete(publicUrl)
-// //     } catch (err) {
-// //       console.error('Upload error:', err)
-// //       setError('Failed to upload image. Please try again.')
-// //     } finally {
-// //       setIsUploading(false)
-// //     }
-// //   }
-
-// //   return (
-// //     <div className="space-y-4">
-// //       {error && (
-// //         <div className="text-red-500 text-sm">{error}</div>
-// //       )}
-
-// //       <label className="block">
-// //         <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-500 cursor-pointer bg-gray-800">
-// //           <div className="space-y-2 text-center">
-// //             {isUploading ? (
-// //               <div className="flex items-center gap-2">
-// //                 <Loader2 className="animate-spin" />
-// //                 <span>Uploading...</span>
-// //               </div>
-// //             ) : (
-// //               <>
-// //                 <Upload className="mx-auto text-gray-400" />
-// //                 <div className="text-gray-400">Click to upload image</div>
-// //                 <div className="text-gray-500 text-sm">Max size: 5MB</div>
-// //               </>
-// //             )}
-// //           </div>
-// //         </div>
-// //         <input
-// //           type="file"
-// //           className="hidden"
-// //           accept="image/*"
-// //           onChange={handleFileChange}
-// //           disabled={isUploading}
-// //         />
-// //       </label>
-
-// //       {preview && (
-// //         <div className="mt-4 relative aspect-video w-full max-w-sm">
-// //           <Image
-// //             src={preview}
-// //             alt="Upload preview"
-// //             fill
-// //             className="rounded border border-gray-700 object-cover"
-// //             sizes="(max-width: 640px) 100vw, 384px"
-// //           />
-// //         </div>
-// //       )}
-// //     </div>
-// //   )
-// // }
 ```
 
 # src/components/ImageWithFallback.tsx
@@ -4514,39 +3369,15 @@ export function MarkdownContent({ content }: { content: string }) {
 # src/components/Navbar.tsx
 
 ```tsx
-// src/components/Navbar.tsx
+// src/components/Navbar.tsx - Updated to use ClientOnly
 'use client'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { supabaseClient } from '@/lib/auth'
-import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { ClientOnly } from '@/components/ClientOnly'
 
 export function Navbar() {
   const { user, isAuthenticated } = useAuth()
-  const router = useRouter()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between h-16">
-            <Link href="/" className="flex items-center font-bold text-xl">
-              My Blog
-            </Link>
-            <div className="flex items-center space-x-8">
-              <Link href="/blog" className="hover:text-gray-600">Blog</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-    )
-  }
 
   return (
     <nav className="bg-white shadow-sm">
@@ -4555,35 +3386,38 @@ export function Navbar() {
           <Link href="/" className="flex items-center font-bold text-xl">
             My Blog
           </Link>
-          <div className="flex items-center space-x-8">
-            <Link href="/blog" className="hover:text-gray-600">Blog</Link>
-            {isAuthenticated ? (
-              <>
-                <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
+          <ClientOnly>
+            <div className="flex items-center space-x-8">
+              <Link href="/blog" className="hover:text-gray-600">Blog</Link>
+              {isAuthenticated ? (
+                <>
+                  <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
+                  <button
+                    onClick={() => supabaseClient.auth.signOut()}
+                    className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
                 <button
-                  onClick={() => supabaseClient.auth.signOut()}
+                  onClick={() => supabaseClient.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: { redirectTo: `${window.location.origin}/auth/callback` }
+                  })}
                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
                 >
-                  Sign Out
+                  Sign In
                 </button>
-              </>
-            ) : (
-              <button
-                onClick={() => supabaseClient.auth.signInWithOAuth({
-                  provider: 'github',
-                  options: { redirectTo: `${window.location.origin}/auth/callback` }
-                })}
-                className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-              >
-                Sign In
-              </button>
-            )}
-          </div>
+              )}
+            </div>
+          </ClientOnly>
         </div>
       </div>
     </nav>
   )
 }
+
 ```
 
 # src/components/PostCard.tsx
@@ -4650,347 +3484,343 @@ export function PostCard({ post }: PostCardProps) {
 
 ```tsx
 // src/components/PostForm.tsx
-'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabaseClient } from '@/lib/auth'
-import { useAuth } from '@/hooks/useAuth'
-import { ImageUpload } from '@/components/ImageUpload'
-import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
-import { Loader2 } from 'lucide-react'
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabaseClient } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { ImageUpload } from "@/components/ImageUpload";
+import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+import { Loader2 } from "lucide-react";
+import { categories, CategoryId } from "@/data/categories";
 
 export function PostForm() {
-  const router = useRouter()
-  const { user } = useAuth()
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    excerpt: '',
-    cover_image: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState('')
+	const router = useRouter();
+	const { user } = useAuth();
+	const [formData, setFormData] = useState({
+		title: "",
+		content: "",
+		excerpt: "",
+		cover_image: "",
+		category: "tech" as CategoryId,
+	});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!user) return;
 
-    setIsSubmitting(true)
-    setError('')
+		setIsSubmitting(true);
+		setError("");
 
-    try {
-      const slug = formData.title
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '')
+		try {
+			const slug = formData.title
+				.toLowerCase()
+				.trim()
+				.replace(/[^a-z0-9]+/g, "-")
+				.replace(/(^-|-$)+/g, "");
 
-      const { error: postError } = await supabaseClient
-        .from('posts')
-        .insert([{
-          ...formData,
-          slug,
-          published: true,
-          author_id: user.id
-        }])
+			const { error: postError } = await supabaseClient.from("posts").insert([
+				{
+					...formData,
+					slug,
+					published: true,
+					author_id: user.id,
+				},
+			]);
 
-      if (postError) throw postError
+			if (postError) throw postError;
 
-      router.push('/blog')
-      router.refresh()
-    } catch (err) {
-      console.error('Error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to create post')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+			// Call revalidation API
+			await fetch("/api/revalidate", { method: "POST" });
+			router.push("/blog");
+		} catch (err) {
+			console.error("Error:", err);
+			setError(err instanceof Error ? err.message : "Failed to create post");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+	return (
+		<form onSubmit={handleSubmit} className="space-y-6">
+			{error && <div className="bg-red-500/10 text-red-500 p-4 rounded">{error}</div>}
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-red-500/10 text-red-500 p-4 rounded">
-          {error}
-        </div>
-      )}
+			<div>
+				<label className="block text-sm font-medium mb-2">Title</label>
+				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100" required />
+			</div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Title</label>
-        <input
-          type="text"
-          value={formData.title}
-          onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-          className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
-          required
-        />
-      </div>
+			<div>
+				<label className="block text-sm font-medium mb-2">Category</label>
+				<select value={formData.category} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))} className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100" required>
+					{categories.map((category) => (
+						<option key={category.id} value={category.id}>
+							{category.name}
+						</option>
+					))}
+				</select>
+			</div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Cover Image</label>
-        <ImageUpload
-          onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
-        />
-      </div>
+			<div>
+				<label className="block text-sm font-medium mb-2">Cover Image</label>
+				<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+			</div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Excerpt</label>
-        <textarea
-          value={formData.excerpt}
-          onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-          className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
-        />
-      </div>
+			<div>
+				<label className="block text-sm font-medium mb-2">Excerpt</label>
+				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100" />
+			</div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Content</label>
-        <div className="border border-gray-700 rounded-lg overflow-hidden">
-          <RichMarkdownEditor
-            initialContent={formData.content}
-            onChange={(content) => setFormData(prev => ({...prev, content}))}
-          />
-        </div>
-      </div>
+			<div>
+				<label className="block text-sm font-medium mb-2">Content</label>
+				<div className="border border-gray-700 rounded-lg overflow-hidden">
+					<RichMarkdownEditor initialContent={formData.content} onChange={(content) => setFormData((prev) => ({ ...prev, content }))} />
+				</div>
+			</div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
-      >
-        {isSubmitting && <Loader2 className="animate-spin" size={16} />}
-        {isSubmitting ? 'Creating...' : 'Create Post'}
-      </button>
-    </form>
-  )
+			<button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2">
+				{isSubmitting && <Loader2 className="animate-spin" size={16} />}
+				{isSubmitting ? "Creating..." : "Create Post"}
+			</button>
+		</form>
+	);
 }
-// 'use client'
-// import { useState } from 'react'
-// import { useRouter } from 'next/navigation'
-// import { supabaseClient } from '@/lib/auth'
-// import { useAuth } from '@/hooks/useAuth'
-// import { ImageUpload } from '@/components/ImageUpload'
-// import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
-// import { Loader2 } from 'lucide-react'
+// // src/components/PostForm.tsx
+// "use client";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { supabaseClient } from "@/lib/auth";
+// import { useAuth } from "@/hooks/useAuth";
+// import { ImageUpload } from "@/components/ImageUpload";
+// import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// import { Loader2 } from "lucide-react";
+// import { categories, CategoryId } from "@/data/categories";
 
 // export function PostForm() {
-//   const router = useRouter()
-//   const { user } = useAuth()
-//   const [formData, setFormData] = useState({
-//     title: '',
-//     content: '',
-//     excerpt: '',
-//     cover_image: ''
-//   })
-//   const [isSubmitting, setIsSubmitting] = useState(false)
-//   const [error, setError] = useState('')
+// 	const router = useRouter();
+// 	const { user } = useAuth();
+// 	const [formData, setFormData] = useState({
+// 		title: "",
+// 		content: "",
+// 		excerpt: "",
+// 		cover_image: "",
+// 		category: "tech" as CategoryId,
+// 	});
+// 	const [isSubmitting, setIsSubmitting] = useState(false);
+// 	const [error, setError] = useState("");
 
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault()
-//     if (!user) return
+// 	const handleSubmit = async (e: React.FormEvent) => {
+// 		e.preventDefault();
+// 		if (!user) return;
 
-//     setIsSubmitting(true)
-//     setError('')
+// 		setIsSubmitting(true);
+// 		setError("");
 
-//     try {
-//       // First, ensure profile exists
-//       const { error: profileError } = await supabaseClient
-//         .from('profiles')
-//         .insert([{
-//           id: user.id,
-//           username: user.email?.split('@')[0] || 'anonymous'
-//         }])
-//         .select()
-//         .single()
+// 		try {
+// 			const slug = formData.title
+// 				.toLowerCase()
+// 				.trim()
+// 				.replace(/[^a-z0-9]+/g, "-")
+// 				.replace(/(^-|-$)+/g, "");
 
-//       // Ignore if profile already exists
-//       if (profileError && !profileError.message.includes('duplicate')) {
-//         throw profileError
-//       }
+// 			const { error: postError } = await supabaseClient.from("posts").insert([
+// 				{
+// 					...formData,
+// 					slug,
+// 					published: true,
+// 					author_id: user.id,
+// 				},
+// 			]);
 
-//       // Create post
-//       const slug = formData.title
-//         .toLowerCase()
-//         .trim()
-//         .replace(/[^a-z0-9]+/g, '-')
-//         .replace(/(^-|-$)+/g, '')
+// 			if (postError) throw postError;
 
-//       const { error: postError } = await supabaseClient
-//         .from('posts')
-//         .insert([{
-//           ...formData,
-//           slug,
-//           published: true,
-//           author_id: user.id
-//         }])
+// 			// Force revalidation of the blog page
+// 			await fetch("/blog", { method: "GET", cache: "no-store" });
+// 			router.refresh();
+// 			router.push("/blog");
+// 		} catch (err) {
+// 			console.error("Error:", err);
+// 			setError(err instanceof Error ? err.message : "Failed to create post");
+// 		} finally {
+// 			setIsSubmitting(false);
+// 		}
+// 	};
 
-//       if (postError) throw postError
+// 	return (
+// 		<form onSubmit={handleSubmit} className="space-y-6">
+// 			{error && <div className="bg-red-500/10 text-red-500 p-4 rounded">{error}</div>}
 
-//       router.push('/blog')
-//       router.refresh()
-//     } catch (err) {
-//       console.error('Error:', err)
-//       setError(err instanceof Error ? err.message : 'Failed to create post')
-//     } finally {
-//       setIsSubmitting(false)
-//     }
-//   }
+// 			<div>
+// 				<label className="block text-sm font-medium mb-2">Title</label>
+// 				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100" required />
+// 			</div>
 
-//   return (
-//     <form onSubmit={handleSubmit} className="space-y-6">
-//       {error && (
-//         <div className="bg-red-500/10 text-red-500 p-4 rounded">
-//           {error}
-//         </div>
-//       )}
+// 			<div>
+// 				<label className="block text-sm font-medium mb-2">Category</label>
+// 				<select value={formData.category} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))} className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100" required>
+// 					{categories.map((category) => (
+// 						<option key={category.id} value={category.id}>
+// 							{category.name}
+// 						</option>
+// 					))}
+// 				</select>
+// 			</div>
 
-//       <div>
-//         <label className="block text-sm font-medium mb-2">Title</label>
-//         <input
-//           type="text"
-//           value={formData.title}
-//           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-//           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
-//           required
-//         />
-//       </div>
+// 			<div>
+// 				<label className="block text-sm font-medium mb-2">Cover Image</label>
+// 				<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// 			</div>
 
-//       <div>
-//         <label className="block text-sm font-medium mb-2">Cover Image</label>
-//         <ImageUpload
-//           onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
-//         />
-//       </div>
+// 			<div>
+// 				<label className="block text-sm font-medium mb-2">Excerpt</label>
+// 				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100" />
+// 			</div>
 
-//       <div>
-//         <label className="block text-sm font-medium mb-2">Excerpt</label>
-//         <textarea
-//           value={formData.excerpt}
-//           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-//           className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
-//         />
-//       </div>
+// 			<div>
+// 				<label className="block text-sm font-medium mb-2">Content</label>
+// 				<div className="border border-gray-700 rounded-lg overflow-hidden">
+// 					<RichMarkdownEditor initialContent={formData.content} onChange={(content) => setFormData((prev) => ({ ...prev, content }))} />
+// 				</div>
+// 			</div>
 
-//       <div>
-//         <label className="block text-sm font-medium mb-2">Content</label>
-//         <RichMarkdownEditor
-//           initialContent={formData.content}
-//           onChange={(content) => setFormData(prev => ({...prev, content}))}
-//         />
-//       </div>
-
-//       <button
-//         type="submit"
-//         disabled={isSubmitting}
-//         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
-//       >
-//         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
-//         {isSubmitting ? 'Creating...' : 'Create Post'}
-//       </button>
-//     </form>
-//   )
+// 			<button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2">
+// 				{isSubmitting && <Loader2 className="animate-spin" size={16} />}
+// 				{isSubmitting ? "Creating..." : "Create Post"}
+// 			</button>
+// 		</form>
+// 	);
 // }
 
-// // // src/components/PostForm.tsx
-// // "use client";
-// // import { useState } from "react";
-// // import { useRouter } from "next/navigation";
-// // import { supabaseClient } from "@/lib/auth";
-// // import { useAuth } from "@/hooks/useAuth";
+// // 'use client'
+// // import { useState } from 'react'
+// // import { useRouter } from 'next/navigation'
+// // import { supabaseClient } from '@/lib/auth'
+// // import { useAuth } from '@/hooks/useAuth'
+// // import { ImageUpload } from '@/components/ImageUpload'
+// // import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
+// // import { Loader2 } from 'lucide-react'
+// // import { categories, CategoryId } from '@/data/categories'
 
 // // export function PostForm() {
-// // 	const router = useRouter();
-// // 	const { user } = useAuth();
-// // 	const [formData, setFormData] = useState({
-// // 		title: "",
-// // 		content: "",
-// // 		excerpt: "",
-// // 		category: "tech", // Add this line
-// // 	});
-// // 	const [isSubmitting, setIsSubmitting] = useState(false);
-// // 	const [error, setError] = useState("");
+// //   const router = useRouter()
+// //   const { user } = useAuth()
+// //   const [formData, setFormData] = useState({
+// //     title: '',
+// //     content: '',
+// //     excerpt: '',
+// //     cover_image: '',
+// //     category: 'tech' as CategoryId
+// //   })
+// //   const [isSubmitting, setIsSubmitting] = useState(false)
+// //   const [error, setError] = useState('')
 
-// // 	const handleSubmit = async (e: React.FormEvent) => {
-// // 		e.preventDefault();
-// // 		if (!user) return;
+// //   const handleSubmit = async (e: React.FormEvent) => {
+// //     e.preventDefault()
+// //     if (!user) return
 
-// // 		setIsSubmitting(true);
-// // 		setError("");
+// //     setIsSubmitting(true)
+// //     setError('')
 
-// // 		try {
-// // 			// First, ensure profile exists
-// // 			const { error: profileError } = await supabaseClient
-// // 				.from("profiles")
-// // 				.insert([
-// // 					{
-// // 						id: user.id,
-// // 						username: user.email?.split("@")[0] || "anonymous",
-// // 					},
-// // 				])
-// // 				.select()
-// // 				.single();
+// //     try {
+// //       const slug = formData.title
+// //         .toLowerCase()
+// //         .trim()
+// //         .replace(/[^a-z0-9]+/g, '-')
+// //         .replace(/(^-|-$)+/g, '')
 
-// // 			// Ignore if profile already exists
-// // 			if (profileError && !profileError.message.includes("duplicate")) {
-// // 				throw profileError;
-// // 			}
+// //       const { error: postError } = await supabaseClient
+// //         .from('posts')
+// //         .insert([{
+// //           ...formData,
+// //           slug,
+// //           published: true,
+// //           author_id: user.id
+// //         }])
 
-// // 			// Then create post
-// // 			const slug = formData.title
-// // 				.toLowerCase()
-// // 				.trim()
-// // 				.replace(/[^a-z0-9]+/g, "-")
-// // 				.replace(/(^-|-$)+/g, "");
+// //       if (postError) throw postError
 
-// // 			const { error: postError } = await supabaseClient.from("posts").insert([
-// // 				{
-// // 					...formData,
-// // 					slug,
-// // 					published: true,
-// // 					author_id: user.id,
-// // 				},
-// // 			]);
+// //       router.push('/blog')
+// //       router.refresh()
+// //     } catch (err) {
+// //       console.error('Error:', err)
+// //       setError(err instanceof Error ? err.message : 'Failed to create post')
+// //     } finally {
+// //       setIsSubmitting(false)
+// //     }
+// //   }
 
-// // 			if (postError) throw postError;
+// //   return (
+// //     <form onSubmit={handleSubmit} className="space-y-6">
+// //       {error && (
+// //         <div className="bg-red-500/10 text-red-500 p-4 rounded">
+// //           {error}
+// //         </div>
+// //       )}
 
-// // 			router.push("/blog");
-// // 			router.refresh();
-// // 		} catch (err) {
-// // 			console.error("Error:", err);
-// // 			setError(err instanceof Error ? err.message : "Failed to create post");
-// // 		} finally {
-// // 			setIsSubmitting(false);
-// // 		}
-// // 	};
+// //       <div>
+// //         <label className="block text-sm font-medium mb-2">Title</label>
+// //         <input
+// //           type="text"
+// //           value={formData.title}
+// //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+// //           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+// //           required
+// //         />
+// //       </div>
 
-// // 	return (
-// // 		<form onSubmit={handleSubmit} className="space-y-6">
-// // 			{error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
-// // 			<div>
-// // 				<label className="block text-sm font-medium mb-2">Title</label>
-// // 				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded bg-white text-gray-900" required />
-// // 			</div>
-// // 			<div>
-// // 				<label className="block text-sm font-medium mb-2">Excerpt</label>
-// // 				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24 bg-white text-gray-900" />
-// // 			</div>
-// // 			<div>
-// // 				<label className="block text-sm font-medium mb-2">Content</label>
-// // 				<textarea value={formData.content} onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))} className="w-full p-2 border rounded h-64 bg-white text-gray-900" required />
-// // 			</div>
-// // 			{/* // Add this to your form JSX, before the submit button */}
-// // 			<div>
-// // 				<label className="block text-sm font-medium mb-2">Category</label>
-// // 				<select value={formData.category} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))} className="w-full p-2 border rounded bg-white text-gray-900" required>
-// // 					<option value="tech">Tech Articles</option>
-// // 					<option value="food">Fusion Food</option>
-// // 					<option value="media">Other Media</option>
-// // 					<option value="personal">Personal</option>
-// // 				</select>
-// // 			</div>
-// // 			<button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50">
-// // 				{isSubmitting ? "Creating..." : "Create Post"}
-// // 			</button>
-// // 		</form>
-// // 	);
+// //       <div>
+// //         <label className="block text-sm font-medium mb-2">Category</label>
+// //         <select
+// //           value={formData.category}
+// //           onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as CategoryId }))}
+// //           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+// //           required
+// //         >
+// //           {categories.map(category => (
+// //             <option key={category.id} value={category.id}>
+// //               {category.name}
+// //             </option>
+// //           ))}
+// //         </select>
+// //       </div>
+
+// //       <div>
+// //         <label className="block text-sm font-medium mb-2">Cover Image</label>
+// //         <ImageUpload
+// //           onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
+// //         />
+// //       </div>
+
+// //       <div>
+// //         <label className="block text-sm font-medium mb-2">Excerpt</label>
+// //         <textarea
+// //           value={formData.excerpt}
+// //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
+// //           className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
+// //         />
+// //       </div>
+
+// //       <div>
+// //         <label className="block text-sm font-medium mb-2">Content</label>
+// //         <div className="border border-gray-700 rounded-lg overflow-hidden">
+// //           <RichMarkdownEditor
+// //             initialContent={formData.content}
+// //             onChange={(content) => setFormData(prev => ({...prev, content}))}
+// //           />
+// //         </div>
+// //       </div>
+
+// //       <button
+// //         type="submit"
+// //         disabled={isSubmitting}
+// //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+// //       >
+// //         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
+// //         {isSubmitting ? 'Creating...' : 'Create Post'}
+// //       </button>
+// //     </form>
+// //   )
 // // }
 
 // // // 'use client'
@@ -4998,6 +3828,9 @@ export function PostForm() {
 // // // import { useRouter } from 'next/navigation'
 // // // import { supabaseClient } from '@/lib/auth'
 // // // import { useAuth } from '@/hooks/useAuth'
+// // // import { ImageUpload } from '@/components/ImageUpload'
+// // // import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
+// // // import { Loader2 } from 'lucide-react'
 
 // // // export function PostForm() {
 // // //   const router = useRouter()
@@ -5005,17 +3838,15 @@ export function PostForm() {
 // // //   const [formData, setFormData] = useState({
 // // //     title: '',
 // // //     content: '',
-// // //     excerpt: ''
+// // //     excerpt: '',
+// // //     cover_image: ''
 // // //   })
 // // //   const [isSubmitting, setIsSubmitting] = useState(false)
 // // //   const [error, setError] = useState('')
 
 // // //   const handleSubmit = async (e: React.FormEvent) => {
 // // //     e.preventDefault()
-// // //     if (!user) {
-// // //       setError('User not authenticated')
-// // //       return
-// // //     }
+// // //     if (!user) return
 
 // // //     setIsSubmitting(true)
 // // //     setError('')
@@ -5027,14 +3858,7 @@ export function PostForm() {
 // // //         .replace(/[^a-z0-9]+/g, '-')
 // // //         .replace(/(^-|-$)+/g, '')
 
-// // //       console.log('Creating post:', {
-// // //         ...formData,
-// // //         slug,
-// // //         published: true,
-// // //         author_id: user.id
-// // //       })
-
-// // //       const { data, error: insertError } = await supabaseClient
+// // //       const { error: postError } = await supabaseClient
 // // //         .from('posts')
 // // //         .insert([{
 // // //           ...formData,
@@ -5042,18 +3866,13 @@ export function PostForm() {
 // // //           published: true,
 // // //           author_id: user.id
 // // //         }])
-// // //         .select()
-// // //         .single()
 
-// // //       if (insertError) {
-// // //         throw insertError
-// // //       }
+// // //       if (postError) throw postError
 
-// // //       console.log('Post created:', data)
 // // //       router.push('/blog')
 // // //       router.refresh()
 // // //     } catch (err) {
-// // //       console.error('Error details:', err)
+// // //       console.error('Error:', err)
 // // //       setError(err instanceof Error ? err.message : 'Failed to create post')
 // // //     } finally {
 // // //       setIsSubmitting(false)
@@ -5062,7 +3881,11 @@ export function PostForm() {
 
 // // //   return (
 // // //     <form onSubmit={handleSubmit} className="space-y-6">
-// // //       {error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
+// // //       {error && (
+// // //         <div className="bg-red-500/10 text-red-500 p-4 rounded">
+// // //           {error}
+// // //         </div>
+// // //       )}
 
 // // //       <div>
 // // //         <label className="block text-sm font-medium mb-2">Title</label>
@@ -5070,8 +3893,15 @@ export function PostForm() {
 // // //           type="text"
 // // //           value={formData.title}
 // // //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-// // //           className="w-full p-2 border rounded bg-white text-gray-900"
+// // //           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
 // // //           required
+// // //         />
+// // //       </div>
+
+// // //       <div>
+// // //         <label className="block text-sm font-medium mb-2">Cover Image</label>
+// // //         <ImageUpload
+// // //           onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
 // // //         />
 // // //       </div>
 
@@ -5080,37 +3910,39 @@ export function PostForm() {
 // // //         <textarea
 // // //           value={formData.excerpt}
 // // //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-// // //           className="w-full p-2 border rounded h-24 bg-white text-gray-900"
+// // //           className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
 // // //         />
 // // //       </div>
 
 // // //       <div>
 // // //         <label className="block text-sm font-medium mb-2">Content</label>
-// // //         <textarea
-// // //           value={formData.content}
-// // //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
-// // //           className="w-full p-2 border rounded h-64 bg-white text-gray-900"
-// // //           required
-// // //         />
+// // //         <div className="border border-gray-700 rounded-lg overflow-hidden">
+// // //           <RichMarkdownEditor
+// // //             initialContent={formData.content}
+// // //             onChange={(content) => setFormData(prev => ({...prev, content}))}
+// // //           />
+// // //         </div>
 // // //       </div>
 
 // // //       <button
 // // //         type="submit"
 // // //         disabled={isSubmitting}
-// // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
 // // //       >
+// // //         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
 // // //         {isSubmitting ? 'Creating...' : 'Create Post'}
 // // //       </button>
 // // //     </form>
 // // //   )
 // // // }
-
-// // // // // src/components/PostForm.tsx
 // // // // 'use client'
 // // // // import { useState } from 'react'
 // // // // import { useRouter } from 'next/navigation'
 // // // // import { supabaseClient } from '@/lib/auth'
 // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // import { ImageUpload } from '@/components/ImageUpload'
+// // // // import { RichMarkdownEditor } from '@/components/RichMarkdownEditor'
+// // // // import { Loader2 } from 'lucide-react'
 
 // // // // export function PostForm() {
 // // // //   const router = useRouter()
@@ -5118,7 +3950,8 @@ export function PostForm() {
 // // // //   const [formData, setFormData] = useState({
 // // // //     title: '',
 // // // //     content: '',
-// // // //     excerpt: ''
+// // // //     excerpt: '',
+// // // //     cover_image: ''
 // // // //   })
 // // // //   const [isSubmitting, setIsSubmitting] = useState(false)
 // // // //   const [error, setError] = useState('')
@@ -5131,23 +3964,44 @@ export function PostForm() {
 // // // //     setError('')
 
 // // // //     try {
+// // // //       // First, ensure profile exists
+// // // //       const { error: profileError } = await supabaseClient
+// // // //         .from('profiles')
+// // // //         .insert([{
+// // // //           id: user.id,
+// // // //           username: user.email?.split('@')[0] || 'anonymous'
+// // // //         }])
+// // // //         .select()
+// // // //         .single()
+
+// // // //       // Ignore if profile already exists
+// // // //       if (profileError && !profileError.message.includes('duplicate')) {
+// // // //         throw profileError
+// // // //       }
+
+// // // //       // Create post
 // // // //       const slug = formData.title
 // // // //         .toLowerCase()
+// // // //         .trim()
 // // // //         .replace(/[^a-z0-9]+/g, '-')
 // // // //         .replace(/(^-|-$)+/g, '')
 
-// // // //       await supabaseClient.from('posts').insert([{
-// // // //         ...formData,
-// // // //         slug,
-// // // //         published: true,
-// // // //         author_id: user.id
-// // // //       }])
+// // // //       const { error: postError } = await supabaseClient
+// // // //         .from('posts')
+// // // //         .insert([{
+// // // //           ...formData,
+// // // //           slug,
+// // // //           published: true,
+// // // //           author_id: user.id
+// // // //         }])
+
+// // // //       if (postError) throw postError
 
 // // // //       router.push('/blog')
 // // // //       router.refresh()
 // // // //     } catch (err) {
-// // // //       setError('Failed to create post')
-// // // //       console.error(err)
+// // // //       console.error('Error:', err)
+// // // //       setError(err instanceof Error ? err.message : 'Failed to create post')
 // // // //     } finally {
 // // // //       setIsSubmitting(false)
 // // // //     }
@@ -5155,7 +4009,11 @@ export function PostForm() {
 
 // // // //   return (
 // // // //     <form onSubmit={handleSubmit} className="space-y-6">
-// // // //       {error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
+// // // //       {error && (
+// // // //         <div className="bg-red-500/10 text-red-500 p-4 rounded">
+// // // //           {error}
+// // // //         </div>
+// // // //       )}
 
 // // // //       <div>
 // // // //         <label className="block text-sm font-medium mb-2">Title</label>
@@ -5163,8 +4021,15 @@ export function PostForm() {
 // // // //           type="text"
 // // // //           value={formData.title}
 // // // //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-// // // //           className="w-full p-2 border rounded"
+// // // //           className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
 // // // //           required
+// // // //         />
+// // // //       </div>
+
+// // // //       <div>
+// // // //         <label className="block text-sm font-medium mb-2">Cover Image</label>
+// // // //         <ImageUpload
+// // // //           onUploadComplete={(url) => setFormData(prev => ({...prev, cover_image: url}))}
 // // // //         />
 // // // //       </div>
 
@@ -5173,76 +4038,97 @@ export function PostForm() {
 // // // //         <textarea
 // // // //           value={formData.excerpt}
 // // // //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-// // // //           className="w-full p-2 border rounded h-24"
+// // // //           className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
 // // // //         />
 // // // //       </div>
 
 // // // //       <div>
 // // // //         <label className="block text-sm font-medium mb-2">Content</label>
-// // // //         <textarea
-// // // //           value={formData.content}
-// // // //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
-// // // //           className="w-full p-2 border rounded h-64"
-// // // //           required
+// // // //         <RichMarkdownEditor
+// // // //           initialContent={formData.content}
+// // // //           onChange={(content) => setFormData(prev => ({...prev, content}))}
 // // // //         />
 // // // //       </div>
 
 // // // //       <button
 // // // //         type="submit"
 // // // //         disabled={isSubmitting}
-// // // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
 // // // //       >
+// // // //         {isSubmitting && <Loader2 className="animate-spin" size={16} />}
 // // // //         {isSubmitting ? 'Creating...' : 'Create Post'}
 // // // //       </button>
 // // // //     </form>
 // // // //   )
 // // // // }
 
-// // // // // // src/components/PostForm.tsx - Updated version
+// // // // // // src/components/PostForm.tsx
 // // // // // "use client";
 // // // // // import { useState } from "react";
 // // // // // import { useRouter } from "next/navigation";
-// // // // // import { blogApi } from "@/lib/supabase";
+// // // // // import { supabaseClient } from "@/lib/auth";
 // // // // // import { useAuth } from "@/hooks/useAuth";
 
 // // // // // export function PostForm() {
-// // // // // 	const { user, isAuthenticated } = useAuth();
 // // // // // 	const router = useRouter();
+// // // // // 	const { user } = useAuth();
 // // // // // 	const [formData, setFormData] = useState({
 // // // // // 		title: "",
 // // // // // 		content: "",
 // // // // // 		excerpt: "",
+// // // // // 		category: "tech", // Add this line
 // // // // // 	});
 // // // // // 	const [isSubmitting, setIsSubmitting] = useState(false);
 // // // // // 	const [error, setError] = useState("");
 
-// // // // // 	if (!isAuthenticated) {
-// // // // // 		return <div>Please sign in to create posts.</div>;
-// // // // // 	}
-
 // // // // // 	const handleSubmit = async (e: React.FormEvent) => {
 // // // // // 		e.preventDefault();
+// // // // // 		if (!user) return;
+
 // // // // // 		setIsSubmitting(true);
 // // // // // 		setError("");
 
 // // // // // 		try {
+// // // // // 			// First, ensure profile exists
+// // // // // 			const { error: profileError } = await supabaseClient
+// // // // // 				.from("profiles")
+// // // // // 				.insert([
+// // // // // 					{
+// // // // // 						id: user.id,
+// // // // // 						username: user.email?.split("@")[0] || "anonymous",
+// // // // // 					},
+// // // // // 				])
+// // // // // 				.select()
+// // // // // 				.single();
+
+// // // // // 			// Ignore if profile already exists
+// // // // // 			if (profileError && !profileError.message.includes("duplicate")) {
+// // // // // 				throw profileError;
+// // // // // 			}
+
+// // // // // 			// Then create post
 // // // // // 			const slug = formData.title
 // // // // // 				.toLowerCase()
+// // // // // 				.trim()
 // // // // // 				.replace(/[^a-z0-9]+/g, "-")
 // // // // // 				.replace(/(^-|-$)+/g, "");
 
-// // // // // 			await blogApi.createPost({
-// // // // // 				...formData,
-// // // // // 				slug,
-// // // // // 				published: false,
-// // // // // 				author_id: user.id,
-// // // // // 			});
+// // // // // 			const { error: postError } = await supabaseClient.from("posts").insert([
+// // // // // 				{
+// // // // // 					...formData,
+// // // // // 					slug,
+// // // // // 					published: true,
+// // // // // 					author_id: user.id,
+// // // // // 				},
+// // // // // 			]);
+
+// // // // // 			if (postError) throw postError;
 
 // // // // // 			router.push("/blog");
 // // // // // 			router.refresh();
 // // // // // 		} catch (err) {
-// // // // // 			setError("Failed to create post");
-// // // // // 			console.error(err);
+// // // // // 			console.error("Error:", err);
+// // // // // 			setError(err instanceof Error ? err.message : "Failed to create post");
 // // // // // 		} finally {
 // // // // // 			setIsSubmitting(false);
 // // // // // 		}
@@ -5251,22 +4137,28 @@ export function PostForm() {
 // // // // // 	return (
 // // // // // 		<form onSubmit={handleSubmit} className="space-y-6">
 // // // // // 			{error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
-
 // // // // // 			<div>
 // // // // // 				<label className="block text-sm font-medium mb-2">Title</label>
-// // // // // 				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded" required />
+// // // // // 				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded bg-white text-gray-900" required />
 // // // // // 			</div>
-
 // // // // // 			<div>
-// // // // // 				<label className="block text-sm font-medium mb-2">Excerpt (optional)</label>
-// // // // // 				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24" />
+// // // // // 				<label className="block text-sm font-medium mb-2">Excerpt</label>
+// // // // // 				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24 bg-white text-gray-900" />
 // // // // // 			</div>
-
 // // // // // 			<div>
 // // // // // 				<label className="block text-sm font-medium mb-2">Content</label>
-// // // // // 				<textarea value={formData.content} onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))} className="w-full p-2 border rounded h-64" required />
+// // // // // 				<textarea value={formData.content} onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))} className="w-full p-2 border rounded h-64 bg-white text-gray-900" required />
 // // // // // 			</div>
-
+// // // // // 			{/* // Add this to your form JSX, before the submit button */}
+// // // // // 			<div>
+// // // // // 				<label className="block text-sm font-medium mb-2">Category</label>
+// // // // // 				<select value={formData.category} onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))} className="w-full p-2 border rounded bg-white text-gray-900" required>
+// // // // // 					<option value="tech">Tech Articles</option>
+// // // // // 					<option value="food">Fusion Food</option>
+// // // // // 					<option value="media">Other Media</option>
+// // // // // 					<option value="personal">Personal</option>
+// // // // // 				</select>
+// // // // // 			</div>
 // // // // // 			<button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50">
 // // // // // 				{isSubmitting ? "Creating..." : "Create Post"}
 // // // // // 			</button>
@@ -5274,15 +4166,15 @@ export function PostForm() {
 // // // // // 	);
 // // // // // }
 
-// // // // // // // src/components/PostForm.tsx
 // // // // // // 'use client'
-
 // // // // // // import { useState } from 'react'
-// // // // // // import { blogApi } from '@/lib/supabase'
 // // // // // // import { useRouter } from 'next/navigation'
+// // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // import { useAuth } from '@/hooks/useAuth'
 
 // // // // // // export function PostForm() {
 // // // // // //   const router = useRouter()
+// // // // // //   const { user } = useAuth()
 // // // // // //   const [formData, setFormData] = useState({
 // // // // // //     title: '',
 // // // // // //     content: '',
@@ -5293,27 +4185,49 @@ export function PostForm() {
 
 // // // // // //   const handleSubmit = async (e: React.FormEvent) => {
 // // // // // //     e.preventDefault()
+// // // // // //     if (!user) {
+// // // // // //       setError('User not authenticated')
+// // // // // //       return
+// // // // // //     }
+
 // // // // // //     setIsSubmitting(true)
 // // // // // //     setError('')
 
 // // // // // //     try {
 // // // // // //       const slug = formData.title
 // // // // // //         .toLowerCase()
+// // // // // //         .trim()
 // // // // // //         .replace(/[^a-z0-9]+/g, '-')
 // // // // // //         .replace(/(^-|-$)+/g, '')
 
-// // // // // //       await blogApi.createPost({
+// // // // // //       console.log('Creating post:', {
 // // // // // //         ...formData,
 // // // // // //         slug,
-// // // // // //         published: false,
-// // // // // //         author_id: 'placeholder-id' // Replace with actual auth user ID
+// // // // // //         published: true,
+// // // // // //         author_id: user.id
 // // // // // //       })
 
+// // // // // //       const { data, error: insertError } = await supabaseClient
+// // // // // //         .from('posts')
+// // // // // //         .insert([{
+// // // // // //           ...formData,
+// // // // // //           slug,
+// // // // // //           published: true,
+// // // // // //           author_id: user.id
+// // // // // //         }])
+// // // // // //         .select()
+// // // // // //         .single()
+
+// // // // // //       if (insertError) {
+// // // // // //         throw insertError
+// // // // // //       }
+
+// // // // // //       console.log('Post created:', data)
 // // // // // //       router.push('/blog')
 // // // // // //       router.refresh()
 // // // // // //     } catch (err) {
-// // // // // //       setError('Failed to create post')
-// // // // // //       console.error(err)
+// // // // // //       console.error('Error details:', err)
+// // // // // //       setError(err instanceof Error ? err.message : 'Failed to create post')
 // // // // // //     } finally {
 // // // // // //       setIsSubmitting(false)
 // // // // // //     }
@@ -5321,9 +4235,7 @@ export function PostForm() {
 
 // // // // // //   return (
 // // // // // //     <form onSubmit={handleSubmit} className="space-y-6">
-// // // // // //       {error && (
-// // // // // //         <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>
-// // // // // //       )}
+// // // // // //       {error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
 
 // // // // // //       <div>
 // // // // // //         <label className="block text-sm font-medium mb-2">Title</label>
@@ -5331,17 +4243,17 @@ export function PostForm() {
 // // // // // //           type="text"
 // // // // // //           value={formData.title}
 // // // // // //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
-// // // // // //           className="w-full p-2 border rounded"
+// // // // // //           className="w-full p-2 border rounded bg-white text-gray-900"
 // // // // // //           required
 // // // // // //         />
 // // // // // //       </div>
 
 // // // // // //       <div>
-// // // // // //         <label className="block text-sm font-medium mb-2">Excerpt (optional)</label>
+// // // // // //         <label className="block text-sm font-medium mb-2">Excerpt</label>
 // // // // // //         <textarea
 // // // // // //           value={formData.excerpt}
 // // // // // //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
-// // // // // //           className="w-full p-2 border rounded h-24"
+// // // // // //           className="w-full p-2 border rounded h-24 bg-white text-gray-900"
 // // // // // //         />
 // // // // // //       </div>
 
@@ -5350,7 +4262,7 @@ export function PostForm() {
 // // // // // //         <textarea
 // // // // // //           value={formData.content}
 // // // // // //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
-// // // // // //           className="w-full p-2 border rounded h-64"
+// // // // // //           className="w-full p-2 border rounded h-64 bg-white text-gray-900"
 // // // // // //           required
 // // // // // //         />
 // // // // // //       </div>
@@ -5365,6 +4277,267 @@ export function PostForm() {
 // // // // // //     </form>
 // // // // // //   )
 // // // // // // }
+
+// // // // // // // // src/components/PostForm.tsx
+// // // // // // // 'use client'
+// // // // // // // import { useState } from 'react'
+// // // // // // // import { useRouter } from 'next/navigation'
+// // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // import { useAuth } from '@/hooks/useAuth'
+
+// // // // // // // export function PostForm() {
+// // // // // // //   const router = useRouter()
+// // // // // // //   const { user } = useAuth()
+// // // // // // //   const [formData, setFormData] = useState({
+// // // // // // //     title: '',
+// // // // // // //     content: '',
+// // // // // // //     excerpt: ''
+// // // // // // //   })
+// // // // // // //   const [isSubmitting, setIsSubmitting] = useState(false)
+// // // // // // //   const [error, setError] = useState('')
+
+// // // // // // //   const handleSubmit = async (e: React.FormEvent) => {
+// // // // // // //     e.preventDefault()
+// // // // // // //     if (!user) return
+
+// // // // // // //     setIsSubmitting(true)
+// // // // // // //     setError('')
+
+// // // // // // //     try {
+// // // // // // //       const slug = formData.title
+// // // // // // //         .toLowerCase()
+// // // // // // //         .replace(/[^a-z0-9]+/g, '-')
+// // // // // // //         .replace(/(^-|-$)+/g, '')
+
+// // // // // // //       await supabaseClient.from('posts').insert([{
+// // // // // // //         ...formData,
+// // // // // // //         slug,
+// // // // // // //         published: true,
+// // // // // // //         author_id: user.id
+// // // // // // //       }])
+
+// // // // // // //       router.push('/blog')
+// // // // // // //       router.refresh()
+// // // // // // //     } catch (err) {
+// // // // // // //       setError('Failed to create post')
+// // // // // // //       console.error(err)
+// // // // // // //     } finally {
+// // // // // // //       setIsSubmitting(false)
+// // // // // // //     }
+// // // // // // //   }
+
+// // // // // // //   return (
+// // // // // // //     <form onSubmit={handleSubmit} className="space-y-6">
+// // // // // // //       {error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
+
+// // // // // // //       <div>
+// // // // // // //         <label className="block text-sm font-medium mb-2">Title</label>
+// // // // // // //         <input
+// // // // // // //           type="text"
+// // // // // // //           value={formData.title}
+// // // // // // //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+// // // // // // //           className="w-full p-2 border rounded"
+// // // // // // //           required
+// // // // // // //         />
+// // // // // // //       </div>
+
+// // // // // // //       <div>
+// // // // // // //         <label className="block text-sm font-medium mb-2">Excerpt</label>
+// // // // // // //         <textarea
+// // // // // // //           value={formData.excerpt}
+// // // // // // //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
+// // // // // // //           className="w-full p-2 border rounded h-24"
+// // // // // // //         />
+// // // // // // //       </div>
+
+// // // // // // //       <div>
+// // // // // // //         <label className="block text-sm font-medium mb-2">Content</label>
+// // // // // // //         <textarea
+// // // // // // //           value={formData.content}
+// // // // // // //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
+// // // // // // //           className="w-full p-2 border rounded h-64"
+// // // // // // //           required
+// // // // // // //         />
+// // // // // // //       </div>
+
+// // // // // // //       <button
+// // // // // // //         type="submit"
+// // // // // // //         disabled={isSubmitting}
+// // // // // // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // // // // //       >
+// // // // // // //         {isSubmitting ? 'Creating...' : 'Create Post'}
+// // // // // // //       </button>
+// // // // // // //     </form>
+// // // // // // //   )
+// // // // // // // }
+
+// // // // // // // // // src/components/PostForm.tsx - Updated version
+// // // // // // // // "use client";
+// // // // // // // // import { useState } from "react";
+// // // // // // // // import { useRouter } from "next/navigation";
+// // // // // // // // import { blogApi } from "@/lib/supabase";
+// // // // // // // // import { useAuth } from "@/hooks/useAuth";
+
+// // // // // // // // export function PostForm() {
+// // // // // // // // 	const { user, isAuthenticated } = useAuth();
+// // // // // // // // 	const router = useRouter();
+// // // // // // // // 	const [formData, setFormData] = useState({
+// // // // // // // // 		title: "",
+// // // // // // // // 		content: "",
+// // // // // // // // 		excerpt: "",
+// // // // // // // // 	});
+// // // // // // // // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// // // // // // // // 	const [error, setError] = useState("");
+
+// // // // // // // // 	if (!isAuthenticated) {
+// // // // // // // // 		return <div>Please sign in to create posts.</div>;
+// // // // // // // // 	}
+
+// // // // // // // // 	const handleSubmit = async (e: React.FormEvent) => {
+// // // // // // // // 		e.preventDefault();
+// // // // // // // // 		setIsSubmitting(true);
+// // // // // // // // 		setError("");
+
+// // // // // // // // 		try {
+// // // // // // // // 			const slug = formData.title
+// // // // // // // // 				.toLowerCase()
+// // // // // // // // 				.replace(/[^a-z0-9]+/g, "-")
+// // // // // // // // 				.replace(/(^-|-$)+/g, "");
+
+// // // // // // // // 			await blogApi.createPost({
+// // // // // // // // 				...formData,
+// // // // // // // // 				slug,
+// // // // // // // // 				published: false,
+// // // // // // // // 				author_id: user.id,
+// // // // // // // // 			});
+
+// // // // // // // // 			router.push("/blog");
+// // // // // // // // 			router.refresh();
+// // // // // // // // 		} catch (err) {
+// // // // // // // // 			setError("Failed to create post");
+// // // // // // // // 			console.error(err);
+// // // // // // // // 		} finally {
+// // // // // // // // 			setIsSubmitting(false);
+// // // // // // // // 		}
+// // // // // // // // 	};
+
+// // // // // // // // 	return (
+// // // // // // // // 		<form onSubmit={handleSubmit} className="space-y-6">
+// // // // // // // // 			{error && <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>}
+
+// // // // // // // // 			<div>
+// // // // // // // // 				<label className="block text-sm font-medium mb-2">Title</label>
+// // // // // // // // 				<input type="text" value={formData.title} onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} className="w-full p-2 border rounded" required />
+// // // // // // // // 			</div>
+
+// // // // // // // // 			<div>
+// // // // // // // // 				<label className="block text-sm font-medium mb-2">Excerpt (optional)</label>
+// // // // // // // // 				<textarea value={formData.excerpt} onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))} className="w-full p-2 border rounded h-24" />
+// // // // // // // // 			</div>
+
+// // // // // // // // 			<div>
+// // // // // // // // 				<label className="block text-sm font-medium mb-2">Content</label>
+// // // // // // // // 				<textarea value={formData.content} onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))} className="w-full p-2 border rounded h-64" required />
+// // // // // // // // 			</div>
+
+// // // // // // // // 			<button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50">
+// // // // // // // // 				{isSubmitting ? "Creating..." : "Create Post"}
+// // // // // // // // 			</button>
+// // // // // // // // 		</form>
+// // // // // // // // 	);
+// // // // // // // // }
+
+// // // // // // // // // // src/components/PostForm.tsx
+// // // // // // // // // 'use client'
+
+// // // // // // // // // import { useState } from 'react'
+// // // // // // // // // import { blogApi } from '@/lib/supabase'
+// // // // // // // // // import { useRouter } from 'next/navigation'
+
+// // // // // // // // // export function PostForm() {
+// // // // // // // // //   const router = useRouter()
+// // // // // // // // //   const [formData, setFormData] = useState({
+// // // // // // // // //     title: '',
+// // // // // // // // //     content: '',
+// // // // // // // // //     excerpt: ''
+// // // // // // // // //   })
+// // // // // // // // //   const [isSubmitting, setIsSubmitting] = useState(false)
+// // // // // // // // //   const [error, setError] = useState('')
+
+// // // // // // // // //   const handleSubmit = async (e: React.FormEvent) => {
+// // // // // // // // //     e.preventDefault()
+// // // // // // // // //     setIsSubmitting(true)
+// // // // // // // // //     setError('')
+
+// // // // // // // // //     try {
+// // // // // // // // //       const slug = formData.title
+// // // // // // // // //         .toLowerCase()
+// // // // // // // // //         .replace(/[^a-z0-9]+/g, '-')
+// // // // // // // // //         .replace(/(^-|-$)+/g, '')
+
+// // // // // // // // //       await blogApi.createPost({
+// // // // // // // // //         ...formData,
+// // // // // // // // //         slug,
+// // // // // // // // //         published: false,
+// // // // // // // // //         author_id: 'placeholder-id' // Replace with actual auth user ID
+// // // // // // // // //       })
+
+// // // // // // // // //       router.push('/blog')
+// // // // // // // // //       router.refresh()
+// // // // // // // // //     } catch (err) {
+// // // // // // // // //       setError('Failed to create post')
+// // // // // // // // //       console.error(err)
+// // // // // // // // //     } finally {
+// // // // // // // // //       setIsSubmitting(false)
+// // // // // // // // //     }
+// // // // // // // // //   }
+
+// // // // // // // // //   return (
+// // // // // // // // //     <form onSubmit={handleSubmit} className="space-y-6">
+// // // // // // // // //       {error && (
+// // // // // // // // //         <div className="bg-red-50 text-red-500 p-4 rounded">{error}</div>
+// // // // // // // // //       )}
+
+// // // // // // // // //       <div>
+// // // // // // // // //         <label className="block text-sm font-medium mb-2">Title</label>
+// // // // // // // // //         <input
+// // // // // // // // //           type="text"
+// // // // // // // // //           value={formData.title}
+// // // // // // // // //           onChange={(e) => setFormData(prev => ({...prev, title: e.target.value}))}
+// // // // // // // // //           className="w-full p-2 border rounded"
+// // // // // // // // //           required
+// // // // // // // // //         />
+// // // // // // // // //       </div>
+
+// // // // // // // // //       <div>
+// // // // // // // // //         <label className="block text-sm font-medium mb-2">Excerpt (optional)</label>
+// // // // // // // // //         <textarea
+// // // // // // // // //           value={formData.excerpt}
+// // // // // // // // //           onChange={(e) => setFormData(prev => ({...prev, excerpt: e.target.value}))}
+// // // // // // // // //           className="w-full p-2 border rounded h-24"
+// // // // // // // // //         />
+// // // // // // // // //       </div>
+
+// // // // // // // // //       <div>
+// // // // // // // // //         <label className="block text-sm font-medium mb-2">Content</label>
+// // // // // // // // //         <textarea
+// // // // // // // // //           value={formData.content}
+// // // // // // // // //           onChange={(e) => setFormData(prev => ({...prev, content: e.target.value}))}
+// // // // // // // // //           className="w-full p-2 border rounded h-64"
+// // // // // // // // //           required
+// // // // // // // // //         />
+// // // // // // // // //       </div>
+
+// // // // // // // // //       <button
+// // // // // // // // //         type="submit"
+// // // // // // // // //         disabled={isSubmitting}
+// // // // // // // // //         className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // // // // // // //       >
+// // // // // // // // //         {isSubmitting ? 'Creating...' : 'Create Post'}
+// // // // // // // // //       </button>
+// // // // // // // // //     </form>
+// // // // // // // // //   )
+// // // // // // // // // }
 
 ```
 
@@ -6039,7 +5212,15 @@ import { ThemeProvider } from 'styled-components'
 import StyledComponentsRegistry from '@/lib/registry'
 import { lightTheme } from '@/lib/theme-config'
 
-export function ThemeLayout({ children }: { children: React.ReactNode }) {
+/*---=====================================================
+This is a React functional component named ThemeLayout.
+It wraps its child components (children) with two providers:
+StyledComponentsRegistry and ThemeProvider.
+The ThemeProvider sets the theme to lightTheme,
+which is imported from @/lib/theme-config.
+This allows the child components to access the
+light theme's styles and settings.
+=====================================================---*/
   return (
     <StyledComponentsRegistry>
       <ThemeProvider theme={lightTheme}>
@@ -6150,8 +5331,7 @@ export const supabaseClient = createClientComponentClient()
 # src/lib/portfolio-theme.ts
 
 ```ts
-// src/styles/theme.ts : from Portfolio 2025
-
+// src/styles/theme.ts : originall from Portfolio 2025
 
 export type {
    ThemeMode,
@@ -6202,6 +5382,7 @@ export default function StyledComponentsRegistry({
 }: {
   children: React.ReactNode
 }) {
+  // Only create stylesheet once with lazy initial state
   const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet())
 
   useServerInsertedHTML(() => {
@@ -6210,14 +5391,17 @@ export default function StyledComponentsRegistry({
     return <>{styles}</>
   })
 
-  if (typeof window !== 'undefined') return <>{children}</>
+  if (typeof window !== 'undefined') {
+    return <>{children}</>
+  }
 
   return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
+    <StyleSheetManager sheet={styledComponentsStyleSheet.instance} enableVendorPrefixes>
       {children}
     </StyleSheetManager>
   )
 }
+
 ```
 
 # src/lib/supabase.ts
@@ -6927,6 +6111,38 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/blog/new']
 }
+```
+
+# src/styles/globals.css
+
+```css
+/* src/styles/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Only include core styles that don't depend on theme */
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	min-height: 100vh;
+}
+
+/* Use CSS variables for theme values */
+:root {
+	--nav-height: 80px;
+}
+
+/* Remove default styles that might conflict */
+button,
+input,
+textarea {
+	all: unset;
+}
+
 ```
 
 # tailwind.config.ts
