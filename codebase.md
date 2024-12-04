@@ -240,94 +240,28 @@ body {
 
 ```tsx
 
-
-const FeaturedCard = ({ post, category...
-   <div
-		className={`relative overflow-hidden rounded-xl bg-primary-800 // this work
-         ...
-         {post ? (
-			<Link
-				href={`/blog/${post.slug}`}
-				className='buttonContainer group block h-[250px] aspect-[16/9]'
-			>
-				{post.cover_image ? (
-					<div className='absolute inset-0'>
-						<Image
-							src={post.cover_image}
-							alt={post.title}
-							fill
-							className='object-cover transition-transform duration-500 group-hover:scale-105'
-							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
-							priority={size === "large"}
-						/>
-						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
-import { Newspaper, Coffee, Laptop, User } from "lucide-react";
-import { Theme } from "@/lib/types";
+// src/components/ThemeToggle.tsx
+"use client";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
-export const categories = [
-	{
-		id: "tech",
-		name: "Tech Articles",
-		icon: Laptop,
-		color: (theme: Theme) => theme.colors.primary[500],
-		textColor: (theme: Theme) => theme.colors.primary[400],
-		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[700]})`,
-		description: "Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.",
-	},
-	{
-		id: "media",
-		name: "Other Media",
-		icon: Newspaper,
-		color: (theme: Theme) => theme.colors.secondary[500],
-		textColor: (theme: Theme) => theme.colors.secondary[400],
-		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.secondary[500]}, ${theme.colors.secondary[700]})`,
-		description: "Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.",
-	},
-	{
-		id: "food",
-		name: "Fusion Food",
-		icon: Coffee,
-		color: (theme: Theme) => theme.colors.accent[500],
-		textColor: (theme: Theme) => theme.colors.accent[400],
-		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.accent[500]}, ${theme.colors.accent[700]})`,
-		description: "Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.",
-	},
-	{
-		id: "personal",
-		name: "Personal",
-		icon: User,
-		color: (theme: Theme) => theme.colors.success[500],
-		textColor: (theme: Theme) => theme.colors.success[400],
-		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.success[500]}, ${theme.colors.success[700]})`,
-		description: "Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.",
-	},
-] as const;
+export function ThemeToggle() {
+	const { isDark, toggleTheme } = useTheme();
 
-export type CategoryId = (typeof categories)[number]["id"];
-
-export function getCategoryById(id: CategoryId) {
-	return categories.find((category) => category.id === id);
-}
-
-export function getCategoryName(id: CategoryId) {
-	return getCategoryById(id)?.name || id;
-}
-
-export function getCategoryColor(id: CategoryId, theme: Theme) {
-	return getCategoryById(id)?.color(theme) || theme.colors.gray[500];
-}
-
-export function getCategoryTextColor(id: CategoryId, theme: Theme) {
-	return getCategoryById(id)?.textColor(theme) || theme.colors.gray[400];
-}
-
-export function getCategoryGradient(id: CategoryId, theme: Theme) {
-	return getCategoryById(id)?.gradient(theme) || `linear-gradient(135deg, ${theme.colors.gray[500]}, ${theme.colors.gray[700]})`;
+	return (
+		<button
+			onClick={toggleTheme}
+			className='p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+			aria-label='Toggle theme'
+		>
+			{isDark ? <Sun className='h-5 w-5 text-yellow-500' /> : <Moon className='h-5 w-5 text-gray-700' />}
+		</button>
+	);
 }
 
 ```
@@ -985,10 +919,89 @@ greet("World");
 - In src/app/blog/page.tsx comment out or remove "Write Post" button. "New Post" button is already in the Navbar for the admin. ✅ Done!
 - Keep the light/dark mode selection persist please!
 
-### Future requirements:
+<p style="color: orange; font-size:1.5rem; padding-top:2rem;">
+December 04, 2024
+</p>
+- <span style=color:red;  font-size:1.25rem">Claude kicked me out! 7:30pm - 9:00pm</span> **#😭**
+<p></p>
+- New comments are not showing up
 
+<p style="color: orange; font-size:1.5rem; padding-top:4rem;">
+Future requirements:
+</p>
 - Add ARIA
 - Login implementation
+
+```
+
+# public/project-summaries/BlogDashboard Category Colors.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+# Fixing Category Button Colors in BlogDashboard
+
+<span style="color: orange; font-size:1.5rem">
+December 04, 2024
+</span>
+<p></p>
+Here's what we accomplished with the blog's theme and styling:
+
+1. Removed styled-components dependencies to resolve conflicts with Tailwind
+2. Fixed theme functionality:
+
+   - Default light theme
+   - Persistent theme selection using localStorage
+   - Working dark/light mode toggle
+   - Proper hydration handling
+
+3. Fixed BlogDashboard:
+
+   - Resolved category button colors
+   - Added distinct colors for each category
+   - Fixed text colors for active/inactive states
+
+4. Major fixes:
+
+   \`\`\`typescript
+   // Theme persistence
+   localStorage.setItem("theme", newIsDark ? "dark" : "light");
+
+   // Hydration fix
+   const [mounted, setMounted] = useState(false);
+   if (!mounted)
+   	return null // Category button colors
+   	`${isActive ? "bg-primary-600" : "bg-gray-800 hover:bg-gray-700"}`;
+   \`\`\`
+
+Outstanding tasks:
+
+1. Remove remaining styled-components dependencies
+2. Work on Navbar styling
+3. Ensure consistent color palette usage across components
+4. Test theme persistence across page reloads
+
+Location of key theme configuration:
+
+- `src/contexts/ThemeContext.tsx`: Theme state management
+- `src/app/layout.tsx`: Global theme application
+- `tailwind.config.ts`: Color palette definition
 
 ```
 
@@ -1825,47 +1838,188 @@ body {
 # src/app/layout.tsx
 
 ```tsx
-// src/app/layout.tsx - Updated with strict CSR marking
-
-import type { Metadata } from "next"
-import localFont from "next/font/local"
-import { Providers } from './providers'
-import { Navbar } from '@/components/Navbar'
-import "@/styles/globals.css"
+// src/app/layout.tsx
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import { Providers } from "./providers";
+import { Navbar } from "@/components/Navbar";
+import "./globals.css";
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-})
+	src: "./fonts/GeistVF.woff",
+	variable: "--font-geist-sans",
+	weight: "100 900",
+});
 
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-})
+	src: "./fonts/GeistMonoVF.woff",
+	variable: "--font-geist-mono",
+	weight: "100 900",
+});
 
 export const metadata: Metadata = {
-  title: "My Blog",
-  description: "A personal blog built with Next.js and Styled Components",
-}
+	title: "My Blog",
+	description: "A personal blog built with Next.js",
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
-        <Providers>
-          <Navbar />
-          {children}
-        </Providers>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html
+			lang='en'
+			suppressHydrationWarning
+		>
+			<head>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+               if (localStorage.theme === 'dark') {
+                 document.documentElement.classList.add('dark')
+               } else {
+                 document.documentElement.classList.remove('dark')
+                 localStorage.setItem('theme', 'light')
+               }
+             `,
+					}}
+				/>
+			</head>
+			<body
+				className={`
+        ${geistSans.variable}
+        ${geistMono.variable}
+        bg-white text-gray-900
+        dark:bg-gray-900 dark:text-white
+        transition-colors duration-200
+      `}
+				suppressHydrationWarning
+			>
+				<Providers>
+					<Navbar />
+					<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+				</Providers>
+			</body>
+		</html>
+	);
 }
+// // src/app/layout.tsx
+// import type { Metadata } from "next";
+// import localFont from "next/font/local";
+// import { Providers } from "./providers";
+// import { Navbar } from "@/components/Navbar";
+// import "./globals.css";
+
+// const geistSans = localFont({
+// 	src: "./fonts/GeistVF.woff",
+// 	variable: "--font-geist-sans",
+// 	weight: "100 900",
+// });
+
+// const geistMono = localFont({
+// 	src: "./fonts/GeistMonoVF.woff",
+// 	variable: "--font-geist-mono",
+// 	weight: "100 900",
+// });
+
+// export const metadata: Metadata = {
+// 	title: "My Blog",
+// 	description: "A personal blog built with Next.js",
+// };
+
+// export default function RootLayout({ children }: { children: React.ReactNode }) {
+// 	return (
+// 		<html
+// 			lang='en'
+// 			suppressHydrationWarning
+// 		>
+// 			<body
+// 				className={`${geistSans.variable} ${geistMono.variable}`}
+// 				suppressHydrationWarning
+// 			>
+// 				<Providers>
+// 					<Navbar />
+// 					<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+// 				</Providers>
+// 			</body>
+// 		</html>
+// 	);
+// }
+// // // src/app/layout.tsx
+// // import type { Metadata } from "next";
+// // import localFont from "next/font/local";
+// // import { Navbar } from "@/components/Navbar";
+// // import "./globals.css";
+
+// // const geistSans = localFont({
+// // 	src: "./fonts/GeistVF.woff",
+// // 	variable: "--font-geist-sans",
+// // 	weight: "100 900",
+// // });
+
+// // const geistMono = localFont({
+// // 	src: "./fonts/GeistMonoVF.woff",
+// // 	variable: "--font-geist-mono",
+// // 	weight: "100 900",
+// // });
+
+// // export const metadata: Metadata = {
+// // 	title: "My Blog",
+// // 	description: "A personal blog built with Next.js",
+// // };
+
+// // export default function RootLayout({ children }: { children: React.ReactNode }) {
+// // 	return (
+// // 		<html
+// // 			lang='en'
+// // 			className='light'
+// // 		>
+// // 			<body className={`${geistSans.variable} ${geistMono.variable} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
+// // 				<Navbar />
+// // 				<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+// // 			</body>
+// // 		</html>
+// // 	);
+// // }
+
+// // // // src/app/layout.tsx - Updated with strict CSR marking
+
+// // // import type { Metadata } from "next"
+// // // import localFont from "next/font/local"
+// // // import { Providers } from './providers'
+// // // import { Navbar } from '@/components/Navbar'
+// // // import "@/styles/globals.css"
+
+// // // const geistSans = localFont({
+// // //   src: "./fonts/GeistVF.woff",
+// // //   variable: "--font-geist-sans",
+// // //   weight: "100 900",
+// // // })
+
+// // // const geistMono = localFont({
+// // //   src: "./fonts/GeistMonoVF.woff",
+// // //   variable: "--font-geist-mono",
+// // //   weight: "100 900",
+// // // })
+
+// // // export const metadata: Metadata = {
+// // //   title: "My Blog",
+// // //   description: "A personal blog built with Next.js and Styled Components",
+// // // }
+
+// // // export default function RootLayout({
+// // //   children,
+// // // }: {
+// // //   children: React.ReactNode
+// // // }) {
+// // //   return (
+// // //     <html lang="en" suppressHydrationWarning>
+// // //       <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+// // //         <Providers>
+// // //           <Navbar />
+// // //           {children}
+// // //         </Providers>
+// // //       </body>
+// // //     </html>
+// // //   )
+// // // }
 
 ```
 
@@ -1911,143 +2065,165 @@ export default function HomePage() {
 
 ```tsx
 // src/app/providers.tsx
-'use client'
-import { ThemeProvider } from 'styled-components'
-import StyledComponentsRegistry from '@/lib/registry'
-import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
-import { GlobalStyle } from '@/lib/theme'
+"use client";
+import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
-function ThemedContent({ children }: { children: React.ReactNode }) {
-  const { theme } = useTheme()
-
-  return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      {children}
-    </ThemeProvider>
-  )
-}
+// Comment out styled-components imports
+// import { ThemeProvider } from 'styled-components'
+// import StyledComponentsRegistry from '@/lib/registry'
+// import { GlobalStyle } from '@/lib/theme'
+// import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <StyledComponentsRegistry>
-      <ThemeContextProvider>
-        <ThemedContent>{children}</ThemedContent>
-      </ThemeContextProvider>
-    </StyledComponentsRegistry>
-  )
-}
+	// Temporarily just return children
+	return <ThemeContextProvider>{children}</ThemeContextProvider>;
 
+	// Comment out the previous providers
+	// return (
+	//   <StyledComponentsRegistry>
+	//     <ThemeContextProvider>
+	//       <ThemedContent>{children}</ThemedContent>
+	//     </ThemeContextProvider>
+	//   </StyledComponentsRegistry>
+	// )
+}
 // // src/app/providers.tsx
 // 'use client'
-// import { useEffect } from 'react'
+// import { ThemeProvider } from 'styled-components'
 // import StyledComponentsRegistry from '@/lib/registry'
+// import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
+// import { GlobalStyle } from '@/lib/theme'
 
-// export function Providers({ children }: { children: React.ReactNode }) {
-//   useEffect(() => {
-//     const theme = localStorage.getItem('theme')
-//     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-//       document.documentElement.classList.add('dark')
-//     }
-//   }, [])
+// function ThemedContent({ children }: { children: React.ReactNode }) {
+//   const { theme } = useTheme()
 
 //   return (
-//     <StyledComponentsRegistry>
+//     <ThemeProvider theme={theme}>
+//       <GlobalStyle />
 //       {children}
+//     </ThemeProvider>
+//   )
+// }
+
+// export function Providers({ children }: { children: React.ReactNode }) {
+//   return (
+//     <StyledComponentsRegistry>
+//       <ThemeContextProvider>
+//         <ThemedContent>{children}</ThemedContent>
+//       </ThemeContextProvider>
 //     </StyledComponentsRegistry>
 //   )
 // }
 
-
 // // // src/app/providers.tsx
 // // 'use client'
-// // import { ThemeProvider as StyledThemeProvider } from 'styled-components'
-// // import { ThemeProvider } from '@/lib/ThemeContext'
+// // import { useEffect } from 'react'
 // // import StyledComponentsRegistry from '@/lib/registry'
-// // import { GlobalStyle } from '@/lib/theme'
-// // import { useTheme } from '@/lib/ThemeContext'
-
-// // function StyledProviders({ children }: { children: React.ReactNode }) {
-// //   const { theme } = useTheme()
-
-// //   return (
-// //     <StyledThemeProvider theme={theme}>
-// //       <GlobalStyle />
-// //       {children}
-// //     </StyledThemeProvider>
-// //   )
-// // }
 
 // // export function Providers({ children }: { children: React.ReactNode }) {
+// //   useEffect(() => {
+// //     const theme = localStorage.getItem('theme')
+// //     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+// //       document.documentElement.classList.add('dark')
+// //     }
+// //   }, [])
+
 // //   return (
 // //     <StyledComponentsRegistry>
-// //       <ThemeProvider>
-// //         <StyledProviders>
-// //           {children}
-// //         </StyledProviders>
-// //       </ThemeProvider>
+// //       {children}
 // //     </StyledComponentsRegistry>
 // //   )
 // // }
-// // // // src/app/providers.tsx - Updated to prevent hydration mismatches
+
+// // // // src/app/providers.tsx
 // // // 'use client'
-// // // import { useState, useEffect, useCallback } from 'react'
-// // // import { useTheme } from '@/hooks/useTheme'
-// // // import { ThemeProvider } from 'styled-components'
-// // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // import { ThemeProvider as StyledThemeProvider } from 'styled-components'
+// // // import { ThemeProvider } from '@/lib/ThemeContext'
 // // // import StyledComponentsRegistry from '@/lib/registry'
 // // // import { GlobalStyle } from '@/lib/theme'
+// // // import { useTheme } from '@/lib/ThemeContext'
 
-// // // export function Providers({ children }: { children: React.ReactNode }) {
-// // //    const { theme, mounted } = useTheme()
-
-// // //   if (!mounted) {
-// // //     return null
-// // //   }
+// // // function StyledProviders({ children }: { children: React.ReactNode }) {
+// // //   const { theme } = useTheme()
 
 // // //   return (
+// // //     <StyledThemeProvider theme={theme}>
+// // //       <GlobalStyle />
+// // //       {children}
+// // //     </StyledThemeProvider>
+// // //   )
+// // // }
+
+// // // export function Providers({ children }: { children: React.ReactNode }) {
+// // //   return (
 // // //     <StyledComponentsRegistry>
-// // //       <ThemeProvider theme={theme}>
-// // //         <GlobalStyle />
-// // //         {children}
+// // //       <ThemeProvider>
+// // //         <StyledProviders>
+// // //           {children}
+// // //         </StyledProviders>
 // // //       </ThemeProvider>
 // // //     </StyledComponentsRegistry>
 // // //   )
 // // // }
+// // // // // src/app/providers.tsx - Updated to prevent hydration mismatches
+// // // // 'use client'
+// // // // import { useState, useEffect, useCallback } from 'react'
+// // // // import { useTheme } from '@/hooks/useTheme'
+// // // // import { ThemeProvider } from 'styled-components'
+// // // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // // import StyledComponentsRegistry from '@/lib/registry'
+// // // // import { GlobalStyle } from '@/lib/theme'
 
-// // // //   // Use null initial state to prevent hydration mismatch
-// // // //   const [mounted, setMounted] = useState(false)
-// // // //   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
+// // // // export function Providers({ children }: { children: React.ReactNode }) {
+// // // //    const { theme, mounted } = useTheme()
 
-// // // //   // Move theme detection to a separate effect
-// // // //   useEffect(() => {
-// // // //     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-// // // //     setIsDarkMode(darkModeQuery.matches)
-
-// // // //     const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
-// // // //     darkModeQuery.addEventListener('change', handleChange)
-// // // //     return () => darkModeQuery.removeEventListener('change', handleChange)
-// // // //   }, [])
-
-// // // //   // Separate mount effect to ensure sequential execution
-// // // //   useEffect(() => {
-// // // //     setMounted(true)
-// // // //   }, [])
-
-// // // //   // Render nothing until mounted and theme is detected
-// // // //   if (!mounted || isDarkMode === null) {
+// // // //   if (!mounted) {
 // // // //     return null
 // // // //   }
 
 // // // //   return (
 // // // //     <StyledComponentsRegistry>
-// // // //       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+// // // //       <ThemeProvider theme={theme}>
 // // // //         <GlobalStyle />
 // // // //         {children}
 // // // //       </ThemeProvider>
 // // // //     </StyledComponentsRegistry>
 // // // //   )
 // // // // }
+
+// // // // //   // Use null initial state to prevent hydration mismatch
+// // // // //   const [mounted, setMounted] = useState(false)
+// // // // //   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
+
+// // // // //   // Move theme detection to a separate effect
+// // // // //   useEffect(() => {
+// // // // //     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+// // // // //     setIsDarkMode(darkModeQuery.matches)
+
+// // // // //     const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
+// // // // //     darkModeQuery.addEventListener('change', handleChange)
+// // // // //     return () => darkModeQuery.removeEventListener('change', handleChange)
+// // // // //   }, [])
+
+// // // // //   // Separate mount effect to ensure sequential execution
+// // // // //   useEffect(() => {
+// // // // //     setMounted(true)
+// // // // //   }, [])
+
+// // // // //   // Render nothing until mounted and theme is detected
+// // // // //   if (!mounted || isDarkMode === null) {
+// // // // //     return null
+// // // // //   }
+
+// // // // //   return (
+// // // // //     <StyledComponentsRegistry>
+// // // // //       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+// // // // //         <GlobalStyle />
+// // // // //         {children}
+// // // // //       </ThemeProvider>
+// // // // //     </StyledComponentsRegistry>
+// // // // //   )
+// // // // // }
 
 ```
 
@@ -2095,13 +2271,13 @@ export function AuthButton() {
 ```tsx
 // src/components/BlogDashboard.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 // import { categories, CategoryId } from "@/data/categories";
-import styled from "styled-components";
-import { categories, CategoryId, getCategoryColor } from "@/data/categories";
+// import styled from "styled-components";
+import { categories, CategoryId } from "@/data/categories";
 
 type Post = {
 	id: string;
@@ -2163,7 +2339,50 @@ const FeaturedCard = ({ post, category, size = "medium", title, description }: {
 );
 
 export default function BlogDashboard({ posts }: { posts: Post[] }) {
+	const [mounted, setMounted] = useState(false);
 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+	// Don't render anything until component is mounted to prevent hydration mismatch
+	if (!mounted) {
+		return null;
+	}
+
+	// Helper function to get category background color
+	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
+		switch (categoryId) {
+			case "tech":
+				return isActive ? "bg-primary-600" : "bg-primary-800 hover:bg-gray-700";
+			case "media":
+				return isActive ? "bg-secondary-600" : "bg-primary-800 hover:bg-gray-700";
+			case "food":
+				return isActive ? "bg-accent-600" : "bg-primary-800 hover:bg-gray-700";
+			case "personal":
+				return isActive ? "bg-success-600" : "bg-primary-800 hover:bg-gray-700";
+			default:
+				return "bg-primary-800 hover:bg-gray-700";
+		}
+	};
+
+	// Helper function to get text color
+	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
+		if (isActive) return "text-white";
+
+		switch (categoryId) {
+			case "tech":
+				return "text-primary-300";
+			case "media":
+				return "text-secondary-300";
+			case "food":
+				return "text-accent-300";
+			case "personal":
+				return "text-primary-200";
+			default:
+				return "text-gray-300";
+		}
+	};
 
 	// Get featured posts
 	const techPost = posts.find((post) => post.category === "tech");
@@ -2180,15 +2399,27 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
 				{categories.map((category) => {
 					const Icon = category.icon;
-					console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
+					const isActive = activeCategory === category.id;
+					// console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
 					return (
 						<button
 							key={category.id}
 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
-							className={`p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`}
+							className={`
+                        p-4 rounded-lg flex items-center space-x-3 transition-all
+                        ${getCategoryColor(category.id, isActive)}
+                      `}
 						>
-							<Icon size={24} />
-							<span className='font-medium'>{category.name}</span>
+							<Icon
+								size={24}
+								className={getTextColor(category.id, isActive)}
+							/>
+							{/* orig */}
+							{/* <span className={`font-medium ${isActive ? "text-white" : ""}`}>{category.name}</span> */}
+							{/* manual */}
+							{/* <span className={`font-medium ${isActive ? "text-white" : "text-gray-300 dark:text-gray-400"}`}>{category.name}</span> */}
+							{/* using helper */}
+							<span className={`font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
 						</button>
 					);
 				})}
@@ -2965,6 +3196,12 @@ export const Content = styled.div<{ theme: Theme }>`
 // src/components/BlogPostContent.tsx
 "use client";
 import BlogPostLayout from "./BlogPostLayout";
+import Link from "next/link";
+import { ImageWithFallback } from "@/components/ImageWithFallback";
+import { Reactions } from "@/components/Reactions";
+import { Comments } from "@/components/Comments";
+import { useAuth } from "@/hooks/useAuth";
+import { DeletePost } from "./DeletePost";
 
 type Post = {
 	id: string;
@@ -2980,156 +3217,278 @@ type Post = {
 };
 
 export default function BlogPostContent({ post }: { post: Post }) {
-	return <BlogPostLayout post={post} />;
-}
-// // src/components/BlogPostContent.tsx - Client Component
-// "use client";
-// import { Article, Title, Metadata, Content } from "./BlogPost.styles";
-// import { MarkdownContent } from "@/components/MarkdownContent";
-// import { ImageWithFallback } from "@/components/ImageWithFallback";
-// import { Reactions } from "@/components/Reactions";
-// import { Comments } from "@/components/Comments";
-// import Link from "next/link";
-// import { DeletePost } from "@/components/DeletePost";
-// import { useAuth } from "@/hooks/useAuth";
+	const { isAuthenticated } = useAuth();
 
-// type Post = {
-// 	id: string;
-// 	title: string;
-// 	content: string;
-// 	excerpt?: string;
-// 	cover_image?: string;
-// 	created_at: string;
-// 	slug: string;
-// 	profiles?: {
-// 		username?: string;
+	return (
+		<div className='max-w-screen-2xl mx-auto px-4'>
+			{/* Header Section */}
+			<div className='flex justify-between items-center mb-8'>
+				<Link
+					href='/blog'
+					className='text-primary-400 hover:text-primary-300'
+				>
+					← Back to posts
+				</Link>
+				{isAuthenticated && (
+					<div className='space-x-4'>
+						<Link
+							href={`/blog/edit/${post.slug}`}
+							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+						>
+							Edit Post
+						</Link>
+						<DeletePost postId={post.id} />
+					</div>
+				)}
+			</div>
+
+			{/* Main Content Grid */}
+			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+				{/* Left Column - Article Content */}
+				<article className='relative'>
+					{post.cover_image && (
+						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+							<ImageWithFallback
+								src={post.cover_image}
+								alt={post.title}
+								className='w-full h-full object-cover'
+								priority
+							/>
+						</div>
+					)}
+
+					<div className='prose prose-lg dark:prose-invert max-w-none'>
+						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+						</div>
+
+						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+						<div className='mt-8 content'>{post.content}</div>
+
+						{/* Engagement Bar */}
+						<div className='sticky bottom-0 bg-gray-200/80 backdrop-blur mt-8 p-4 rounded-lg'>
+							<Reactions postId={post.id} />
+						</div>
+					</div>
+				</article>
+
+				{/* Right Column - Comments */}
+				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 p-4 rounded-lg'>
+					<Comments postId={post.id} />
+				</div>
+			</div>
+		</div>
+	);
+}
+// // src/components/BlogPostContent.tsx
+// "use client";
+// import BlogPostLayout from "./BlogPostLayout";
+
+// type BlogPostProps = {
+// 	post: {
+// 		id: string;
+// 		title: string;
+// 		content: string;
+// 		excerpt?: string;
+// 		cover_image?: string;
+// 		created_at: string;
+// 		slug: string;
+// 		profiles?: {
+// 			username?: string;
+// 		};
 // 	};
 // };
 
-// /*-=====================================================================================
-// BlogPostContent component serves as the main display template for individual blog posts,
-// combining content presentation with interactive features.
-// ======================================================================================-*/
-// export default function BlogPostContent({ post }: { post: Post }) {
-//    const { isAuthenticated } = useAuth();
-
+// export default function BlogPostContent({ post }: BlogPostProps) {
 // 	return (
-// 		<Article>
-// 			<div className="flex justify-between items-center mb-8">
-// 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
-// 					← Back to posts
-// 				</Link>
-// 				{isAuthenticated && (
-// 					<div className="space-x-4">
-// 						<Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// 							Edit Post
-// 						</Link>
-// 						<DeletePost postId={post.id} />
-// 					</div>
-// 				)}
-// 			</div>
-
-// 			{post.cover_image && (
-// 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-// 					<ImageWithFallback src={post.cover_image} alt={post.title} className="w-full h-full" priority />
-// 				</div>
-// 			)}
-
-// 			<header>
-// 				<Title>{post.title}</Title>
-// 				<Metadata>
+// 		<article className='max-w-3xl mx-auto'>
+// 			<header className='mb-8'>
+// 				<h1 className='text-4xl font-bold mb-4'>{post.title}</h1>
+// 				<div className='text-sm text-gray-600 dark:text-gray-400'>
 // 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-// 				</Metadata>
+// 				</div>
 // 			</header>
 
-// 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
+// 			{post.excerpt && <p className='text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
 
-// 			<Content>
-// 				<MarkdownContent content={post.content} />
-// 				<div className="mt-8 border-t border-gray-700 pt-8">
-// 					<Reactions postId={post.id} />
-// 				</div>
-// 			</Content>
-
-// 			<Comments postId={post.id} />
-// 		</Article>
+// 			<div className='prose dark:prose-invert max-w-none'>
+// 				{/* Your content rendering here */}
+// 				{post.content}
+// 			</div>
+// 		</article>
 // 	);
 // }
 
-// // // src/components/BlogPostContent.tsx - Client Component
-// // 'use client'
-// // import { Article, Title, Metadata, Content } from './BlogPost.styles'
-// // import { MarkdownContent } from '@/components/MarkdownContent'
-// // import { ImageWithFallback } from '@/components/ImageWithFallback'
-// // import { Reactions } from '@/components/Reactions'
-// // import { Comments } from '@/components/Comments'
-// // import Link from 'next/link'
-// // import { DeletePost } from '@/components/DeletePost'
+// // // src/components/BlogPostContent.tsx
+// // "use client";
+// // import BlogPostLayout from "./BlogPostLayout";
 
 // // type Post = {
-// //   id: string
-// //   title: string
-// //   content: string
-// //   excerpt?: string
-// //   cover_image?: string
-// //   created_at: string
-// //   slug: string
-// //   profiles?: {
-// //     username?: string
-// //   }
-// // }
+// // 	id: string;
+// // 	title: string;
+// // 	content: string;
+// // 	excerpt?: string;
+// // 	cover_image?: string;
+// // 	created_at: string;
+// // 	slug: string;
+// // 	profiles?: {
+// // 		username?: string;
+// // 	};
+// // };
 
 // // export default function BlogPostContent({ post }: { post: Post }) {
-// //   return (
-// //     <Article>
-// //       <div className="flex justify-between items-center mb-8">
-// //         <Link href="/blog" className="text-blue-400 hover:text-blue-300">
-// //           ← Back to posts
-// //         </Link>
-// //         <div className="space-x-4">
-// //           <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// //             Edit Post
-// //           </Link>
-// //           <DeletePost postId={post.id} />
-// //         </div>
-// //       </div>
-
-// //       {post.cover_image && (
-// //         <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-// //           <ImageWithFallback
-// //             src={post.cover_image}
-// //             alt={post.title}
-// //             className="w-full h-full"
-// //             priority
-// //           />
-// //         </div>
-// //       )}
-
-// //       <header>
-// //         <Title>{post.title}</Title>
-// //         <Metadata>
-// //           {new Date(post.created_at).toLocaleDateString()} •
-// //           {post.profiles?.username || 'Anonymous'}
-// //         </Metadata>
-// //       </header>
-
-// //       {post.excerpt && (
-// //         <p className="text-xl text-gray-300 mb-8 font-serif italic">
-// //           {post.excerpt}
-// //         </p>
-// //       )}
-
-// //       <Content>
-// //         <MarkdownContent content={post.content} />
-// //         <div className="mt-8 border-t border-gray-700 pt-8">
-// //           <Reactions postId={post.id} />
-// //         </div>
-// //       </Content>
-
-// //       <Comments postId={post.id} />
-// //     </Article>
-// //   )
+// // 	return <BlogPostLayout post={post} />;
 // // }
+// // // // src/components/BlogPostContent.tsx - Client Component
+// // // "use client";
+// // // import { Article, Title, Metadata, Content } from "./BlogPost.styles";
+// // // import { MarkdownContent } from "@/components/MarkdownContent";
+// // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // import { Reactions } from "@/components/Reactions";
+// // // import { Comments } from "@/components/Comments";
+// // // import Link from "next/link";
+// // // import { DeletePost } from "@/components/DeletePost";
+// // // import { useAuth } from "@/hooks/useAuth";
+
+// // // type Post = {
+// // // 	id: string;
+// // // 	title: string;
+// // // 	content: string;
+// // // 	excerpt?: string;
+// // // 	cover_image?: string;
+// // // 	created_at: string;
+// // // 	slug: string;
+// // // 	profiles?: {
+// // // 		username?: string;
+// // // 	};
+// // // };
+
+// // // /*-=====================================================================================
+// // // BlogPostContent component serves as the main display template for individual blog posts,
+// // // combining content presentation with interactive features.
+// // // ======================================================================================-*/
+// // // export default function BlogPostContent({ post }: { post: Post }) {
+// // //    const { isAuthenticated } = useAuth();
+
+// // // 	return (
+// // // 		<Article>
+// // // 			<div className="flex justify-between items-center mb-8">
+// // // 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// // // 					← Back to posts
+// // // 				</Link>
+// // // 				{isAuthenticated && (
+// // // 					<div className="space-x-4">
+// // // 						<Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// // // 							Edit Post
+// // // 						</Link>
+// // // 						<DeletePost postId={post.id} />
+// // // 					</div>
+// // // 				)}
+// // // 			</div>
+
+// // // 			{post.cover_image && (
+// // // 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// // // 					<ImageWithFallback src={post.cover_image} alt={post.title} className="w-full h-full" priority />
+// // // 				</div>
+// // // 			)}
+
+// // // 			<header>
+// // // 				<Title>{post.title}</Title>
+// // // 				<Metadata>
+// // // 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+// // // 				</Metadata>
+// // // 			</header>
+
+// // // 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
+
+// // // 			<Content>
+// // // 				<MarkdownContent content={post.content} />
+// // // 				<div className="mt-8 border-t border-gray-700 pt-8">
+// // // 					<Reactions postId={post.id} />
+// // // 				</div>
+// // // 			</Content>
+
+// // // 			<Comments postId={post.id} />
+// // // 		</Article>
+// // // 	);
+// // // }
+
+// // // // // src/components/BlogPostContent.tsx - Client Component
+// // // // 'use client'
+// // // // import { Article, Title, Metadata, Content } from './BlogPost.styles'
+// // // // import { MarkdownContent } from '@/components/MarkdownContent'
+// // // // import { ImageWithFallback } from '@/components/ImageWithFallback'
+// // // // import { Reactions } from '@/components/Reactions'
+// // // // import { Comments } from '@/components/Comments'
+// // // // import Link from 'next/link'
+// // // // import { DeletePost } from '@/components/DeletePost'
+
+// // // // type Post = {
+// // // //   id: string
+// // // //   title: string
+// // // //   content: string
+// // // //   excerpt?: string
+// // // //   cover_image?: string
+// // // //   created_at: string
+// // // //   slug: string
+// // // //   profiles?: {
+// // // //     username?: string
+// // // //   }
+// // // // }
+
+// // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // //   return (
+// // // //     <Article>
+// // // //       <div className="flex justify-between items-center mb-8">
+// // // //         <Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// // // //           ← Back to posts
+// // // //         </Link>
+// // // //         <div className="space-x-4">
+// // // //           <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// // // //             Edit Post
+// // // //           </Link>
+// // // //           <DeletePost postId={post.id} />
+// // // //         </div>
+// // // //       </div>
+
+// // // //       {post.cover_image && (
+// // // //         <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// // // //           <ImageWithFallback
+// // // //             src={post.cover_image}
+// // // //             alt={post.title}
+// // // //             className="w-full h-full"
+// // // //             priority
+// // // //           />
+// // // //         </div>
+// // // //       )}
+
+// // // //       <header>
+// // // //         <Title>{post.title}</Title>
+// // // //         <Metadata>
+// // // //           {new Date(post.created_at).toLocaleDateString()} •
+// // // //           {post.profiles?.username || 'Anonymous'}
+// // // //         </Metadata>
+// // // //       </header>
+
+// // // //       {post.excerpt && (
+// // // //         <p className="text-xl text-gray-300 mb-8 font-serif italic">
+// // // //           {post.excerpt}
+// // // //         </p>
+// // // //       )}
+
+// // // //       <Content>
+// // // //         <MarkdownContent content={post.content} />
+// // // //         <div className="mt-8 border-t border-gray-700 pt-8">
+// // // //           <Reactions postId={post.id} />
+// // // //         </div>
+// // // //       </Content>
+
+// // // //       <Comments postId={post.id} />
+// // // //     </Article>
+// // // //   )
+// // // // }
 
 ```
 
@@ -3280,100 +3639,99 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 
 ```tsx
 // src/components/Comments.tsx
-'use client'
-import { useState, useEffect } from 'react'
-import { supabaseClient } from '@/lib/auth'
+"use client";
+import { useState, useEffect } from "react";
+import { supabaseClient } from "@/lib/auth";
 
 export function Comments({ postId }: { postId: string }) {
-  const [comments, setComments] = useState<any[]>([])
-  const [content, setContent] = useState('')
-  const [authorName, setAuthorName] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+	const [comments, setComments] = useState<any[]>([]);
+	const [content, setContent] = useState("");
+	const [authorName, setAuthorName] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadComments()
-  }, [postId])
+	useEffect(() => {
+		loadComments();
+	}, [postId]);
 
-  const loadComments = async () => {
-    const { data } = await supabaseClient
-      .from('comments')
-      .select('*')
-      .eq('post_id', postId)
-      .order('created_at', { ascending: true })
+	const loadComments = async () => {
+		const { data } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
 
-    setComments(data || [])
-  }
+		setComments(data || []);
+	};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!content.trim() || !authorName.trim()) return
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!content.trim() || !authorName.trim()) return;
 
-    setIsSubmitting(true)
-    try {
-      await supabaseClient.from('comments').insert({
-        content: content.trim(),
-        post_id: postId,
-        author_name: authorName.trim()
-      })
-      setContent('')
-      loadComments()
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+		setIsSubmitting(true);
+		try {
+			await supabaseClient.from("comments").insert({
+				content: content.trim(),
+				post_id: postId,
+				author_name: authorName.trim(),
+			});
+			setContent("");
+			loadComments();
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-  return (
-    <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
+	return (
+		<div className='mt-12'>
+			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-2 text-gray-300">Name</label>
-          <input
-            type="text"
-            value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
-            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
-            required
-            placeholder="Your name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-2 text-gray-300">Comment</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
-            rows={3}
-            required
-            placeholder="Write a comment..."
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-        >
-          {isSubmitting ? 'Posting...' : 'Post Comment'}
-        </button>
-      </form>
+			<form
+				onSubmit={handleSubmit}
+				className='mb-8 space-y-4'
+			>
+				<div>
+					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+					<input
+						type='text'
+						value={authorName}
+						onChange={(e) => setAuthorName(e.target.value)}
+						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+						required
+						placeholder='Your name'
+					/>
+				</div>
+				<div>
+					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+					<textarea
+						value={content}
+						onChange={(e) => setContent(e.target.value)}
+						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+						rows={3}
+						required
+						placeholder='Write a comment...'
+					/>
+				</div>
+				<button
+					type='submit'
+					disabled={isSubmitting}
+					className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'
+				>
+					{isSubmitting ? "Posting..." : "Post Comment"}
+				</button>
+			</form>
 
-      <div className="space-y-4">
-        {comments.map((comment) => (
-          <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
-            <div className="text-sm text-gray-400 mb-2">
-              {comment.author_name || 'Anonymous'} • {' '}
-              {new Date(comment.created_at).toLocaleDateString()}
-            </div>
-            <p className="text-gray-200">{comment.content}</p>
-          </div>
-        ))}
-        {comments.length === 0 && (
-          <p className="text-gray-400">No comments yet</p>
-        )}
-      </div>
-    </div>
-  )
+			<div className='space-y-4'>
+				{comments.map((comment) => (
+					<div
+						key={comment.id}
+						className='border border-gray-700 rounded p-4 bg-gray-800'
+					>
+						<div className='text-sm text-gray-400 mb-2'>
+							{comment.author_name || "Anonymous"} • {new Date(comment.created_at).toLocaleDateString()}
+						</div>
+						<p className='text-gray-200'>{comment.content}</p>
+					</div>
+				))}
+				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+			</div>
+		</div>
+	);
 }
 
 // // src/components/Comments.tsx
@@ -3584,6 +3942,7 @@ export function Comments({ postId }: { postId: string }) {
 // //     </div>
 // //   )
 // // }
+
 ```
 
 # src/components/DeletePost.tsx
@@ -7009,243 +7368,324 @@ export function ThemeToggle() {
 
 ```tsx
 // src/contexts/ThemeContext.tsx
-'use client'
-import { createContext, useContext, useEffect, useState } from 'react'
-import { lightTheme, darkTheme } from '@/lib/theme-config'
-import type { Theme } from '@/lib/types'
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type ThemeContextType = {
-  theme: Theme;
-  isDark: boolean;
-  toggleTheme: () => void;
-}
+	isDark: boolean;
+	toggleTheme: () => void;
+};
 
-const ThemeContext = createContext<ThemeContextType | null>(null)
+const ThemeContext = createContext<ThemeContextType>({
+	isDark: false,
+	toggleTheme: () => {},
+});
 
 export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false)
-  const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme)
+	const [mounted, setMounted] = useState(false);
+	const [isDark, setIsDark] = useState(false);
 
-  useEffect(() => {
-    // Check local storage first
-    const stored = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+	useEffect(() => {
+		const stored = localStorage.getItem("theme");
+		const shouldBeDark = stored === "dark";
 
-    const shouldBeDark = stored ? stored === 'dark' : prefersDark
+		setIsDark(shouldBeDark);
+		if (shouldBeDark) {
+			document.documentElement.classList.add("dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+		}
+		setMounted(true);
+	}, []);
 
-    setIsDark(shouldBeDark)
-    setCurrentTheme(shouldBeDark ? darkTheme : lightTheme)
+	const toggleTheme = () => {
+		setIsDark((prev) => {
+			const newIsDark = !prev;
+			localStorage.setItem("theme", newIsDark ? "dark" : "light");
 
-    if (shouldBeDark) {
-      document.documentElement.classList.add('dark')
-    }
-  }, [])
+			if (newIsDark) {
+				document.documentElement.classList.add("dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+			}
 
-  const toggleTheme = () => {
-    setIsDark(prev => {
-      const newIsDark = !prev
-      const newTheme = newIsDark ? darkTheme : lightTheme
+			return newIsDark;
+		});
+	};
 
-      setCurrentTheme(newTheme)
-      localStorage.setItem('theme', newIsDark ? 'dark' : 'light')
+	if (!mounted) return null;
 
-      if (newIsDark) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
-
-      return newIsDark
-    })
-  }
-
-  return (
-    <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+	return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeContextProvider')
-  }
-  return context
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error("useTheme must be used within ThemeContextProvider");
+	}
+	return context;
 }
+// // src/contexts/ThemeContext.tsx
+// "use client";
+// import { createContext, useContext, useEffect, useState } from "react";
+
+// type ThemeContextType = {
+// 	isDark: boolean;
+// 	toggleTheme: () => void;
+// };
+
+// const ThemeContext = createContext<ThemeContextType>({
+// 	isDark: false,
+// 	toggleTheme: () => {},
+// });
+
+// export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+// 	const [mounted, setMounted] = useState(false);
+// 	const [isDark, setIsDark] = useState(false);
+
+// 	useEffect(() => {
+// 		// Only run theme detection after mount to prevent hydration mismatch
+// 		const stored = localStorage.getItem("theme");
+// 		const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+// 		const shouldBeDark = stored ? stored === "dark" : prefersDark;
+
+// 		setIsDark(shouldBeDark);
+// 		if (shouldBeDark) {
+// 			document.documentElement.classList.add("dark");
+// 		}
+// 		setMounted(true);
+// 	}, []);
+
+// 	const toggleTheme = () => {
+// 		setIsDark((prev) => {
+// 			const newIsDark = !prev;
+// 			localStorage.setItem("theme", newIsDark ? "dark" : "light");
+
+// 			if (newIsDark) {
+// 				document.documentElement.classList.add("dark");
+// 			} else {
+// 				document.documentElement.classList.remove("dark");
+// 			}
+
+// 			return newIsDark;
+// 		});
+// 	};
+
+// 	// Prevent flash during SSR by rendering children only after mount
+// 	if (!mounted) {
+// 		return null;
+// 	}
+
+// 	return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
+// }
+
+// export function useTheme() {
+// 	const context = useContext(ThemeContext);
+// 	if (!context) {
+// 		throw new Error("useTheme must be used within ThemeContextProvider");
+// 	}
+// 	return context;
+// }
+// // // src/contexts/ThemeContext.tsx
+// // "use client";
+// // import { createContext, useContext, useEffect, useState } from "react";
+
+// // type ThemeContextType = {
+// // 	isDark: boolean;
+// // 	toggleTheme: () => void;
+// // };
+
+// // const ThemeContext = createContext<ThemeContextType>({
+// // 	isDark: false,
+// // 	toggleTheme: () => {},
+// // });
+
+// // export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+// // 	const [isDark, setIsDark] = useState(false);
+
+// // 	useEffect(() => {
+// // 		// Check local storage first
+// // 		const stored = localStorage.getItem("theme");
+// // 		const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+// // 		const shouldBeDark = stored ? stored === "dark" : prefersDark;
+
+// // 		setIsDark(shouldBeDark);
+// // 		if (shouldBeDark) {
+// // 			document.documentElement.classList.add("dark");
+// // 		}
+// // 	}, []);
+
+// // 	const toggleTheme = () => {
+// // 		setIsDark((prev) => {
+// // 			const newIsDark = !prev;
+// // 			localStorage.setItem("theme", newIsDark ? "dark" : "light");
+
+// // 			if (newIsDark) {
+// // 				document.documentElement.classList.add("dark");
+// // 			} else {
+// // 				document.documentElement.classList.remove("dark");
+// // 			}
+
+// // 			return newIsDark;
+// // 		});
+// // 	};
+
+// // 	return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
+// // }
+
+// // export function useTheme() {
+// // 	const context = useContext(ThemeContext);
+// // 	if (!context) {
+// // 		throw new Error("useTheme must be used within ThemeContextProvider");
+// // 	}
+// // 	return context;
+// // }
+// // // // src/contexts/ThemeContext.tsx
+// // // 'use client'
+// // // import { createContext, useContext, useEffect, useState } from 'react'
+// // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // import type { Theme } from '@/lib/types'
+
+// // // type ThemeContextType = {
+// // //   theme: Theme;
+// // //   isDark: boolean;
+// // //   toggleTheme: () => void;
+// // // }
+
+// // // const ThemeContext = createContext<ThemeContextType | null>(null)
+
+// // // export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+// // //   const [isDark, setIsDark] = useState(false)
+// // //   const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme)
+
+// // //   useEffect(() => {
+// // //     // Check local storage first
+// // //     const stored = localStorage.getItem('theme')
+// // //     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+// // //     const shouldBeDark = stored ? stored === 'dark' : prefersDark
+
+// // //     setIsDark(shouldBeDark)
+// // //     setCurrentTheme(shouldBeDark ? darkTheme : lightTheme)
+
+// // //     if (shouldBeDark) {
+// // //       document.documentElement.classList.add('dark')
+// // //     }
+// // //   }, [])
+
+// // //   const toggleTheme = () => {
+// // //     setIsDark(prev => {
+// // //       const newIsDark = !prev
+// // //       const newTheme = newIsDark ? darkTheme : lightTheme
+
+// // //       setCurrentTheme(newTheme)
+// // //       localStorage.setItem('theme', newIsDark ? 'dark' : 'light')
+
+// // //       if (newIsDark) {
+// // //         document.documentElement.classList.add('dark')
+// // //       } else {
+// // //         document.documentElement.classList.remove('dark')
+// // //       }
+
+// // //       return newIsDark
+// // //     })
+// // //   }
+
+// // //   return (
+// // //     <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
+// // //       {children}
+// // //     </ThemeContext.Provider>
+// // //   )
+// // // }
+
+// // // export function useTheme() {
+// // //   const context = useContext(ThemeContext)
+// // //   if (!context) {
+// // //     throw new Error('useTheme must be used within ThemeContextProvider')
+// // //   }
+// // //   return context
+// // // }
+
 ```
 
 # src/data/categories.ts
 
 ```ts
 // src/data/categories.ts
-import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
+import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
 export const categories = [
    {
       id: 'tech',
       name: 'Tech Articles',
       icon: Laptop,
-      color: 'bg-primary-600',  // Using your primary colors
-      textColor: 'text-primary-400',
-      gradient: 'from-primary-500 to-primary-700',
       description: 'Deep dives into software development, web technologies, and the latest tech trends.'
    },
    {
       id: 'media',
       name: 'Other Media',
       icon: Newspaper,
-      color: 'bg-secondary-400',  // Using your secondary color
-      textColor: 'text-primary-400',
-      gradient: 'from-primary-400 to-primary-600', // Using primary as fallback since secondary doesn't have gradients
       description: 'Exploring movies, books, games, and digital content.'
    },
    {
       id: 'food',
       name: 'Fusion Food',
       icon: Coffee,
-      color: 'bg-accent-400',  // Using your accent color
-      textColor: 'text-accent',
-      gradient: 'from-primary-300 to-primary-500', // Using primary as fallback since accent doesn't have gradients
       description: 'Creative recipes blending different culinary traditions.'
    },
    {
       id: 'personal',
       name: 'Personal',
       icon: User,
-      color: 'bg-primary-400',  // Using another shade of primary
-      textColor: 'text-primary-300',
-      gradient: 'from-primary-200 to-primary-400',
       description: 'Personal reflections, experiences, and life lessons.'
    }
 ] as const;
 
 export type CategoryId = typeof categories[number]['id'];
 
-// // // src/data/categories.ts
-// // import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
-// // import { Theme } from '@/lib/types';
-
-// // export const categories = [
-// //    {
-// //       id: 'tech',
-// //       name: 'Tech Articles',
-// //       icon: Laptop,
-// //       color: (theme: Theme) => theme.colors.primary[500],
-// //       textColor: (theme: Theme) => theme.colors.primary[400],
-// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[700]})`,
-// //       description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
-// //    },
-// //    {
-// //       id: 'media',
-// //       name: 'Other Media',
-// //       icon: Newspaper,
-// //       color: (theme: Theme) => theme.colors.secondary[500],
-// //       textColor: (theme: Theme) => theme.colors.secondary[400],
-// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.secondary[500]}, ${theme.colors.secondary[700]})`,
-// //       description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
-// //    },
-// //    {
-// //       id: 'food',
-// //       name: 'Fusion Food',
-// //       icon: Coffee,
-// //       color: (theme: Theme) => theme.colors.accent[500],
-// //       textColor: (theme: Theme) => theme.colors.accent[400],
-// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.accent[500]}, ${theme.colors.accent[700]})`,
-// //       description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
-// //    },
-// //    {
-// //       id: 'personal',
-// //       name: 'Personal',
-// //       icon: User,
-// //       color: (theme: Theme) => theme.colors.success[500],
-// //       textColor: (theme: Theme) => theme.colors.success[400],
-// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.success[500]}, ${theme.colors.success[700]})`,
-// //       description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
-// //    }
-// // ] as const;
-
-// // export type CategoryId = typeof categories[number]['id'];
-
-// // export function getCategoryById(id: CategoryId) {
-// //    return categories.find(category => category.id === id);
-// // }
-
-// // export function getCategoryName(id: CategoryId) {
-// //    return getCategoryById(id)?.name || id;
-// // }
-
-// // export function getCategoryColor(id: CategoryId, theme: Theme) {
-// //    return getCategoryById(id)?.color(theme) || theme.colors.gray[500];
-// // }
-
-// // export function getCategoryTextColor(id: CategoryId, theme: Theme) {
-// //    return getCategoryById(id)?.textColor(theme) || theme.colors.gray[400];
-// // }
-
-// // export function getCategoryGradient(id: CategoryId, theme: Theme) {
-// //    return getCategoryById(id)?.gradient(theme) || `linear-gradient(135deg, ${theme.colors.gray[500]}, ${theme.colors.gray[700]})`;
-// // }
-
 // // src/data/categories.ts
-// import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
+// import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
 // export const categories = [
 //    {
 //       id: 'tech',
 //       name: 'Tech Articles',
 //       icon: Laptop,
-//       color: 'bg-blue-500',
-//       textColor: 'text-primary-200',
-//       gradient: 'from-primary-500 to-primary-700',
-//       description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
+//       color: 'bg-primary-600',
+//       textColor: 'text-primary-300',
+//       gradient: 'bg-gradient-to-br from-primary-500 to-primary-700',
+//       description: 'Deep dives into software development, web technologies, and the latest tech trends.'
 //    },
 //    {
 //       id: 'media',
 //       name: 'Other Media',
 //       icon: Newspaper,
-//       color: 'bg-primary-300',
-//       textColor: 'text-purple-400',
-//       gradient: 'from-purple-500 to-purple-700',
-//       description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
+//       color: 'bg-secondary-600',
+//       textColor: 'text-secondary-300',
+//       gradient: 'bg-gradient-to-br from-secondary-500 to-secondary-700',
+//       description: 'Exploring movies, books, games, and digital content.'
 //    },
 //    {
 //       id: 'food',
 //       name: 'Fusion Food',
 //       icon: Coffee,
-//       color: 'bg-orange-500',
-//       textColor: 'text-orange-400',
-//       gradient: 'from-orange-500 to-orange-700',
-//       description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
+//       color: 'bg-accent-600',
+//       textColor: 'text-accent-300',
+//       gradient: 'bg-gradient-to-br from-accent-500 to-accent-700',
+//       description: 'Creative recipes blending different culinary traditions.'
 //    },
 //    {
 //       id: 'personal',
 //       name: 'Personal',
 //       icon: User,
-//       color: 'bg-green-500',
-//       textColor: 'text-green-400',
-//       gradient: 'from-green-500 to-green-700',
-//       description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
+//       color: 'bg-primary-500',
+//       textColor: 'text-primary-200',
+//       gradient: 'bg-gradient-to-br from-primary-400 to-primary-600',
+//       description: 'Personal reflections, experiences, and life lessons.'
 //    }
 // ] as const;
 
 // export type CategoryId = typeof categories[number]['id'];
-
-// export function getCategoryById(id: CategoryId) {
-//    return categories.find(category => category.id === id);
-// }
-
-// export function getCategoryName(id: CategoryId) {
-//    return getCategoryById(id)?.name || id;
-// }
-
-// export function getCategoryColor(id: CategoryId) {
-//    return getCategoryById(id)?.color || 'bg-gray-500';
-// }
-
-// export function getCategoryTextColor(id: CategoryId) {
-//    return getCategoryById(id)?.textColor || 'text-gray-400';
-// }
 ```
 
 # src/data/navbarConfig.ts
@@ -7957,58 +8397,48 @@ import { lightTheme as portfolioLight, darkTheme as portfolioDark } from './port
 import type { Theme } from './types'
 
 export const theme = {
-  light: {
-    ...portfolioLight,
-    // Blog-specific overrides
-    prose: {
-      headings: portfolioLight.colors.text.light.primary,
-      body: portfolioLight.colors.text.light.secondary,
-      links: portfolioLight.colors.primary[500],
-      code: {
-        background: portfolioLight.colors.gray[100],
-        text: portfolioLight.colors.gray[900]
+   light: {
+      ...portfolioLight,
+      // Blog-specific overrides
+      prose: {
+         headings: portfolioLight.colors.text.light.primary,
+         body: portfolioLight.colors.text.light.secondary,
+         links: portfolioLight.colors.primary[500],
+         code: {
+            background: portfolioLight.colors.gray[100],
+            text: portfolioLight.colors.gray[900]
+         }
       }
-    }
-  },
-  dark: {
-    ...portfolioDark,
-    // Blog-specific overrides
-    prose: {
-      headings: portfolioDark.colors.text.dark.primary,
-      body: portfolioDark.colors.text.dark.secondary,
-      links: portfolioDark.colors.primary[400],
-      code: {
-        background: portfolioDark.colors.gray[800],
-        text: portfolioDark.colors.gray[100]
+   },
+   dark: {
+      ...portfolioDark,
+      // Blog-specific overrides
+      prose: {
+         headings: portfolioDark.colors.text.dark.primary,
+         body: portfolioDark.colors.text.dark.secondary,
+         links: portfolioDark.colors.primary[400],
+         code: {
+            background: portfolioDark.colors.gray[800],
+            text: portfolioDark.colors.gray[100]
+         }
       }
-    }
-  }
+   }
 }
 
 export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
   :root {
-    --background: ${({ theme }) => theme.isDarkTheme ?
-      theme.colors.backgrounds.dark :
-      theme.colors.backgrounds.light};
-    --foreground: ${({ theme }) => theme.isDarkTheme ?
-      theme.colors.text.dark.primary :
-      theme.colors.text.light.primary};
-  }
+   /* Only set CSS variables that won't conflict with Tailwind */
+    --nav-height: ${({ theme }) => theme.sizes.navHeight};
+ }
 
   body {
-   //  background-color: var(--background);
-   //  color: var(--foreground);
-   //  font-family: ${({ theme }) => theme.typography.body.fontFamily};
-   background-color: ${({ theme }) => theme.colors.backgrounds.light};
-    color: ${({ theme }) => theme.colors.text.light.primary};
+   min-height: 100vh;
+   font-family: ${({ theme }) => theme.typography.body.fontFamily};
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: ${({ theme }) => theme.typography.heading.fontFamily};
-    color: ${({ theme }) => theme.isDarkTheme ?
-      theme.colors.text.dark.primary :
-      theme.colors.text.light.primary};
-  }
+   }
 
   // Prose styles for blog content
   .prose {
@@ -8033,8 +8463,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
 
     a {
       color: ${({ theme }) => theme.isDarkTheme ?
-        theme.colors.primary[400] :
-        theme.colors.primary[600]};
+      theme.colors.primary[400] :
+      theme.colors.primary[600]};
       text-decoration: none;
 
       &:hover {
@@ -8044,8 +8474,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
 
     code {
       background: ${({ theme }) => theme.isDarkTheme ?
-        theme.colors.gray[800] :
-        theme.colors.gray[100]};
+      theme.colors.gray[800] :
+      theme.colors.gray[100]};
       padding: 0.2em 0.4em;
       border-radius: 0.25rem;
       font-size: 0.875em;
@@ -8053,8 +8483,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
 
     pre {
       background: ${({ theme }) => theme.isDarkTheme ?
-        theme.colors.gray[900] :
-        theme.colors.gray[100]};
+      theme.colors.gray[900] :
+      theme.colors.gray[100]};
       padding: 1.5rem;
       border-radius: 0.5rem;
       overflow-x: auto;
@@ -8358,30 +8788,43 @@ export default {
                950: '#2f1a5b',
             },
             secondary: {
-               50: '#fefde8',
-               100: '#fefbc3',
-               200: '#fef48a',
-               300: '#fde647',
-               400: '#fbd82d',
-               500: '#ebba07',
-               600: '#ca9004',
-               700: '#a16707',
-               800: '#85510e',
-               900: '#714212',
-               950: '#422206',
+               50: '#eefbfc',
+               100: '#d4f3f6',
+               200: '#afe6ee',
+               300: '#77d2e2',
+               400: '#3ab6cf',
+               500: '#1d99b8',
+               600: '#187a9b',
+               700: '#19627d',
+               800: '#1c5268',
+               900: '#1b4559',
+               950: '#0c2c3d',
             },
             accent: {
-               50: '#fff3ed',
-               100: '#ffe4d4',
-               200: '#ffc5a8',
-               300: '#ff9c70',
-               400: '#ff6737',
-               500: '#ff3b0a',
-               600: '#f02506',
-               700: '#c71707',
-               800: '#9e140e',
-               900: '#7f150f',
-               950: '#450605',
+               50: '#fef2f2',
+               100: '#fee2e2',
+               200: '#fecaca',
+               300: '#fca5a5',
+               400: '#f87171',
+               500: '#ef4444',
+               600: '#dc2626',
+               700: '#b91c1c',
+               800: '#991b1b',
+               900: '#7f1d1d',
+               950: '#450a0a',
+            },
+            success: {
+               50: '#f8ffe5',
+               100: '#efffc7',
+               200: '#deff95',
+               300: '#bbff3d',
+               400: '#aaf625',
+               500: '#8add05',
+               600: '#6ab100',
+               700: '#508605',
+               800: '#41690b',
+               900: '#37590e',
+               950: '#1b3201',
             },
          }
       }

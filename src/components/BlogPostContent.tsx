@@ -64,7 +64,7 @@ export default function BlogPostContent({ post }: { post: Post }) {
 
 					<div className='prose prose-lg dark:prose-invert max-w-none'>
 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
-						<div className='text-gray-500 dark:text-gray-400 mb-8'>
+						<div className='text-gray-400 dark:text-gray-400 mb-8'>
 							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
 						</div>
 
@@ -73,14 +73,14 @@ export default function BlogPostContent({ post }: { post: Post }) {
 						<div className='mt-8 content'>{post.content}</div>
 
 						{/* Engagement Bar */}
-						<div className='sticky bottom-0 bg-gray-900/80 backdrop-blur mt-8 p-4 rounded-lg'>
+						<div className='sticky bottom-0 bg-gray-200/80 backdrop-blur mt-8 p-4 rounded-lg'>
 							<Reactions postId={post.id} />
 						</div>
 					</div>
 				</article>
 
 				{/* Right Column - Comments */}
-				<div className='lg:sticky lg:top-4 space-y-6'>
+				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 p-4 rounded-lg'>
 					<Comments postId={post.id} />
 				</div>
 			</div>
