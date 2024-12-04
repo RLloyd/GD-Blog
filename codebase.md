@@ -54,6 +54,13 @@ next-env.d.ts
 public/notes/*
 ```
 
+# .vscode/settings.json
+
+```json
+{
+}
+```
+
 # next-env.d.ts
 
 ```ts
@@ -172,6 +179,10 @@ datasource db {
 
 ```
 
+# public/assets/MashMediaStudio.png
+
+This is a binary file of the type: Image
+
 # public/file.svg
 
 This is a file of the type: SVG Image
@@ -184,74 +195,140 @@ This is a file of the type: SVG Image
 
 This is a file of the type: SVG Image
 
+# public/notes/Article-Ideas.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+
+</style>
+
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+# Article Ideas
+## Tech
+- Light & Dark image backgrounds
+   - Published in LinkedIn  ✅ Done!
+   - Need to add in MyBlog
+
+- Loaders
+   - WIP
+
+- AudioPlayer
+- Using both TailwindCSS and Styled-Components
+- Video player in your site
+- Animations: CSS, Framer-Motion
+
+## Media
+- Video animations
+
+```
+
 # public/notes/misc.tsx
 
 ```tsx
-// src/components/BlogDashboard.tsx
 
-// Inside BlogDashboard component:
-export default function BlogDashboard({ posts, featuredSetup = defaultFeatures }: BlogDashboardProps) {
-   const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
-   // Debug logs
-   console.log('Posts:', posts);
-   console.log('Featured Setup:', featuredSetup);
-
-   // Get featured posts based on setup
-   const featuredPosts = featuredSetup
-     .sort((a, b) => a.order - b.order)
-     .map(feature => {
-       const foundPost = posts.find(post => post.category === feature.category);
-       console.log('Looking for category:', feature.category, 'Found post:', foundPost);
-
-       return {
-         post: foundPost,
-         category: categories.find(c => c.id === feature.category)!,
-         size: feature.size,
-         title: feature.title,
-         description: feature.description
-       };
-     });
-
-   console.log('Featured Posts:', featuredPosts);
-
-   // Simplified grid layout
-   return (
-     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-       {/* Categories section */}
-
-       {activeCategory ? (
-         // Category view
-       ) : (
-         <>
-           <div className="featuredBlogsContainer grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-             {featuredPosts.map(({ post, category, size, title, description }, index) => (
-               <div
-                 key={post?.id || index}
-                 className={size === 'large' ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1'}
-               >
-                 <FeaturedCard
-                   post={post}
-                   category={category}
-                   size={size}
-                   title={title}
-                   description={description}
-                 />
-               </div>
-             ))}
-           </div>
-
-           {/* All Posts section */}
-         </>
-       )}
-     </div>
-   );
- }
+const FeaturedCard = ({ post, category...
+   <div
+		className={`relative overflow-hidden rounded-xl bg-primary-800 // this work
+         ...
+         {post ? (
+			<Link
+				href={`/blog/${post.slug}`}
+				className='buttonContainer group block h-[250px] aspect-[16/9]'
+			>
+				{post.cover_image ? (
+					<div className='absolute inset-0'>
+						<Image
+							src={post.cover_image}
+							alt={post.title}
+							fill
+							className='object-cover transition-transform duration-500 group-hover:scale-105'
+							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+							priority={size === "large"}
+						/>
+						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
+import { Newspaper, Coffee, Laptop, User } from "lucide-react";
+import { Theme } from "@/lib/types";
+
+export const categories = [
+	{
+		id: "tech",
+		name: "Tech Articles",
+		icon: Laptop,
+		color: (theme: Theme) => theme.colors.primary[500],
+		textColor: (theme: Theme) => theme.colors.primary[400],
+		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[700]})`,
+		description: "Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.",
+	},
+	{
+		id: "media",
+		name: "Other Media",
+		icon: Newspaper,
+		color: (theme: Theme) => theme.colors.secondary[500],
+		textColor: (theme: Theme) => theme.colors.secondary[400],
+		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.secondary[500]}, ${theme.colors.secondary[700]})`,
+		description: "Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.",
+	},
+	{
+		id: "food",
+		name: "Fusion Food",
+		icon: Coffee,
+		color: (theme: Theme) => theme.colors.accent[500],
+		textColor: (theme: Theme) => theme.colors.accent[400],
+		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.accent[500]}, ${theme.colors.accent[700]})`,
+		description: "Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.",
+	},
+	{
+		id: "personal",
+		name: "Personal",
+		icon: User,
+		color: (theme: Theme) => theme.colors.success[500],
+		textColor: (theme: Theme) => theme.colors.success[400],
+		gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.success[500]}, ${theme.colors.success[700]})`,
+		description: "Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.",
+	},
+] as const;
+
+export type CategoryId = (typeof categories)[number]["id"];
+
+export function getCategoryById(id: CategoryId) {
+	return categories.find((category) => category.id === id);
+}
+
+export function getCategoryName(id: CategoryId) {
+	return getCategoryById(id)?.name || id;
+}
+
+export function getCategoryColor(id: CategoryId, theme: Theme) {
+	return getCategoryById(id)?.color(theme) || theme.colors.gray[500];
+}
+
+export function getCategoryTextColor(id: CategoryId, theme: Theme) {
+	return getCategoryById(id)?.textColor(theme) || theme.colors.gray[400];
+}
+
+export function getCategoryGradient(id: CategoryId, theme: Theme) {
+	return getCategoryById(id)?.gradient(theme) || `linear-gradient(135deg, ${theme.colors.gray[500]}, ${theme.colors.gray[700]})`;
+}
 
 ```
 
@@ -674,6 +751,130 @@ strong {
 
 ```
 
+# public/notes/Theme Implementation Doc.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+
+</style>
+
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+# Theme Implementation Documentation
+
+## ThemeContext and Hook
+\`\`\`typescript
+// contexts/ThemeContext.tsx
+
+// Context Type
+type ThemeContextType = {
+  theme: Theme;
+  isDark: boolean;
+  toggleTheme: () => void;
+}
+
+// Hook Implementation
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (!context) {
+    throw new Error('useTheme must be used within ThemeContextProvider')
+  }
+  return context
+}
+
+// Usage Example
+function Component() {
+  const { theme, isDark, toggleTheme } = useTheme()
+  return <button onClick={toggleTheme}>Toggle</button>
+}
+\`\`\`
+
+## ThemeProvider Implementation
+\`\`\`typescript
+export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+  const [isDark, setIsDark] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const shouldBeDark = stored ? stored === 'dark' : prefersDark
+
+    setIsDark(shouldBeDark)
+    setCurrentTheme(shouldBeDark ? darkTheme : lightTheme)
+
+    if (shouldBeDark) document.documentElement.classList.add('dark')
+  }, [])
+
+  const toggleTheme = () => {
+    setIsDark(prev => {
+      const newIsDark = !prev
+      const newTheme = newIsDark ? darkTheme : lightTheme
+      setCurrentTheme(newTheme)
+      localStorage.setItem('theme', newIsDark ? 'dark' : 'light')
+      document.documentElement.classList.toggle('dark')
+      return newIsDark
+    })
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+\`\`\`
+
+## Integration Points
+
+### Styled Components
+\`\`\`typescript
+const StyledComponent = styled.div<{ theme: Theme }>`
+  color: ${({ theme }) => theme.isDark ? theme.colors.text.dark : theme.colors.text.light};
+`
+\`\`\`
+
+### Tailwind CSS
+\`\`\`typescript
+function Component() {
+  const { isDark } = useTheme()
+  return (
+    <div className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+      {/* Content */}
+    </div>
+  )
+}
+\`\`\`
+
+## Features
+- System theme detection
+- Theme persistence
+- Type-safe theme access
+- Synchronized styling
+- No flash on page load
+- Error boundary for hook usage
+
+## Best Practices
+1. Always use hook within ThemeProvider
+2. Access theme values through hook
+3. Combine with Tailwind for responsive design
+4. Use theme object for complex dynamic styles
+5. Maintain TypeScript types for theme objects
+```
+
 # public/notes/To-Do.md
 
 ```md
@@ -692,188 +893,44 @@ body {
   background-color: #FFFDF7;
 }
 
-/* Typography scale */
-h1 {
-  font-size: 2.5rem;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-  color: #1A202C;
-  letter-spacing: -0.02em;
-  border-bottom: 2px solid #E2E8F0;
-  padding-bottom: 0.5rem;
-}
-
-h2 {
-  font-size: 1.875rem;
-  line-height: 1.3;
-  margin-top: 3rem;
-  margin-bottom: 1rem;
-  color: #2D3748;
-  letter-spacing: -0.01em;
-}
-
-h3 {
-  font-size: 1.5rem;
-  line-height: 1.4;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  color: #4A5568;
-}
-
-/* Paragraphs and lists */
-p {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-}
-
-ul, ol {
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-li {
-  margin-bottom: 0.5rem;
-}
-
-/* Code blocks */
-code {
-  font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
-  font-size: 0.9em;
-  background-color: #F7FAFC;
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  border: 1px solid #E2E8F0;
-}
-
-pre {
-  background-color: #F7FAFC;
-  padding: 1.5rem;
-  border-radius: 6px;
-  overflow-x: auto;
-  border: 1px solid #E2E8F0;
-  margin: 1.5rem 0;
-}
-
-pre code {
-  border: none;
-  padding: 0;
-}
-
-/* Links */
-a {
-  color: #4A90E2;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease;
-}
-
-a:hover {
-  border-bottom-color: currentColor;
-}
-
-/* Blockquotes */
-blockquote {
-  font-style: italic;
-  margin: 1.5rem 0;
-  padding-left: 1.5rem;
-  border-left: 3px solid #CBD5E0;
-  color: #4A5568;
-}
-
-/* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-}
-
-th, td {
-  padding: 0.75rem;
-  border: 1px solid #E2E8F0;
-  text-align: left;
-}
-
-th {
-  background-color: #F7FAFC;
-  font-weight: 700;
-}
-
-/* Emphasis and strong */
-em {
-  font-style: italic;
-}
-
-strong {
-  font-weight: 700;
-  color: #1A202C;
-}
-
-/* Meta information */
-.meta {
-  font-size: 0.875rem;
-  color: #718096;
-  margin-bottom: 2rem;
-}
-
-/* Feature list checkmarks */
-.features li::before {
-  content: "✓";
-  color: #48BB78;
-  font-weight: bold;
-  display: inline-block;
-  width: 1.5em;
-  margin-left: -1.5em;
-}
-
-/* Command line prompts */
-.command {
-  display: block;
-  margin: 1rem 0;
-  padding: 1rem;
-  background-color: #2D3748;
-  color: #FFFFFF;
-  border-radius: 6px;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.command::before {
-  content: "$ ";
-  color: #A0AEC0;
-}
 </style>
 
 <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
 
 # To Do
 
-
 ## Lists
+
 ### Date: 12.01.2024
+
 - Claude timed me out: 5:45am - 8:am
 - Use the same theme as portfolio-2025
-   - Fonts: family, colors, sizes
-   - Color Palette
-   -
-- Light & Dark theme
-- Integrate Styled-Components with TailwindCSS
-- Able to show code in content
-- Can we show who liked and commented on a post
-- Blog Posts Dashboard:
-   - Create a different category of posts
-      - Tech Articles
-      - Other Medias
-      - Fusion Food
-      - Personal
-   - Show two large cards of favorite category and show all the posts underneath in cards format as well
-   - Similar to this design: https://www.loopple.com/preview-sample/dashboard-blogs-asteria?hide-banner=true&buttons=true
+  - Fonts: family, colors, sizes
+  - Color Palette
+  -
+- Light & Dark theme ✅ Done!
+- Integrate Styled-Components with TailwindCSS ✅ Done!
+- Able to show code in content ✅ Done!
+- Can we show who liked and commented on a post ✅ Done!
+- Blog Posts Dashboard: ✅ Done!
+
+  - Create a different category of posts ✅ Done!
+    - Tech Articles
+    - Other Medias
+    - Fusion Food
+    - Personal
+  - Show two large cards of favorite category and show all the posts underneath in cards format as well ✅ Done!
+    - Expanded to be able to show 1 - .n of Featured cards ✅ Done!
+  - Similar to this design: https://www.loopple.com/preview-sample/dashboard-blogs-asteria?hide-banner=true&buttons=true
 
 - Does readers have to be logged in to read, comment, like
 - Fix <img to <Image in src/components/BlogDashboard.tsx line: 71, 97
 
-- Changed: BlogDashboard.tsx : All posts container +to display 4 columns instead of 3
-   - <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+- Changed: BlogDashboard.tsx : All posts container +to display 4 columns instead of 3 ✅ Done!
+  - <div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
 ### Codeblock:
+
 \`\`\`javascript
 /* Code blocks */
 code {
@@ -885,23 +942,54 @@ code {
   border: 1px solid #E2E8F0;
 }
 \`\`\`
+
 \`\`\`javascript
 const greet = (name) => {
-  console.log(`Hello, ${name}!`);
+	console.log(`Hello, ${name}!`);
 };
 greet("World");
 \`\`\`
 
-
 ## Refactor
+
 ### Date: 12.02.2024
+
 > - Claude timed me out: 6am - 9am **#😭**
+
 - Add category assignment for New Post and Edit form. ✅ Fixed!
 - Do we still need src/app/providers.tsx
 - Add ARIA to the pages that readers will interact with. Don't need it for the admin.
 
 ### Date: 12.02.2024 @ 1:50pm
+
 > ### - Claude timed me out again: 1:50pm - 3:00pm **#😭**
+
+- Adjust featured card height BlogDashboard.tsx to 250px. Default: h-full ✅
+  \`\`\`javascript
+  <Link href={`/blog/${post.slug}`} className="buttonContainer group block h-[250px] aspect-[16/9]">
+  \`\`\`
+- Add light & dark mode feature ✅ Working, needs further checking. Need to do other things.
+
+### Date: 12.03.2024 @ 4:20am
+
+- Navbar, clicking on MyBlog goes to '/" but brings out another Navbar ✅ Fixed!
+- Create a json or .ts file for Navbar data ✅ Done!
+
+### Date: 12.03.2024 @ 6:30am
+
+- We shouldn't require readers to sign in to be able to comment or Like a post. ✅ Done!
+- We should also take out Write Post, Edit Post and Delete Post if the reader is not sign in ✅ Done!
+- On the src/components/Navbar.tsx please use src/data/navbarConfig.ts ✅ Done!
+
+- We need to get the theming color palette better implemented. Right now it's funky.
+- In src/app/blog/page.tsx comment out or remove "Write Post" button. "New Post" button is already in the Navbar for the admin. ✅ Done!
+- Keep the light/dark mode selection persist please!
+
+### Future requirements:
+
+- Add ARIA
+- Login implementation
+
 ```
 
 # public/project-summaries/BlogDashboard Category Fix.md
@@ -963,6 +1051,74 @@ Test the fix by:
 2. Verifying posts appear immediately after creation
 3. Checking category filtering works correctly
 4. Ensuring featured tech post displays properly
+```
+
+# public/project-summaries/BlogDashboard Component Doc.md
+
+```md
+<style>
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+# BlogDashboard Component Documentation
+
+## Grid Layout Structure
+The featured posts section uses a responsive grid layout with three breakpoints:
+
+\`\`\`typescript
+grid-cols-1 md:grid-cols-2 lg:grid-cols-4
+\`\`\`
+
+### Featured Cards Placement
+1. Tech Post (Large)
+   - Mobile: Full width
+   - Tablet: Spans 2 columns, 2 rows
+   - Desktop: Same as tablet
+
+2. Media Post (Medium)
+   - Mobile: Full width
+   - Tablet: Spans 2 columns
+   - Desktop: Same as tablet
+
+3. Food Post (Full)
+   - Mobile: Full width
+   - Tablet: Spans 2 columns
+   - Desktop: Spans all 4 columns
+
+## Card Size Types
+\`\`\`typescript
+type Size = "large" | "medium" | "full";
+\`\`\`
+
+### Size Properties
+- `large`: Used for main feature (2x2)
+- `medium`: Secondary features (1x1)
+- `full`: Full-width feature (spans available columns)
+
+## Implementation Notes
+- `col-start-1` ensures the full-width card aligns properly
+- `row-span-2` on large card creates space for medium card
+- All cards maintain 16:9 aspect ratio for consistency
+
+## Usage Example
+\`\`\`typescript
+<FeaturedCard
+  post={post}
+  category={categories[0]}
+  size="large|medium|full"
+  title="Custom Title"
+  description="Optional description"
+/>
+\`\`\`
 ```
 
 # public/project-summaries/Resolving-Hydration-Styling-Issues.md
@@ -1303,12 +1459,12 @@ export default async function BlogList() {
     <div className="max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8 px-4">
         <h1 className="text-3xl font-bold">Blog Posts</h1>
-        <Link
+        {/* <Link
           href="/blog/new"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Write Post
-        </Link>
+        </Link> */}
       </div>
 
       <BlogDashboard
@@ -1720,26 +1876,30 @@ export default function RootLayout({
 "use client";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "@/lib/theme-config";
-import { Navbar } from "@/components/Navbar";
 
 /*---==================================================================
-This code snippet defines a functional component named `HomePage`
-that is exported as the default export. When this component is rendered,
-it returns a JSX structure. The JSX structure consists of a
-`ThemeProvider` component from the `styled-components` library,
-which wraps around the `Navbar` component and a `main` element.
-The `ThemeProvider` component receives a `theme` prop,
-which is set to the `lightTheme` variable. Inside the `main` element,
-there is an `h1` element with the text "Welcome to the Blog".
-This code snippet is likely part of a React application and is
-responsible for rendering the home page of the blog.
+The homepage serves as the entry point to our blog platform, providing:
+- Overview of recent blog posts
+- Summary of different content categories
+- Quick access to featured articles
 ==================================================================---*/
 export default function HomePage() {
 	return (
 		<ThemeProvider theme={lightTheme}>
-			<Navbar />
 			<main className="container mx-auto px-4 py-8">
-				<h1>Welcome to the Blog</h1>
+				<section className="max-w-4xl mx-auto space-y-8">
+					<h1 className="text-4xl font-bold mb-4">Welcome to My Blog</h1>
+					<div className="text-xl">
+						Dive into a world of creativity, innovation, and flavors! Here, you’ll find:
+						<ul>
+							<li>Tech Tutorials: Simplifying coding concepts and showcasing CSS & JavaScript animations to bring your web designs to life.</li>
+							<li>Other Media: Explore the art of video production and animations, where visuals tell the story.</li>
+							<li>Fusion Food: Savor the blend of Asian-inspired cuisine and global tastes for a culinary adventure.</li>
+							<li>Personal Stories: A window into my journey, thoughts, and experiences.</li>
+						</ul>
+						<p>Whether you’re here to learn, create, or simply be inspired, there’s something for everyone. Let’s explore together!</p>
+					</div>
+				</section>
 			</main>
 		</ThemeProvider>
 	);
@@ -1750,48 +1910,144 @@ export default function HomePage() {
 # src/app/providers.tsx
 
 ```tsx
-// src/app/providers.tsx - Updated to prevent hydration mismatches
+// src/app/providers.tsx
 'use client'
-import { useState, useEffect, useCallback } from 'react'
 import { ThemeProvider } from 'styled-components'
-import { lightTheme, darkTheme } from '@/lib/theme-config'
 import StyledComponentsRegistry from '@/lib/registry'
+import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
 import { GlobalStyle } from '@/lib/theme'
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  // Use null initial state to prevent hydration mismatch
-  const [mounted, setMounted] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
-
-  // Move theme detection to a separate effect
-  useEffect(() => {
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    setIsDarkMode(darkModeQuery.matches)
-
-    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
-    darkModeQuery.addEventListener('change', handleChange)
-    return () => darkModeQuery.removeEventListener('change', handleChange)
-  }, [])
-
-  // Separate mount effect to ensure sequential execution
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Render nothing until mounted and theme is detected
-  if (!mounted || isDarkMode === null) {
-    return null
-  }
+function ThemedContent({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme()
 
   return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      {children}
+    </ThemeProvider>
+  )
+}
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
     <StyledComponentsRegistry>
-      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        {children}
-      </ThemeProvider>
+      <ThemeContextProvider>
+        <ThemedContent>{children}</ThemedContent>
+      </ThemeContextProvider>
     </StyledComponentsRegistry>
   )
 }
+
+// // src/app/providers.tsx
+// 'use client'
+// import { useEffect } from 'react'
+// import StyledComponentsRegistry from '@/lib/registry'
+
+// export function Providers({ children }: { children: React.ReactNode }) {
+//   useEffect(() => {
+//     const theme = localStorage.getItem('theme')
+//     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+//       document.documentElement.classList.add('dark')
+//     }
+//   }, [])
+
+//   return (
+//     <StyledComponentsRegistry>
+//       {children}
+//     </StyledComponentsRegistry>
+//   )
+// }
+
+
+// // // src/app/providers.tsx
+// // 'use client'
+// // import { ThemeProvider as StyledThemeProvider } from 'styled-components'
+// // import { ThemeProvider } from '@/lib/ThemeContext'
+// // import StyledComponentsRegistry from '@/lib/registry'
+// // import { GlobalStyle } from '@/lib/theme'
+// // import { useTheme } from '@/lib/ThemeContext'
+
+// // function StyledProviders({ children }: { children: React.ReactNode }) {
+// //   const { theme } = useTheme()
+
+// //   return (
+// //     <StyledThemeProvider theme={theme}>
+// //       <GlobalStyle />
+// //       {children}
+// //     </StyledThemeProvider>
+// //   )
+// // }
+
+// // export function Providers({ children }: { children: React.ReactNode }) {
+// //   return (
+// //     <StyledComponentsRegistry>
+// //       <ThemeProvider>
+// //         <StyledProviders>
+// //           {children}
+// //         </StyledProviders>
+// //       </ThemeProvider>
+// //     </StyledComponentsRegistry>
+// //   )
+// // }
+// // // // src/app/providers.tsx - Updated to prevent hydration mismatches
+// // // 'use client'
+// // // import { useState, useEffect, useCallback } from 'react'
+// // // import { useTheme } from '@/hooks/useTheme'
+// // // import { ThemeProvider } from 'styled-components'
+// // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // import StyledComponentsRegistry from '@/lib/registry'
+// // // import { GlobalStyle } from '@/lib/theme'
+
+// // // export function Providers({ children }: { children: React.ReactNode }) {
+// // //    const { theme, mounted } = useTheme()
+
+// // //   if (!mounted) {
+// // //     return null
+// // //   }
+
+// // //   return (
+// // //     <StyledComponentsRegistry>
+// // //       <ThemeProvider theme={theme}>
+// // //         <GlobalStyle />
+// // //         {children}
+// // //       </ThemeProvider>
+// // //     </StyledComponentsRegistry>
+// // //   )
+// // // }
+
+// // // //   // Use null initial state to prevent hydration mismatch
+// // // //   const [mounted, setMounted] = useState(false)
+// // // //   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
+
+// // // //   // Move theme detection to a separate effect
+// // // //   useEffect(() => {
+// // // //     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+// // // //     setIsDarkMode(darkModeQuery.matches)
+
+// // // //     const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
+// // // //     darkModeQuery.addEventListener('change', handleChange)
+// // // //     return () => darkModeQuery.removeEventListener('change', handleChange)
+// // // //   }, [])
+
+// // // //   // Separate mount effect to ensure sequential execution
+// // // //   useEffect(() => {
+// // // //     setMounted(true)
+// // // //   }, [])
+
+// // // //   // Render nothing until mounted and theme is detected
+// // // //   if (!mounted || isDarkMode === null) {
+// // // //     return null
+// // // //   }
+
+// // // //   return (
+// // // //     <StyledComponentsRegistry>
+// // // //       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+// // // //         <GlobalStyle />
+// // // //         {children}
+// // // //       </ThemeProvider>
+// // // //     </StyledComponentsRegistry>
+// // // //   )
+// // // // }
 
 ```
 
@@ -1843,45 +2099,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { categories, CategoryId } from "@/data/categories";
-import { PostCard } from "@/components/PostCard";
+// import { categories, CategoryId } from "@/data/categories";
+import styled from "styled-components";
+import { categories, CategoryId, getCategoryColor } from "@/data/categories";
 
-// Grid size configuration types
-type GridSize = "large" | "medium" | "small";
-
-// interface GridConfig {
-//   cols: number;
-//   rows: number;
-//   className: string;
-// }
-
-// const gridSizeConfigs: Record<GridSize, GridConfig> = {
-//   large: {
-//     cols: 2,
-//     rows: 2,
-//     className: 'col-span-2 row-span-2 aspect-[16/9]'
-//   },
-//   medium: {
-//     cols: 1,
-//     rows: 1,
-//     className: 'col-span-1 row-span-1 aspect-[4/3]'
-//   },
-//   small: {
-//     cols: 1,
-//     rows: 1,
-//     className: 'col-span-1 aspect-square'
-//   }
-// };
-
-// type FeaturedSetup = {
-//   category: CategoryId;
-//   size: GridSize;
-//   order: number;
-//   title?: string;
-//   description?: string;
-// }[];
-
-export type Post = {
+type Post = {
 	id: string;
 	title: string;
 	excerpt: string;
@@ -1891,337 +2113,791 @@ export type Post = {
 	cover_image?: string;
 };
 
-export type FeaturedSetup = {
-	category: CategoryId;
-	size: GridSize;
-	order: number;
-	title?: string;
-	description?: string;
-}[];
-
-interface GridConfig {
-	cols: number;
-	rows: number;
-	className: string;
-}
-
-const gridSizeConfigs: Record<GridSize, GridConfig> = {
-	large: {
-		cols: 2,
-		rows: 2,
-		className: "col-span-2 row-span-2 aspect-[16/9]",
-	},
-	medium: {
-		cols: 1,
-		rows: 1,
-		className: "col-span-1 row-span-1 aspect-[4/3]",
-	},
-	small: {
-		cols: 1,
-		rows: 1,
-		className: "col-span-1 aspect-square",
-	},
-};
-
-// Default featured setup - can be overridden via props
-const defaultFeatures: FeaturedSetup = [
-	{
-		category: "tech",
-		size: "large",
-		order: 0,
-		title: "Latest in Tech",
-		description: "Latest tech insights and tutorials",
-	},
-	{
-		category: "media",
-		size: "medium",
-		order: 1,
-		title: "Media & Reviews",
-		description: "Recent media coverage and reviews",
-	},
-	{
-		category: "food",
-		size: "medium",
-		order: 2,
-		title: "Food & Recipes",
-		description: "Latest recipes and culinary adventures",
-	},
-];
-
-interface BlogDashboardProps {
-	posts: Post[];
-	featuredSetup?: FeaturedSetup;
-}
-
-export default function BlogDashboard({ posts, featuredSetup = defaultFeatures }: BlogDashboardProps) {
-	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
-
-	// Calculate grid layout
-	const getFeaturedLayout = () => {
-		const totalCols = 4; // Base grid is 4 columns
-		let usedCols = 0;
-		let gridTemplateAreas = "";
-
-		featuredSetup.forEach((feature, index) => {
-			const config = gridSizeConfigs[feature.size];
-			if (usedCols + config.cols > totalCols) {
-				gridTemplateAreas += `"`;
-				usedCols = 0;
-			}
-			gridTemplateAreas += ` area${index}`;
-			usedCols += config.cols;
-		});
-
-		return gridTemplateAreas;
-	};
-
-	// Get featured posts based on setup
-	const featuredPosts = featuredSetup
-		.sort((a, b) => a.order - b.order)
-		.map((feature) => ({
-			post: posts.find((post) => post.category === feature.category),
-			category: categories.find((c) => c.id === feature.category)!,
-			size: feature.size,
-			title: feature.title,
-			description: feature.description,
-		}));
-
-	// Filter remaining posts, excluding featured ones
-	const featuredPostIds = featuredPosts.map((f) => f.post?.id).filter(Boolean) as string[];
-	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredPostIds.includes(post.id));
-
-	const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[0]; size: GridSize; title?: string; description?: string }) => (
-		<div
-			className={`relative overflow-hidden rounded-xl bg-gray-800
-      ${gridSizeConfigs[size].className}
-      transition-transform duration-300 hover:scale-[1.02]`}
-		>
-			{post ? (
-				<Link href={`/blog/${post.slug}`} className="group block h-full">
-					{post.cover_image ? (
-						<div className="absolute inset-0">
-							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes={size === "large" ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 25vw"} priority={size === "large"} />
-							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-						</div>
-					) : (
-						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-					)}
-					<div className="absolute inset-0 p-6 flex flex-col justify-end">
-						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div>
-						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
-						<p className="text-gray-300 line-clamp-2">{description || post.excerpt}</p>
+const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: "large" | "medium" | "full"; title?: string; description?: string }) => (
+	<div
+		className={`relative overflow-hidden rounded-xl bg-primary-800
+      ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
+         transition-transform duration-300 hover:scale-[1.02]`}
+	>
+		{post ? (
+			<Link
+				href={`/blog/${post.slug}`}
+				className='buttonContainer group block h-[250px] aspect-[16/9]'
+			>
+				{post.cover_image ? (
+					<div className='absolute inset-0'>
+						<Image
+							src={post.cover_image}
+							alt={post.title}
+							fill
+							className='object-cover transition-transform duration-500 group-hover:scale-105'
+							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+							priority={size === "large"}
+						/>
+						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
+						{/* <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' /> */}
 					</div>
-				</Link>
-			) : (
+				) : (
+					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+				)}
+				<div className='absolute inset-0 p-6 flex flex-col justify-end'>
+					<div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div>
+					{/* <div className={`text-sm font-medium text-primary-300 mb-2`}>{title || category.name}</div> */}
+					{/* <div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div> */}
+					<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+					{/* bg-brand-primary text-white */}
+					{/* <h3 className='text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3> */}
+					<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+				</div>
+			</Link>
+		) : (
+			<div className='aspect-[16/9] relative'>
 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
-					<div className="absolute inset-0 p-6 flex items-center justify-center">
-						<p className="text-xl text-white/70">No {category.name} posts yet</p>
+					<div className='absolute inset-0 p-6 flex items-center justify-center'>
+						<p className='text-xl text-white/70'>No {category.name} posts yet</p>
 					</div>
 				</div>
-			)}
-		</div>
-	);
+			</div>
+		)}
+	</div>
+);
+
+export default function BlogDashboard({ posts }: { posts: Post[] }) {
+	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+	// Get featured posts
+	const techPost = posts.find((post) => post.category === "tech");
+	const mediaPost = posts.find((post) => post.category === "media");
+	const foodPost = posts.find((post) => post.category === "food");
+
+	// Filter remaining posts
+	const featuredIds = [techPost?.id, mediaPost?.id, foodPost?.id].filter(Boolean);
+	const remainingPosts = posts.filter((post) => !featuredIds.includes(post.id));
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-			{/* Categories buttons */}
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+		<div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+			{/* Category buttons */}
+			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
 				{categories.map((category) => {
+					const Icon = category.icon;
+					console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
+					return (
+						<button
+							key={category.id}
+							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+							className={`p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`}
+						>
+							<Icon size={24} />
+							<span className='font-medium'>{category.name}</span>
+						</button>
+					);
+				})}
+				{/* {categories.map((category) => {
 					const Icon = category.icon;
 					return (
 						<button
 							key={category.id}
 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
-							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-                ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
+							className={`p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white dark:opacity-90` : "bg-primary-800 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600"}`}
 						>
+
 							<Icon size={24} />
-							<span className="font-medium">{category.name}</span>
+							<span className='font-medium'>{category.name}</span>
 						</button>
 					);
-				})}
+				})} */}
 			</div>
 
-			{activeCategory ? (
-				<div className="space-y-8">
-					<div className="flex justify-between items-start">
-						<div>
-							<button onClick={() => setActiveCategory(null)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4">
-								<ArrowLeft size={20} />
-								<span>Back to all posts</span>
-							</button>
-							<h2 className="text-3xl font-bold mb-2">{categories.find((c) => c.id === activeCategory)?.name}</h2>
-							<p className="text-gray-300 max-w-2xl">{categories.find((c) => c.id === activeCategory)?.description}</p>
+			{/* Featured Posts Grid */}
+			{!activeCategory && (
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+					{techPost && (
+						<div className='md:col-span-2 md:row-span-2'>
+							<FeaturedCard
+								post={techPost}
+								category={categories[0]}
+								size='large'
+								title='Featured Tech Article'
+							/>
 						</div>
-					</div>
-					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-						{filteredPosts.map((post) => (
-							<PostCard key={post.id} post={post} />
-						))}
-					</div>
+					)}
+					{mediaPost && (
+						<div className='md:col-span-2'>
+							<FeaturedCard
+								post={mediaPost}
+								category={categories[1]}
+								size='medium'
+								title='Latest Media'
+							/>
+						</div>
+					)}
+					{foodPost && (
+						<div className='md:col-span-2 lg:col-span-4 lg:col-start-1'>
+							<FeaturedCard
+								post={foodPost}
+								category={categories[2]}
+								size='full'
+								title='Latest Recipe'
+							/>
+						</div>
+					)}
 				</div>
-			) : (
-				<>
-					<div
-						className="featuredBlogsContainer grid gap-8"
-						style={{
-							gridTemplateColumns: "repeat(4, 1fr)",
-							gridTemplateAreas: getFeaturedLayout(),
-						}}
-					>
-						{featuredPosts.map(({ post, category, size, title, description }, index) => (
-							<div key={post?.id || index} style={{ gridArea: `area${index}` }}>
-								<FeaturedCard post={post} category={category} size={size} title={title} description={description} />
-							</div>
-						))}
-					</div>
-
-					<div>
-						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
-						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-							{filteredPosts.map((post) => (
-								<PostCard key={post.id} post={post} />
-							))}
-						</div>
-					</div>
-				</>
 			)}
+			{/* Works but no responsiveness */}
+			{/* {!activeCategory && (
+				<div className="grid grid-cols-4 gap-6">
+					{techPost && (
+						<div className="col-span-2 row-span-2">
+							<FeaturedCard post={techPost} category={categories[0]} size="large" title="Featured Tech Article" />
+						</div>
+					)}
+					{mediaPost && (
+						<div className="col-span-2">
+							<FeaturedCard post={mediaPost} category={categories[1]} size="medium" title="Latest Media" />
+						</div>
+					)}
+               {foodPost && (
+                  <div className="col-span-4 col-start-1">
+                     <FeaturedCard post={foodPost} category={categories[2]} size="full" title="Latest Recipe" />
+                  </div>
+               )}
+				</div>
+			)} */}
+
+			{/* Doesn't work */}
+			{/* {!activeCategory && (
+				<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+					{techPost && (
+						<div className="md:col-span-2 md:row-span-2">
+							<FeaturedCard post={techPost} category={categories[0]} size="large" title="Featured Tech Article" />
+						</div>
+					)}
+					{mediaPost && (
+						<div className="md:col-span-2">
+							<FeaturedCard post={mediaPost} category={categories[1]} size="medium" title="Latest Media" />
+						</div>
+					)}
+					{foodPost && (
+						<div className="md:col-span-2">
+							// <FeaturedCard post={foodPost} category={categories[2]} size="medium" title="Latest Recipe" />
+							<FeaturedCard post={foodPost} category={categories[2]} size="full" title="Latest Recipe" />
+						</div>
+					)}
+				</div>
+			)} */}
+
+			{/* Regular Posts Grid */}
+			<div>
+				<h2 className='text-2xl font-bold mb-6'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
+					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
+						<Link
+							key={post.id}
+							href={`/blog/${post.slug}`}
+							className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'
+						>
+							<div className='aspect-[16/9] relative bg-gray-900'>
+								{post.cover_image && (
+									<Image
+										src={post.cover_image}
+										alt={post.title}
+										fill
+										className='object-cover'
+										sizes='(max-width: 768px) 100vw, 25vw'
+									/>
+								)}
+							</div>
+							<div className='p-4'>
+								<div className='flex justify-between items-center mb-2'>
+									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
+									<span className='text-sm text-gray-400'>{post.date}</span>
+								</div>
+								<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+							</div>
+						</Link>
+					))}
+				</div>
+			</div>
 		</div>
 	);
 }
-// // src/components/BlogDashboard.tsx
+// src/components/BlogDashboard.tsx
 // "use client";
-
-// import { useState } from "react";
-// import Link from "next/link";
-// import Image from "next/image";
-// import { ArrowLeft } from "lucide-react";
-// import { categories, CategoryId } from "@/data/categories";
-// import { PostCard } from "@/components/PostCard";
+// import { useState } from 'react';
+// import Link from 'next/link';
+// import Image from 'next/image';
+// import { ArrowLeft } from 'lucide-react';
+// import { categories, CategoryId } from '@/data/categories';
 
 // type Post = {
-// 	id: string;
-// 	title: string;
-// 	excerpt: string;
-// 	category: CategoryId;
-// 	date: string;
-// 	slug: string;
-// 	cover_image?: string;
+//   id: string;
+//   title: string;
+//   excerpt: string;
+//   category: CategoryId;
+//   date: string;
+//   slug: string;
+//   cover_image?: string;
 // };
 
+// const FeaturedCard = ({ post, category, size = "medium", title, description }: {
+//   post?: Post;
+//   category: typeof categories[number];
+//   size: "large" | "medium";
+//   title?: string;
+//   description?: string;
+// }) => (
+//   <div className={`relative overflow-hidden rounded-xl bg-gray-800 ${
+//     size === "large" ? "row-span-2 col-span-2" : "col-span-1"
+//   } transition-transform duration-300 hover:scale-[1.02]`}>
+//     {post ? (
+//       <Link href={`/blog/${post.slug}`} className="group block h-full aspect-[16/9]">
+//         {post.cover_image ? (
+//           <div className="absolute inset-0">
+//             <Image
+//               src={post.cover_image}
+//               alt={post.title}
+//               fill
+//               className="object-cover transition-transform duration-500 group-hover:scale-105"
+//               sizes="(max-width: 768px) 100vw, 50vw"
+//               priority={size === "large"}
+//             />
+//             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+//           </div>
+//         ) : (
+//           <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+//         )}
+//         <div className="absolute inset-0 p-6 flex flex-col justify-end">
+//           <div className={`text-sm font-medium ${category.textColor} mb-2`}>
+//             {title || category.name}
+//           </div>
+//           <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+//             {post.title}
+//           </h3>
+//           <p className="text-gray-300 line-clamp-2">
+//             {description || post.excerpt}
+//           </p>
+//         </div>
+//       </Link>
+//     ) : (
+//       <div className="aspect-[16/9] relative">
+//         <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+//           <div className="absolute inset-0 p-6 flex items-center justify-center">
+//             <p className="text-xl text-white/70">No {category.name} posts yet</p>
+//           </div>
+//         </div>
+//       </div>
+//     )}
+//   </div>
+// );
+
 // export default function BlogDashboard({ posts }: { posts: Post[] }) {
-// 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+//   const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
-// 	// Find featured posts before any filtering
-// 	const latestTechPost = posts.find((post) => post.category === "tech");
-// 	const latestMediaPost = posts.find(post => post.category === 'media');
+//   // Get featured posts
+//   const techPost = posts.find(post => post.category === 'tech');
+//   const mediaPost = posts.find(post => post.category === 'media');
+//   const foodPost = posts.find(post => post.category === 'food');
 
-// 	// Get remaining posts AFTER removing both featured posts
-// 	// const remainingPosts = posts.filter(post => {
-// 	//   const isFeaturedTech = post.id === latestTechPost?.id;
-// 	//   const isFeaturedMedia = post.id === latestMediaPost?.id;
-// 	//   return !isFeaturedTech && !isFeaturedMedia;
-// 	// });
+//   // Filter remaining posts
+//   const featuredIds = [techPost?.id, mediaPost?.id, foodPost?.id].filter(Boolean);
+//   const remainingPosts = posts.filter(post => !featuredIds.includes(post.id));
 
-// 	// Get filtered posts based on active category
-// 	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => post.id !== latestTechPost?.id);
+//   return (
+//     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+//       {/* Category buttons */}
+//       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+//         {categories.map((category) => {
+//           const Icon = category.icon;
+//           return (
+//             <button
+//               key={category.id}
+//               onClick={() => setActiveCategory(
+//                 activeCategory === category.id ? null : category.id as CategoryId
+//               )}
+//               className={`p-4 rounded-lg flex items-center space-x-3 transition-all
+//                 ${activeCategory === category.id ?
+//                   category.color + ' text-white' :
+//                   'bg-gray-800 hover:bg-gray-700'}`}
+//             >
+//               <Icon size={24} />
+//               <span className="font-medium">{category.name}</span>
+//             </button>
+//           );
+//         })}
+//       </div>
 
-// 	const FeaturedCard = ({ post, category }: { post?: Post; category: (typeof categories)[0] }) => (
-// 		<div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800">
-// 			{post ? (
-// 				<Link href={`/blog/${post.slug}`} className="group block h-full">
-// 					{post.cover_image ? (
-// 						<div className="absolute inset-0">
-// 							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" />
-// 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-// 						</div>
-// 					) : (
-// 						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-// 					)}
-// 					<div className="absolute inset-0 p-6 flex flex-col justify-end">
-// 						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{category.name}</div>
-// 						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
-// 						<p className="text-gray-300 line-clamp-2">{post.excerpt}</p>
-// 					</div>
-// 				</Link>
-// 			) : (
-// 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
-// 					<div className="absolute inset-0 p-6 flex items-center justify-center">
-// 						<p className="text-xl text-white/70">No {category.name} posts yet</p>
-// 					</div>
-// 				</div>
-// 			)}
-// 			<Link
-// 				href="#"
-// 				onClick={(e) => {
-// 					e.preventDefault();
-// 					setActiveCategory(category.id as CategoryId);
-// 				}}
-// 				className={`absolute top-4 right-4 px-3 py-1.5 rounded-full ${category.color}
-//           text-white text-sm font-medium hover:opacity-90 transition-opacity`}
-// 			>
-// 				{category.name}
-// 			</Link>
-// 		</div>
-// 	);
+//       {/* Featured Posts Grid */}
+//       {!activeCategory && (
+//         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+//           {techPost && (
+//             <div className="md:col-span-2 md:row-span-2">
+//               <FeaturedCard
+//                 post={techPost}
+//                 category={categories[0]}
+//                 size="large"
+//                 title="Featured Tech Article"
+//               />
+//             </div>
+//           )}
+//           {mediaPost && (
+//             <div className="md:col-span-2">
+//               <FeaturedCard
+//                 post={mediaPost}
+//                 category={categories[1]}
+//                 size="medium"
+//                 title="Latest Media"
+//               />
+//             </div>
+//           )}
+//           {foodPost && (
+//             <div className="md:col-span-2">
+//               <FeaturedCard
+//                 post={foodPost}
+//                 category={categories[2]}
+//                 size="medium"
+//                 title="Latest Recipe"
+//               />
+//             </div>
+//           )}
+//         </div>
+//       )}
 
-// 	return (
-// 		<div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-// 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-// 				{categories.map((category) => {
-// 					const Icon = category.icon;
-// 					return (
-// 						<button
-// 							key={category.id}
-// 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
-// 							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
-//                 ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
-// 						>
-// 							<Icon size={24} />
-// 							<span className="font-medium">{category.name}</span>
-// 						</button>
-// 					);
-// 				})}
-// 			</div>
-
-// 			{activeCategory ? (
-// 				<div className="space-y-8">
-// 					<div className="flex justify-between items-start">
-// 						<div>
-// 							<button onClick={() => setActiveCategory(null)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4">
-// 								<ArrowLeft size={20} />
-// 								<span>Back to all posts</span>
-// 							</button>
-// 							<h2 className="text-3xl font-bold mb-2">{categories.find((c) => c.id === activeCategory)?.name}</h2>
-// 							<p className="text-gray-300 max-w-2xl">{categories.find((c) => c.id === activeCategory)?.description}</p>
-// 						</div>
-// 					</div>
-// 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-// 						{filteredPosts.map((post) => (
-// 							<PostCard key={post.id} post={post} />
-// 						))}
-// 					</div>
-// 				</div>
-// 			) : (
-// 				<>
-// 					<div className="featuredBogsContainer grid md:grid-cols-2 gap-8">
-// 						<FeaturedCard post={latestTechPost} category={categories[0]} />
-// 						<FeaturedCard post={latestMediaPost} category={categories[1]} />
-// 					</div>
-
-// 					<div>
-// 						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
-// 						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-// 							{filteredPosts.map((post) => (
-// 								<PostCard key={post.id} post={post} />
-// 							))}
-// 						</div>
-// 					</div>
-// 				</>
-// 			)}
-// 		</div>
-// 	);
+//       {/* Regular Posts Grid */}
+//       <div>
+//         <h2 className="text-2xl font-bold mb-6">
+//           {activeCategory ?
+//             categories.find(c => c.id === activeCategory)?.name :
+//             'All Posts'}
+//         </h2>
+//         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+//           {(activeCategory ?
+//             posts.filter(post => post.category === activeCategory) :
+//             remainingPosts
+//           ).map((post) => (
+//             <Link
+//               key={post.id}
+//               href={`/blog/${post.slug}`}
+//               className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+//             >
+//               <div className="aspect-[16/9] relative bg-gray-900">
+//                 {post.cover_image && (
+//                   <Image
+//                     src={post.cover_image}
+//                     alt={post.title}
+//                     fill
+//                     className="object-cover"
+//                     sizes="(max-width: 768px) 100vw, 25vw"
+//                   />
+//                 )}
+//               </div>
+//               <div className="p-4">
+//                 <div className="flex justify-between items-center mb-2">
+//                   <span className={`text-sm ${
+//                     categories.find(c => c.id === post.category)?.textColor
+//                   }`}>
+//                     {categories.find(c => c.id === post.category)?.name}
+//                   </span>
+//                   <span className="text-sm text-gray-400">{post.date}</span>
+//                 </div>
+//                 <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">
+//                   {post.title}
+//                 </h3>
+//                 <p className="text-gray-300 text-sm line-clamp-2">
+//                   {post.excerpt}
+//                 </p>
+//               </div>
+//             </Link>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
 // }
+// // "use client";
+// // import { useState } from "react";
+// // import Link from "next/link";
+// // import Image from "next/image";
+// // import { ArrowLeft } from "lucide-react";
+// // import { categories, CategoryId } from "@/data/categories";
+// // import { PostCard } from "@/components/PostCard";
+
+// // // Grid size configuration types
+// // type GridSize = "large" | "medium" | "small";
+
+// // // interface GridConfig {
+// // //   cols: number;
+// // //   rows: number;
+// // //   className: string;
+// // // }
+
+// // // const gridSizeConfigs: Record<GridSize, GridConfig> = {
+// // //   large: {
+// // //     cols: 2,
+// // //     rows: 2,
+// // //     className: 'col-span-2 row-span-2 aspect-[16/9]'
+// // //   },
+// // //   medium: {
+// // //     cols: 1,
+// // //     rows: 1,
+// // //     className: 'col-span-1 row-span-1 aspect-[4/3]'
+// // //   },
+// // //   small: {
+// // //     cols: 1,
+// // //     rows: 1,
+// // //     className: 'col-span-1 aspect-square'
+// // //   }
+// // // };
+
+// // // type FeaturedSetup = {
+// // //   category: CategoryId;
+// // //   size: GridSize;
+// // //   order: number;
+// // //   title?: string;
+// // //   description?: string;
+// // // }[];
+
+// // export type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	excerpt: string;
+// // 	category: CategoryId;
+// // 	date: string;
+// // 	slug: string;
+// // 	cover_image?: string;
+// // };
+
+// // export type FeaturedSetup = {
+// // 	category: CategoryId;
+// // 	size: GridSize;
+// // 	order: number;
+// // 	title?: string;
+// // 	description?: string;
+// // }[];
+
+// // interface GridConfig {
+// // 	cols: number;
+// // 	rows: number;
+// // 	className: string;
+// // }
+
+// // const gridSizeConfigs: Record<GridSize, GridConfig> = {
+// // 	large: {
+// // 		cols: 2,
+// // 		rows: 2,
+// // 		className: "col-span-2 row-span-2 aspect-[16/9]",
+// // 	},
+// // 	medium: {
+// // 		cols: 1,
+// // 		rows: 1,
+// // 		className: "col-span-1 row-span-1 aspect-[4/3]",
+// // 	},
+// // 	small: {
+// // 		cols: 1,
+// // 		rows: 1,
+// // 		className: "col-span-1 aspect-square",
+// // 	},
+// // };
+
+// // // Default featured setup - can be overridden via props
+// // const defaultFeatures: FeaturedSetup = [
+// // 	{
+// // 		category: "tech",
+// // 		size: "large",
+// // 		order: 0,
+// // 		title: "Latest in Tech",
+// // 		description: "Latest tech insights and tutorials",
+// // 	},
+// // 	{
+// // 		category: "media",
+// // 		size: "medium",
+// // 		order: 1,
+// // 		title: "Media & Reviews",
+// // 		description: "Recent media coverage and reviews",
+// // 	},
+// // 	{
+// // 		category: "food",
+// // 		size: "medium",
+// // 		order: 2,
+// // 		title: "Food & Recipes",
+// // 		description: "Latest recipes and culinary adventures",
+// // 	},
+// // ];
+
+// // interface BlogDashboardProps {
+// // 	posts: Post[];
+// // 	featuredSetup?: FeaturedSetup;
+// // }
+
+// // export default function BlogDashboard({ posts, featuredSetup = defaultFeatures }: BlogDashboardProps) {
+// // 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+// // 	// Calculate grid layout
+// // 	const getFeaturedLayout = () => {
+// // 		const totalCols = 4; // Base grid is 4 columns
+// // 		let usedCols = 0;
+// // 		let gridTemplateAreas = "";
+
+// // 		featuredSetup.forEach((feature, index) => {
+// // 			const config = gridSizeConfigs[feature.size];
+// // 			if (usedCols + config.cols > totalCols) {
+// // 				gridTemplateAreas += `"`;
+// // 				usedCols = 0;
+// // 			}
+// // 			gridTemplateAreas += ` area${index}`;
+// // 			usedCols += config.cols;
+// // 		});
+
+// // 		return gridTemplateAreas;
+// // 	};
+
+// // 	// Get featured posts based on setup
+// // 	const featuredPosts = featuredSetup
+// // 		.sort((a, b) => a.order - b.order)
+// // 		.map((feature) => ({
+// // 			post: posts.find((post) => post.category === feature.category),
+// // 			category: categories.find((c) => c.id === feature.category)!,
+// // 			size: feature.size,
+// // 			title: feature.title,
+// // 			description: feature.description,
+// // 		}));
+
+// // 	// Filter remaining posts, excluding featured ones
+// // 	const featuredPostIds = featuredPosts.map((f) => f.post?.id).filter(Boolean) as string[];
+// // 	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredPostIds.includes(post.id));
+
+// // 	const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[0]; size: GridSize; title?: string; description?: string }) => (
+// // 		<div
+// // 			className={`relative overflow-hidden rounded-xl bg-gray-800
+// //       ${gridSizeConfigs[size].className}
+// //       transition-transform duration-300 hover:scale-[1.02]`}
+// // 		>
+// // 			{post ? (
+// // 				<Link href={`/blog/${post.slug}`} className="group block h-full">
+// // 					{post.cover_image ? (
+// // 						<div className="absolute inset-0">
+// // 							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes={size === "large" ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 25vw"} priority={size === "large"} />
+// // 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+// // 						</div>
+// // 					) : (
+// // 						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// // 					)}
+// // 					<div className="absolute inset-0 p-6 flex flex-col justify-end">
+// // 						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div>
+// // 						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
+// // 						<p className="text-gray-300 line-clamp-2">{description || post.excerpt}</p>
+// // 					</div>
+// // 				</Link>
+// // 			) : (
+// // 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+// // 					<div className="absolute inset-0 p-6 flex items-center justify-center">
+// // 						<p className="text-xl text-white/70">No {category.name} posts yet</p>
+// // 					</div>
+// // 				</div>
+// // 			)}
+// // 		</div>
+// // 	);
+
+// // 	return (
+// // 		<div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+// // 			{/* Categories buttons */}
+// // 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+// // 				{categories.map((category) => {
+// // 					const Icon = category.icon;
+// // 					return (
+// // 						<button
+// // 							key={category.id}
+// // 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+// // 							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
+// //                 ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
+// // 						>
+// // 							<Icon size={24} />
+// // 							<span className="font-medium">{category.name}</span>
+// // 						</button>
+// // 					);
+// // 				})}
+// // 			</div>
+
+// // 			{activeCategory ? (
+// // 				<div className="space-y-8">
+// // 					<div className="flex justify-between items-start">
+// // 						<div>
+// // 							<button onClick={() => setActiveCategory(null)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4">
+// // 								<ArrowLeft size={20} />
+// // 								<span>Back to all posts</span>
+// // 							</button>
+// // 							<h2 className="text-3xl font-bold mb-2">{categories.find((c) => c.id === activeCategory)?.name}</h2>
+// // 							<p className="text-gray-300 max-w-2xl">{categories.find((c) => c.id === activeCategory)?.description}</p>
+// // 						</div>
+// // 					</div>
+// // 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+// // 						{filteredPosts.map((post) => (
+// // 							<PostCard key={post.id} post={post} />
+// // 						))}
+// // 					</div>
+// // 				</div>
+// // 			) : (
+// // 				<>
+// // 					<div
+// // 						className="featuredBlogsContainer grid gap-8"
+// // 						style={{
+// // 							gridTemplateColumns: "repeat(4, 1fr)",
+// // 							gridTemplateAreas: getFeaturedLayout(),
+// // 						}}
+// // 					>
+// // 						{featuredPosts.map(({ post, category, size, title, description }, index) => (
+// // 							<div key={post?.id || index} style={{ gridArea: `area${index}` }}>
+// // 								<FeaturedCard post={post} category={category} size={size} title={title} description={description} />
+// // 							</div>
+// // 						))}
+// // 					</div>
+
+// // 					<div>
+// // 						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
+// // 						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+// // 							{filteredPosts.map((post) => (
+// // 								<PostCard key={post.id} post={post} />
+// // 							))}
+// // 						</div>
+// // 					</div>
+// // 				</>
+// // 			)}
+// // 		</div>
+// // 	);
+// // }
+// // // // src/components/BlogDashboard.tsx
+// // // "use client";
+
+// // // import { useState } from "react";
+// // // import Link from "next/link";
+// // // import Image from "next/image";
+// // // import { ArrowLeft } from "lucide-react";
+// // // import { categories, CategoryId } from "@/data/categories";
+// // // import { PostCard } from "@/components/PostCard";
+
+// // // type Post = {
+// // // 	id: string;
+// // // 	title: string;
+// // // 	excerpt: string;
+// // // 	category: CategoryId;
+// // // 	date: string;
+// // // 	slug: string;
+// // // 	cover_image?: string;
+// // // };
+
+// // // export default function BlogDashboard({ posts }: { posts: Post[] }) {
+// // // 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+// // // 	// Find featured posts before any filtering
+// // // 	const latestTechPost = posts.find((post) => post.category === "tech");
+// // // 	const latestMediaPost = posts.find(post => post.category === 'media');
+
+// // // 	// Get remaining posts AFTER removing both featured posts
+// // // 	// const remainingPosts = posts.filter(post => {
+// // // 	//   const isFeaturedTech = post.id === latestTechPost?.id;
+// // // 	//   const isFeaturedMedia = post.id === latestMediaPost?.id;
+// // // 	//   return !isFeaturedTech && !isFeaturedMedia;
+// // // 	// });
+
+// // // 	// Get filtered posts based on active category
+// // // 	const filteredPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => post.id !== latestTechPost?.id);
+
+// // // 	const FeaturedCard = ({ post, category }: { post?: Post; category: (typeof categories)[0] }) => (
+// // // 		<div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-gray-800">
+// // // 			{post ? (
+// // // 				<Link href={`/blog/${post.slug}`} className="group block h-full">
+// // // 					{post.cover_image ? (
+// // // 						<div className="absolute inset-0">
+// // // 							<Image src={post.cover_image} alt={post.title} fill className="object-cover transition-transform group-hover:scale-105" sizes="(max-width: 768px) 100vw, 50vw" />
+// // // 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+// // // 						</div>
+// // // 					) : (
+// // // 						<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// // // 					)}
+// // // 					<div className="absolute inset-0 p-6 flex flex-col justify-end">
+// // // 						<div className={`text-sm font-medium ${category.textColor} mb-2`}>{category.name}</div>
+// // // 						<h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{post.title}</h3>
+// // // 						<p className="text-gray-300 line-clamp-2">{post.excerpt}</p>
+// // // 					</div>
+// // // 				</Link>
+// // // 			) : (
+// // // 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+// // // 					<div className="absolute inset-0 p-6 flex items-center justify-center">
+// // // 						<p className="text-xl text-white/70">No {category.name} posts yet</p>
+// // // 					</div>
+// // // 				</div>
+// // // 			)}
+// // // 			<Link
+// // // 				href="#"
+// // // 				onClick={(e) => {
+// // // 					e.preventDefault();
+// // // 					setActiveCategory(category.id as CategoryId);
+// // // 				}}
+// // // 				className={`absolute top-4 right-4 px-3 py-1.5 rounded-full ${category.color}
+// // //           text-white text-sm font-medium hover:opacity-90 transition-opacity`}
+// // // 			>
+// // // 				{category.name}
+// // // 			</Link>
+// // // 		</div>
+// // // 	);
+
+// // // 	return (
+// // // 		<div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+// // // 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+// // // 				{categories.map((category) => {
+// // // 					const Icon = category.icon;
+// // // 					return (
+// // // 						<button
+// // // 							key={category.id}
+// // // 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+// // // 							className={`p-4 rounded-lg flex items-center space-x-3 transition-all
+// // //                 ${activeCategory === category.id ? category.color + " text-white" : "bg-gray-800 hover:bg-gray-700"}`}
+// // // 						>
+// // // 							<Icon size={24} />
+// // // 							<span className="font-medium">{category.name}</span>
+// // // 						</button>
+// // // 					);
+// // // 				})}
+// // // 			</div>
+
+// // // 			{activeCategory ? (
+// // // 				<div className="space-y-8">
+// // // 					<div className="flex justify-between items-start">
+// // // 						<div>
+// // // 							<button onClick={() => setActiveCategory(null)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4">
+// // // 								<ArrowLeft size={20} />
+// // // 								<span>Back to all posts</span>
+// // // 							</button>
+// // // 							<h2 className="text-3xl font-bold mb-2">{categories.find((c) => c.id === activeCategory)?.name}</h2>
+// // // 							<p className="text-gray-300 max-w-2xl">{categories.find((c) => c.id === activeCategory)?.description}</p>
+// // // 						</div>
+// // // 					</div>
+// // // 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+// // // 						{filteredPosts.map((post) => (
+// // // 							<PostCard key={post.id} post={post} />
+// // // 						))}
+// // // 					</div>
+// // // 				</div>
+// // // 			) : (
+// // // 				<>
+// // // 					<div className="featuredBogsContainer grid md:grid-cols-2 gap-8">
+// // // 						<FeaturedCard post={latestTechPost} category={categories[0]} />
+// // // 						<FeaturedCard post={latestMediaPost} category={categories[1]} />
+// // // 					</div>
+
+// // // 					<div>
+// // // 						<h2 className="text-2xl font-bold mb-6">All Posts</h2>
+// // // 						<div className="allPostsContainer grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+// // // 							{filteredPosts.map((post) => (
+// // // 								<PostCard key={post.id} post={post} />
+// // // 							))}
+// // // 						</div>
+// // // 					</div>
+// // // 				</>
+// // // 			)}
+// // // 		</div>
+// // // 	);
+// // // }
 
 ```
 
@@ -2286,80 +2962,294 @@ export const Content = styled.div<{ theme: Theme }>`
 # src/components/BlogPostContent.tsx
 
 ```tsx
-// src/components/BlogPostContent.tsx - Client Component
-'use client'
-import { Article, Title, Metadata, Content } from './BlogPost.styles'
-import { MarkdownContent } from '@/components/MarkdownContent'
-import { ImageWithFallback } from '@/components/ImageWithFallback'
-import { Reactions } from '@/components/Reactions'
-import { Comments } from '@/components/Comments'
-import Link from 'next/link'
-import { DeletePost } from '@/components/DeletePost'
+// src/components/BlogPostContent.tsx
+"use client";
+import BlogPostLayout from "./BlogPostLayout";
 
 type Post = {
-  id: string
-  title: string
-  content: string
-  excerpt?: string
-  cover_image?: string
-  created_at: string
-  slug: string
-  profiles?: {
-    username?: string
-  }
-}
+	id: string;
+	title: string;
+	content: string;
+	excerpt?: string;
+	cover_image?: string;
+	created_at: string;
+	slug: string;
+	profiles?: {
+		username?: string;
+	};
+};
 
 export default function BlogPostContent({ post }: { post: Post }) {
-  return (
-    <Article>
-      <div className="flex justify-between items-center mb-8">
-        <Link href="/blog" className="text-blue-400 hover:text-blue-300">
-          ← Back to posts
-        </Link>
-        <div className="space-x-4">
-          <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            Edit Post
-          </Link>
-          <DeletePost postId={post.id} />
-        </div>
-      </div>
-
-      {post.cover_image && (
-        <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-          <ImageWithFallback
-            src={post.cover_image}
-            alt={post.title}
-            className="w-full h-full"
-            priority
-          />
-        </div>
-      )}
-
-      <header>
-        <Title>{post.title}</Title>
-        <Metadata>
-          {new Date(post.created_at).toLocaleDateString()} •
-          {post.profiles?.username || 'Anonymous'}
-        </Metadata>
-      </header>
-
-      {post.excerpt && (
-        <p className="text-xl text-gray-300 mb-8 font-serif italic">
-          {post.excerpt}
-        </p>
-      )}
-
-      <Content>
-        <MarkdownContent content={post.content} />
-        <div className="mt-8 border-t border-gray-700 pt-8">
-          <Reactions postId={post.id} />
-        </div>
-      </Content>
-
-      <Comments postId={post.id} />
-    </Article>
-  )
+	return <BlogPostLayout post={post} />;
 }
+// // src/components/BlogPostContent.tsx - Client Component
+// "use client";
+// import { Article, Title, Metadata, Content } from "./BlogPost.styles";
+// import { MarkdownContent } from "@/components/MarkdownContent";
+// import { ImageWithFallback } from "@/components/ImageWithFallback";
+// import { Reactions } from "@/components/Reactions";
+// import { Comments } from "@/components/Comments";
+// import Link from "next/link";
+// import { DeletePost } from "@/components/DeletePost";
+// import { useAuth } from "@/hooks/useAuth";
+
+// type Post = {
+// 	id: string;
+// 	title: string;
+// 	content: string;
+// 	excerpt?: string;
+// 	cover_image?: string;
+// 	created_at: string;
+// 	slug: string;
+// 	profiles?: {
+// 		username?: string;
+// 	};
+// };
+
+// /*-=====================================================================================
+// BlogPostContent component serves as the main display template for individual blog posts,
+// combining content presentation with interactive features.
+// ======================================================================================-*/
+// export default function BlogPostContent({ post }: { post: Post }) {
+//    const { isAuthenticated } = useAuth();
+
+// 	return (
+// 		<Article>
+// 			<div className="flex justify-between items-center mb-8">
+// 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// 					← Back to posts
+// 				</Link>
+// 				{isAuthenticated && (
+// 					<div className="space-x-4">
+// 						<Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// 							Edit Post
+// 						</Link>
+// 						<DeletePost postId={post.id} />
+// 					</div>
+// 				)}
+// 			</div>
+
+// 			{post.cover_image && (
+// 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// 					<ImageWithFallback src={post.cover_image} alt={post.title} className="w-full h-full" priority />
+// 				</div>
+// 			)}
+
+// 			<header>
+// 				<Title>{post.title}</Title>
+// 				<Metadata>
+// 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+// 				</Metadata>
+// 			</header>
+
+// 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
+
+// 			<Content>
+// 				<MarkdownContent content={post.content} />
+// 				<div className="mt-8 border-t border-gray-700 pt-8">
+// 					<Reactions postId={post.id} />
+// 				</div>
+// 			</Content>
+
+// 			<Comments postId={post.id} />
+// 		</Article>
+// 	);
+// }
+
+// // // src/components/BlogPostContent.tsx - Client Component
+// // 'use client'
+// // import { Article, Title, Metadata, Content } from './BlogPost.styles'
+// // import { MarkdownContent } from '@/components/MarkdownContent'
+// // import { ImageWithFallback } from '@/components/ImageWithFallback'
+// // import { Reactions } from '@/components/Reactions'
+// // import { Comments } from '@/components/Comments'
+// // import Link from 'next/link'
+// // import { DeletePost } from '@/components/DeletePost'
+
+// // type Post = {
+// //   id: string
+// //   title: string
+// //   content: string
+// //   excerpt?: string
+// //   cover_image?: string
+// //   created_at: string
+// //   slug: string
+// //   profiles?: {
+// //     username?: string
+// //   }
+// // }
+
+// // export default function BlogPostContent({ post }: { post: Post }) {
+// //   return (
+// //     <Article>
+// //       <div className="flex justify-between items-center mb-8">
+// //         <Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// //           ← Back to posts
+// //         </Link>
+// //         <div className="space-x-4">
+// //           <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// //             Edit Post
+// //           </Link>
+// //           <DeletePost postId={post.id} />
+// //         </div>
+// //       </div>
+
+// //       {post.cover_image && (
+// //         <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// //           <ImageWithFallback
+// //             src={post.cover_image}
+// //             alt={post.title}
+// //             className="w-full h-full"
+// //             priority
+// //           />
+// //         </div>
+// //       )}
+
+// //       <header>
+// //         <Title>{post.title}</Title>
+// //         <Metadata>
+// //           {new Date(post.created_at).toLocaleDateString()} •
+// //           {post.profiles?.username || 'Anonymous'}
+// //         </Metadata>
+// //       </header>
+
+// //       {post.excerpt && (
+// //         <p className="text-xl text-gray-300 mb-8 font-serif italic">
+// //           {post.excerpt}
+// //         </p>
+// //       )}
+
+// //       <Content>
+// //         <MarkdownContent content={post.content} />
+// //         <div className="mt-8 border-t border-gray-700 pt-8">
+// //           <Reactions postId={post.id} />
+// //         </div>
+// //       </Content>
+
+// //       <Comments postId={post.id} />
+// //     </Article>
+// //   )
+// // }
+
+```
+
+# src/components/BlogPostLayout.tsx
+
+```tsx
+// src/components/BlogPostLayout.tsx
+import { useState } from "react";
+import { Heart, Share2, MessageSquare } from "lucide-react";
+import { Article, Title, Metadata, Content } from "./BlogPost.styles";
+import { MarkdownContent } from "@/components/MarkdownContent";
+import { ImageWithFallback } from "@/components/ImageWithFallback";
+import { Reactions } from "@/components/Reactions";
+import { Comments } from "@/components/Comments";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { DeletePost } from "./DeletePost";
+
+type BlogPostLayoutProps = {
+	post: {
+		id: string;
+		title: string;
+		content: string;
+		excerpt?: string;
+		cover_image?: string;
+		created_at: string;
+		slug: string;
+		profiles?: {
+			username?: string;
+		};
+	};
+	children?: React.ReactNode;
+};
+
+export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) {
+	const [isOpen, setIsOpen] = useState(true);
+	const { isAuthenticated } = useAuth();
+
+	return (
+		<div className='max-w-screen-2xl mx-auto px-4'>
+			{/* Header Section */}
+			<div className='flex justify-between items-center mb-8'>
+				<Link
+					href='/blog'
+					className='text-brand-primary-400 hover:text-brand-primary-300'
+				>
+					← Back to posts
+				</Link>
+				{isAuthenticated && (
+					<div className='space-x-4'>
+						<Link
+							href={`/blog/edit/${post.slug}`}
+							className='bg-brand-primary-500 text-white px-4 py-2 rounded hover:bg-brand-primary-600'
+						>
+							Edit Post
+						</Link>
+						<DeletePost postId={post.id} />
+					</div>
+				)}
+			</div>
+
+			{/* Main Content Grid */}
+			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+				{/* Left Column - Article Content */}
+				<article className='relative'>
+					{post.cover_image && (
+						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+							<ImageWithFallback
+								src={post.cover_image}
+								alt={post.title}
+								className='w-full h-full'
+								priority
+							/>
+						</div>
+					)}
+
+					<div className='prose prose-lg max-w-none'>
+						{/* <Title>{post.title}</Title> • styled-components */}
+						<h1 className='text-3xl font-bold mb-4 text-primary-500 dark:text-primary-400'>{post.title}</h1>
+						<Metadata>
+							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+						</Metadata>
+						<div className='dateContainer text-primary-400 mb-8 font-serif italic'>
+							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+						</div>
+
+						{post.excerpt && <p className='text-xl text-gray-300 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+						<MarkdownContent content={post.content} />
+					</div>
+
+					{/* Engagement Bar */}
+					<div className='sticky bottom-0 bg-gray-900/80 backdrop-blur mt-8 p-4 rounded-lg'>
+						<div className='flex items-center justify-between'>
+							<Reactions postId={post.id} />
+							<div className='flex gap-4'>
+								<button className='flex items-center gap-2 text-gray-300 hover:text-white'>
+									<MessageSquare size={20} />
+									<span>{isOpen ? "Hide" : "Show"} Comments</span>
+								</button>
+								<button className='flex items-center gap-2 text-gray-300 hover:text-white'>
+									<Share2 size={20} />
+									Share
+								</button>
+							</div>
+						</div>
+					</div>
+				</article>
+
+				{/* Right Column - Comments */}
+				<div className={`lg:block ${isOpen ? "block" : "hidden"}`}>
+					<div className='sticky top-4'>
+						<Comments postId={post.id} />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 ```
 
 # src/components/ClientOnly.tsx
@@ -2392,13 +3282,12 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 // src/components/Comments.tsx
 'use client'
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { supabaseClient } from '@/lib/auth'
 
 export function Comments({ postId }: { postId: string }) {
-  const { user } = useAuth()
   const [comments, setComments] = useState<any[]>([])
   const [content, setContent] = useState('')
+  const [authorName, setAuthorName] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -2408,7 +3297,7 @@ export function Comments({ postId }: { postId: string }) {
   const loadComments = async () => {
     const { data } = await supabaseClient
       .from('comments')
-      .select('*, profiles(username)')
+      .select('*')
       .eq('post_id', postId)
       .order('created_at', { ascending: true })
 
@@ -2417,14 +3306,14 @@ export function Comments({ postId }: { postId: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user || !content.trim()) return
+    if (!content.trim() || !authorName.trim()) return
 
     setIsSubmitting(true)
     try {
       await supabaseClient.from('comments').insert({
         content: content.trim(),
         post_id: postId,
-        author_id: user.id
+        author_name: authorName.trim()
       })
       setContent('')
       loadComments()
@@ -2434,93 +3323,62 @@ export function Comments({ postId }: { postId: string }) {
   }
 
   return (
-   <div className="mt-12">
-     <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
+    <div className="mt-12">
+      <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
 
-     {user ? (
-       <form onSubmit={handleSubmit} className="mb-8">
-         <textarea
-           value={content}
-           onChange={(e) => setContent(e.target.value)}
-           className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
-           rows={3}
-           required
-           placeholder="Write a comment..."
-         />
-         <button
-           type="submit"
-           disabled={isSubmitting}
-           className="mt-2 bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-         >
-           {isSubmitting ? 'Posting...' : 'Post Comment'}
-         </button>
-       </form>
-     ) : (
-       <p className="mb-8 text-gray-300">Please sign in to comment</p>
-     )}
+      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-300">Name</label>
+          <input
+            type="text"
+            value={authorName}
+            onChange={(e) => setAuthorName(e.target.value)}
+            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
+            required
+            placeholder="Your name"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-300">Comment</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
+            rows={3}
+            required
+            placeholder="Write a comment..."
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Posting...' : 'Post Comment'}
+        </button>
+      </form>
 
-     <div className="space-y-4">
-       {comments.map((comment) => (
-         <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
-           <div className="text-sm text-gray-400 mb-2">
-             {comment.profiles?.username || 'Anonymous'} • {' '}
-             {new Date(comment.created_at).toLocaleDateString()}
-           </div>
-           <p className="text-gray-200">{comment.content}</p>
-         </div>
-       ))}
-       {comments.length === 0 && (
-         <p className="text-gray-400">No comments yet</p>
-       )}
-     </div>
-   </div>
- )
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
+            <div className="text-sm text-gray-400 mb-2">
+              {comment.author_name || 'Anonymous'} • {' '}
+              {new Date(comment.created_at).toLocaleDateString()}
+            </div>
+            <p className="text-gray-200">{comment.content}</p>
+          </div>
+        ))}
+        {comments.length === 0 && (
+          <p className="text-gray-400">No comments yet</p>
+        )}
+      </div>
+    </div>
+  )
+}
 
-//   return (
-//     <div className="mt-12">
-//       <h2 className="text-2xl font-bold mb-6">Comments</h2>
-
-//       {user ? (
-//         <form onSubmit={handleSubmit} className="mb-8">
-//           <textarea
-//             value={content}
-//             onChange={(e) => setContent(e.target.value)}
-//             className="w-full p-2 border rounded bg-white text-gray-900"
-//             rows={3}
-//             required
-//             placeholder="Write a comment..."
-//           />
-//           <button
-//             type="submit"
-//             disabled={isSubmitting}
-//             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-//           >
-//             {isSubmitting ? 'Posting...' : 'Post Comment'}
-//           </button>
-//         </form>
-//       ) : (
-//         <p className="mb-8 text-gray-600">Please sign in to comment</p>
-//       )}
-
-//       <div className="space-y-4">
-//         {comments.map((comment) => (
-//           <div key={comment.id} className="border rounded p-4 bg-white">
-//             <div className="text-sm text-gray-600 mb-2">
-//               {comment.profiles?.username || 'Anonymous'} • {' '}
-//               {new Date(comment.created_at).toLocaleDateString()}
-//             </div>
-//             <p>{comment.content}</p>
-//           </div>
-//         ))}
-//         {comments.length === 0 && (
-//           <p className="text-gray-500">No comments yet</p>
-//         )}
-//       </div>
-//     </div>
-//   )
-// }
+// // src/components/Comments.tsx
 // 'use client'
-// import { useState } from 'react'
+// import { useState, useEffect } from 'react'
 // import { useAuth } from '@/hooks/useAuth'
 // import { supabaseClient } from '@/lib/auth'
 
@@ -2529,6 +3387,10 @@ export function Comments({ postId }: { postId: string }) {
 //   const [comments, setComments] = useState<any[]>([])
 //   const [content, setContent] = useState('')
 //   const [isSubmitting, setIsSubmitting] = useState(false)
+
+//   useEffect(() => {
+//     loadComments()
+//   }, [postId])
 
 //   const loadComments = async () => {
 //     const { data } = await supabaseClient
@@ -2559,44 +3421,169 @@ export function Comments({ postId }: { postId: string }) {
 //   }
 
 //   return (
-//     <div className="mt-12">
-//       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+//    <div className="mt-12">
+//      <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
 
-//       {user ? (
-//         <form onSubmit={handleSubmit} className="mb-8">
-//           <textarea
-//             value={content}
-//             onChange={(e) => setContent(e.target.value)}
-//             className="w-full p-2 border rounded bg-white text-gray-900"
-//             rows={3}
-//             required
-//           />
-//           <button
-//             type="submit"
-//             disabled={isSubmitting}
-//             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-//           >
-//             {isSubmitting ? 'Posting...' : 'Post Comment'}
-//           </button>
-//         </form>
-//       ) : (
-//         <p>Please sign in to comment</p>
-//       )}
+//      {user ? (
+//        <form onSubmit={handleSubmit} className="mb-8">
+//          <textarea
+//            value={content}
+//            onChange={(e) => setContent(e.target.value)}
+//            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
+//            rows={3}
+//            required
+//            placeholder="Write a comment..."
+//          />
+//          <button
+//            type="submit"
+//            disabled={isSubmitting}
+//            className="mt-2 bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+//          >
+//            {isSubmitting ? 'Posting...' : 'Post Comment'}
+//          </button>
+//        </form>
+//      ) : (
+//        <p className="mb-8 text-gray-300">Please sign in to comment</p>
+//      )}
 
-//       <div className="space-y-4">
-//         {comments.map((comment) => (
-//           <div key={comment.id} className="border rounded p-4">
-//             <div className="text-sm text-gray-600 mb-2">
-//               {comment.profiles?.username || 'Anonymous'} •
-//               {new Date(comment.created_at).toLocaleDateString()}
-//             </div>
-//             <p>{comment.content}</p>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   )
-// }
+//      <div className="space-y-4">
+//        {comments.map((comment) => (
+//          <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
+//            <div className="text-sm text-gray-400 mb-2">
+//              {comment.profiles?.username || 'Anonymous'} • {' '}
+//              {new Date(comment.created_at).toLocaleDateString()}
+//            </div>
+//            <p className="text-gray-200">{comment.content}</p>
+//          </div>
+//        ))}
+//        {comments.length === 0 && (
+//          <p className="text-gray-400">No comments yet</p>
+//        )}
+//      </div>
+//    </div>
+//  )
+
+// //   return (
+// //     <div className="mt-12">
+// //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+
+// //       {user ? (
+// //         <form onSubmit={handleSubmit} className="mb-8">
+// //           <textarea
+// //             value={content}
+// //             onChange={(e) => setContent(e.target.value)}
+// //             className="w-full p-2 border rounded bg-white text-gray-900"
+// //             rows={3}
+// //             required
+// //             placeholder="Write a comment..."
+// //           />
+// //           <button
+// //             type="submit"
+// //             disabled={isSubmitting}
+// //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// //           >
+// //             {isSubmitting ? 'Posting...' : 'Post Comment'}
+// //           </button>
+// //         </form>
+// //       ) : (
+// //         <p className="mb-8 text-gray-600">Please sign in to comment</p>
+// //       )}
+
+// //       <div className="space-y-4">
+// //         {comments.map((comment) => (
+// //           <div key={comment.id} className="border rounded p-4 bg-white">
+// //             <div className="text-sm text-gray-600 mb-2">
+// //               {comment.profiles?.username || 'Anonymous'} • {' '}
+// //               {new Date(comment.created_at).toLocaleDateString()}
+// //             </div>
+// //             <p>{comment.content}</p>
+// //           </div>
+// //         ))}
+// //         {comments.length === 0 && (
+// //           <p className="text-gray-500">No comments yet</p>
+// //         )}
+// //       </div>
+// //     </div>
+// //   )
+// // }
+// // 'use client'
+// // import { useState } from 'react'
+// // import { useAuth } from '@/hooks/useAuth'
+// // import { supabaseClient } from '@/lib/auth'
+
+// // export function Comments({ postId }: { postId: string }) {
+// //   const { user } = useAuth()
+// //   const [comments, setComments] = useState<any[]>([])
+// //   const [content, setContent] = useState('')
+// //   const [isSubmitting, setIsSubmitting] = useState(false)
+
+// //   const loadComments = async () => {
+// //     const { data } = await supabaseClient
+// //       .from('comments')
+// //       .select('*, profiles(username)')
+// //       .eq('post_id', postId)
+// //       .order('created_at', { ascending: true })
+
+// //     setComments(data || [])
+// //   }
+
+// //   const handleSubmit = async (e: React.FormEvent) => {
+// //     e.preventDefault()
+// //     if (!user || !content.trim()) return
+
+// //     setIsSubmitting(true)
+// //     try {
+// //       await supabaseClient.from('comments').insert({
+// //         content: content.trim(),
+// //         post_id: postId,
+// //         author_id: user.id
+// //       })
+// //       setContent('')
+// //       loadComments()
+// //     } finally {
+// //       setIsSubmitting(false)
+// //     }
+// //   }
+
+// //   return (
+// //     <div className="mt-12">
+// //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+
+// //       {user ? (
+// //         <form onSubmit={handleSubmit} className="mb-8">
+// //           <textarea
+// //             value={content}
+// //             onChange={(e) => setContent(e.target.value)}
+// //             className="w-full p-2 border rounded bg-white text-gray-900"
+// //             rows={3}
+// //             required
+// //           />
+// //           <button
+// //             type="submit"
+// //             disabled={isSubmitting}
+// //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// //           >
+// //             {isSubmitting ? 'Posting...' : 'Post Comment'}
+// //           </button>
+// //         </form>
+// //       ) : (
+// //         <p>Please sign in to comment</p>
+// //       )}
+
+// //       <div className="space-y-4">
+// //         {comments.map((comment) => (
+// //           <div key={comment.id} className="border rounded p-4">
+// //             <div className="text-sm text-gray-600 mb-2">
+// //               {comment.profiles?.username || 'Anonymous'} •
+// //               {new Date(comment.created_at).toLocaleDateString()}
+// //             </div>
+// //             <p>{comment.content}</p>
+// //           </div>
+// //         ))}
+// //       </div>
+// //     </div>
+// //   )
+// // }
 ```
 
 # src/components/DeletePost.tsx
@@ -3369,54 +4356,694 @@ export function MarkdownContent({ content }: { content: string }) {
 # src/components/Navbar.tsx
 
 ```tsx
-// src/components/Navbar.tsx - Updated to use ClientOnly
+// src/components/Navbar.tsx
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/hooks/useAuth'
 import { supabaseClient } from '@/lib/auth'
-import { ClientOnly } from '@/components/ClientOnly'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { navLinks, navStyles } from '@/data/navbarConfig'
 
 export function Navbar() {
-  const { user, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between h-16">
-          <Link href="/" className="flex items-center font-bold text-xl">
-            My Blog
+    <nav className={navStyles.base}>
+      <div className={navStyles.container}>
+        <div className={navStyles.inner}>
+          <Link href={navLinks.brand.href} className={navStyles.brand}>
+            <Image
+              src={navLinks.brand.logo}
+              alt={navLinks.brand.label}
+              width={150}
+              height={40}
+              priority
+            />
+            <span className="sr-only">{navLinks.brand.label}</span>
           </Link>
-          <ClientOnly>
-            <div className="flex items-center space-x-8">
-              <Link href="/blog" className="hover:text-gray-600">Blog</Link>
-              {isAuthenticated ? (
-                <>
-                  <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
-                  <button
-                    onClick={() => supabaseClient.auth.signOut()}
-                    className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => supabaseClient.auth.signInWithOAuth({
-                    provider: 'github',
-                    options: { redirectTo: `${window.location.origin}/auth/callback` }
-                  })}
-                  className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+          <div className="flex items-center space-x-8">
+            {navLinks.mainLinks.map(link => {
+              if ('authRequired' in link && link.authRequired && !isAuthenticated) {
+                return null;
+              }
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={navStyles.link}
                 >
-                  Sign In
-                </button>
-              )}
-            </div>
-          </ClientOnly>
+                  {link.label}
+                </Link>
+              );
+            })}
+            <ThemeToggle />
+            {isAuthenticated ? (
+              <button
+                onClick={() => supabaseClient.auth.signOut()}
+                className={navStyles.button}
+              >
+                {navLinks.authLinks.signOut.label}
+              </button>
+            ) : (
+              <button
+                onClick={() => supabaseClient.auth.signInWithOAuth({
+                  provider: 'github',
+                  options: { redirectTo: `${window.location.origin}/auth/callback` }
+                })}
+                className={navStyles.button}
+              >
+                {navLinks.authLinks.signIn.label}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </nav>
   )
 }
+// // src/components/Navbar.tsx
+// "use client";
+// import Link from "next/link";
+// import { useAuth } from "@/hooks/useAuth";
+// import { supabaseClient } from "@/lib/auth";
+// import { ThemeToggle } from "@/components/ThemeToggle";
+// import { navLinks, navStyles } from "@/data/navbarConfig";
+
+// export function Navbar() {
+// 	const { isAuthenticated } = useAuth();
+
+// 	return (
+// 		<nav className={navStyles.base}>
+// 			<div className={navStyles.container}>
+// 				<div className={navStyles.inner}>
+// 					<Link href={navLinks.brand.href} className={navStyles.brand}>
+// 						{navLinks.brand.label}
+// 					</Link>
+// 					<div className="flex items-center space-x-8">
+// 						{navLinks.mainLinks.map((link) => {
+// 							if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+// 								return null;
+// 							}
+// 							return (
+// 								<Link key={link.href} href={link.href} className={navStyles.link}>
+// 									{link.label}
+// 								</Link>
+// 							);
+// 						})}
+// 						<ThemeToggle />
+// 						{isAuthenticated ? (
+// 							<button onClick={() => supabaseClient.auth.signOut()} className={navStyles.button}>
+// 								{navLinks.authLinks.signOut.label}
+// 							</button>
+// 						) : (
+// 							<button
+// 								onClick={() =>
+// 									supabaseClient.auth.signInWithOAuth({
+// 										provider: "github",
+// 										options: { redirectTo: `${window.location.origin}/auth/callback` },
+// 									})
+// 								}
+// 								className={navStyles.button}
+// 							>
+// 								{navLinks.authLinks.signIn.label}
+// 							</button>
+// 						)}
+// 					</div>
+// 				</div>
+// 			</div>
+// 		</nav>
+// 	);
+// }
+
+// // // src/components/Navbar.tsx
+// // 'use client'
+// // import Link from 'next/link'
+// // import { useAuth } from '@/hooks/useAuth'
+// // import { supabaseClient } from '@/lib/auth'
+// // import { ThemeToggle } from '@/components/ThemeToggle'
+// // import { navLinks, navStyles } from '@/data/navbarConfig'
+
+// // export function Navbar() {
+// //   const { user, isAuthenticated } = useAuth()
+
+// //   return (
+// //     <nav className={navStyles.base}>
+// //       <div className={navStyles.container}>
+// //         <div className={navStyles.inner}>
+// //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// //             {navLinks.brand.label}
+// //           </Link>
+// //           <div className="flex items-center space-x-8">
+// //             {navLinks.mainLinks.map(link => (
+// //               !link.authRequired || isAuthenticated ? (
+// //                 <Link
+// //                   key={link.href}
+// //                   href={link.href}
+// //                   className={navStyles.link}
+// //                 >
+// //                   {link.label}
+// //                 </Link>
+// //               ) : null
+// //             ))}
+// //             <ThemeToggle />
+// //             {isAuthenticated ? (
+// //               <button
+// //                 onClick={() => supabaseClient.auth.signOut()}
+// //                 className={navStyles.button}
+// //               >
+// //                 {navLinks.authLinks.signOut.label}
+// //               </button>
+// //             ) : (
+// //               <button
+// //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// //                   provider: 'github',
+// //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// //                 })}
+// //                 className={navStyles.button}
+// //               >
+// //                 {navLinks.authLinks.signIn.label}
+// //               </button>
+// //             )}
+// //           </div>
+// //         </div>
+// //       </div>
+// //     </nav>
+// //   )
+// // }
+
+// // // // src/components/Navbar.tsx
+// // // 'use client'
+// // // import Link from 'next/link'
+// // // import { useAuth } from '@/hooks/useAuth'
+// // // import { supabaseClient } from '@/lib/auth'
+// // // import { ClientOnly } from '@/components/ClientOnly'
+// // // import { navLinks, navStyles } from '@/data/navbarConfig'
+// // // import { Sun, Moon } from 'lucide-react'
+// // // import { useTheme } from '@/hooks/useTheme'
+
+// // // export function Navbar() {
+// // //   const { isAuthenticated } = useAuth()
+// // //   const { theme, toggleTheme } = useTheme()
+
+// // //   const handleSignIn = () => {
+// // //     supabaseClient.auth.signInWithOAuth({
+// // //       provider: 'github',
+// // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // //     })
+// // //   }
+
+// // //   const handleSignOut = () => supabaseClient.auth.signOut()
+
+// // //   return (
+// // //     <nav className={navStyles.base}>
+// // //       <div className={navStyles.container}>
+// // //         <div className={navStyles.inner}>
+// // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // //             {navLinks.brand.label}
+// // //           </Link>
+
+// // //           <div className="flex items-center space-x-8">
+// // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
+
+// // //             {isAuthenticated && (
+// // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
+// // //             )}
+
+// // //             <button
+// // //               onClick={toggleTheme}
+// // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+// // //               aria-label="Toggle theme"
+// // //             >
+// // //               {theme === 'dark' ?
+// // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
+// // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+// // //               }
+// // //             </button>
+
+// // //             <ClientOnly>
+// // //               {isAuthenticated ? (
+// // //                 <button onClick={handleSignOut} className={navStyles.button}>
+// // //                   {navLinks.authLinks.signOut.label}
+// // //                 </button>
+// // //               ) : (
+// // //                 <button onClick={handleSignIn} className={navStyles.button}>
+// // //                   {navLinks.authLinks.signIn.label}
+// // //                 </button>
+// // //               )}
+// // //             </ClientOnly>
+// // //           </div>
+// // //         </div>
+// // //       </div>
+// // //     </nav>
+// // //   )
+// // // }
+// // // // // src/components/Navbar.tsx
+// // // // 'use client'
+// // // // import Link from 'next/link'
+// // // // import { useAuth } from '@/hooks/useAuth'
+// // // // import { supabaseClient } from '@/lib/auth'
+// // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+// // // // import { Sun, Moon } from 'lucide-react'
+// // // // import { useState, useEffect } from 'react'
+
+// // // // export function Navbar() {
+// // // //   const { isAuthenticated } = useAuth()
+// // // //   const [isDarkMode, setIsDarkMode] = useState(false)
+
+// // // //   useEffect(() => {
+// // // //     const isDark = document.documentElement.classList.contains('dark')
+// // // //     setIsDarkMode(isDark)
+// // // //   }, [])
+
+// // // //   const toggleTheme = () => {
+// // // //     document.documentElement.classList.toggle('dark')
+// // // //     setIsDarkMode(!isDarkMode)
+// // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
+// // // //   }
+
+// // // //   const handleSignIn = () => {
+// // // //     supabaseClient.auth.signInWithOAuth({
+// // // //       provider: 'github',
+// // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // //     })
+// // // //   }
+
+// // // //   const handleSignOut = () => supabaseClient.auth.signOut()
+
+// // // //   return (
+// // // //     <nav className={navStyles.base}>
+// // // //       <div className={navStyles.container}>
+// // // //         <div className={navStyles.inner}>
+// // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // //             {navLinks.brand.label}
+// // // //           </Link>
+
+// // // //           <div className="flex items-center space-x-8">
+// // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
+
+// // // //             {isAuthenticated && (
+// // // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
+// // // //             )}
+
+// // // //             <button
+// // // //               onClick={toggleTheme}
+// // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+// // // //               aria-label="Toggle theme"
+// // // //             >
+// // // //               {isDarkMode ?
+// // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
+// // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+// // // //               }
+// // // //             </button>
+
+// // // //             <ClientOnly>
+// // // //               {isAuthenticated ? (
+// // // //                 <button
+// // // //                   onClick={handleSignOut}
+// // // //                   className={navStyles.button}
+// // // //                 >
+// // // //                   {navLinks.authLinks.signOut.label}
+// // // //                 </button>
+// // // //               ) : (
+// // // //                 <button
+// // // //                   onClick={handleSignIn}
+// // // //                   className={navStyles.button}
+// // // //                 >
+// // // //                   {navLinks.authLinks.signIn.label}
+// // // //                 </button>
+// // // //               )}
+// // // //             </ClientOnly>
+// // // //           </div>
+// // // //         </div>
+// // // //       </div>
+// // // //     </nav>
+// // // //   )
+// // // // }
+// // // // // // src/components/Navbar.tsx
+// // // // // 'use client'
+// // // // // import Link from 'next/link'
+// // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+// // // // // import { Sun, Moon } from 'lucide-react'
+// // // // // import { useState, useEffect } from 'react'
+
+// // // // // export function Navbar() {
+// // // // //   const { isAuthenticated } = useAuth()
+// // // // //   const [isDarkMode, setIsDarkMode] = useState(false)
+
+// // // // //   useEffect(() => {
+// // // // //     const isDark = document.documentElement.classList.contains('dark')
+// // // // //     setIsDarkMode(isDark)
+// // // // //   }, [])
+
+// // // // //   const toggleTheme = () => {
+// // // // //     document.documentElement.classList.toggle('dark')
+// // // // //     setIsDarkMode(!isDarkMode)
+// // // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
+// // // // //   }
+
+// // // // //   const handleSignIn = () => {
+// // // // //     supabaseClient.auth.signInWithOAuth({
+// // // // //       provider: 'github',
+// // // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // //     })
+// // // // //   }
+
+// // // // //   const handleSignOut = () => supabaseClient.auth.signOut()
+
+// // // // //   return (
+// // // // //     <nav className={navStyles.base}>
+// // // // //       <div className={navStyles.container}>
+// // // // //         <div className={navStyles.inner}>
+// // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // //             {navLinks.brand.label}
+// // // // //           </Link>
+
+// // // // //           <div className="flex items-center space-x-8">
+// // // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
+
+// // // // //             <button
+// // // // //               onClick={toggleTheme}
+// // // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+// // // // //               aria-label="Toggle theme"
+// // // // //             >
+// // // // //               {isDarkMode ?
+// // // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
+// // // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+// // // // //               }
+// // // // //             </button>
+
+// // // // //             <ClientOnly>
+// // // // //               {isAuthenticated ? (
+// // // // //                 <button
+// // // // //                   onClick={handleSignOut}
+// // // // //                   className={navStyles.button}
+// // // // //                 >
+// // // // //                   {navLinks.authLinks.signOut.label}
+// // // // //                 </button>
+// // // // //               ) : (
+// // // // //                 <button
+// // // // //                   onClick={handleSignIn}
+// // // // //                   className={navStyles.button}
+// // // // //                 >
+// // // // //                   {navLinks.authLinks.signIn.label}
+// // // // //                 </button>
+// // // // //               )}
+// // // // //             </ClientOnly>
+// // // // //           </div>
+// // // // //         </div>
+// // // // //       </div>
+// // // // //     </nav>
+// // // // //   )
+// // // // // }
+// // // // // // // src/components/Navbar.tsx
+// // // // // // 'use client'
+// // // // // // import Link from 'next/link'
+// // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+
+// // // // // // export function Navbar() {
+// // // // // //   const { isAuthenticated } = useAuth()
+
+// // // // // //   const handleSignIn = () => {
+// // // // // //     supabaseClient.auth.signInWithOAuth({
+// // // // // //       provider: 'github',
+// // // // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // //     })
+// // // // // //   }
+
+// // // // // //   const handleSignOut = () => supabaseClient.auth.signOut()
+
+// // // // // //   return (
+// // // // // //     <nav className={navStyles.base}>
+// // // // // //       <div className={navStyles.container}>
+// // // // // //         <div className={navStyles.inner}>
+// // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // // //             {navLinks.brand.label}
+// // // // // //           </Link>
+
+// // // // // //           <div className="flex items-center space-x-8">
+// // // // // //             {navLinks.mainLinks.map((link) => {
+// // // // // //               if (link.authRequired && !isAuthenticated) return null;
+// // // // // //               return (
+// // // // // //                 <Link
+// // // // // //                   key={link.href}
+// // // // // //                   href={link.href}
+// // // // // //                   className={navStyles.link}
+// // // // // //                 >
+// // // // // //                   {link.label}
+// // // // // //                 </Link>
+// // // // // //               );
+// // // // // //             })}
+
+// // // // // //             <ClientOnly>
+// // // // // //               {isAuthenticated ? (
+// // // // // //                 <button
+// // // // // //                   onClick={handleSignOut}
+// // // // // //                   className={navStyles.button}
+// // // // // //                 >
+// // // // // //                   {navLinks.authLinks.signOut.label}
+// // // // // //                 </button>
+// // // // // //               ) : (
+// // // // // //                 <button
+// // // // // //                   onClick={handleSignIn}
+// // // // // //                   className={navStyles.button}
+// // // // // //                 >
+// // // // // //                   {navLinks.authLinks.signIn.label}
+// // // // // //                 </button>
+// // // // // //               )}
+// // // // // //             </ClientOnly>
+// // // // // //           </div>
+// // // // // //         </div>
+// // // // // //       </div>
+// // // // // //     </nav>
+// // // // // //   )
+// // // // // // }
+// // // // // // // // src/components/Navbar.tsx
+// // // // // // // 'use client'
+// // // // // // // import Link from 'next/link'
+// // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+
+// // // // // // // export function Navbar() {
+// // // // // // //    const { isAuthenticated } = useAuth();
+
+// // // // // // //   return (
+// // // // // // //     <nav className={navStyles.base}>
+// // // // // // //       <div className={navStyles.container}>
+// // // // // // //         <div className={navStyles.inner}>
+// // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // // // //             {navLinks.brand.label}
+// // // // // // //           </Link>
+// // // // // // //           <div className="flex items-center space-x-8">
+// // // // // // //             {navLinks.mainLinks.map(link => (
+// // // // // // //               !link.authRequired || isAuthenticated ? (
+// // // // // // //                 <Link
+// // // // // // //                   key={link.href}
+// // // // // // //                   href={link.href}
+// // // // // // //                   className={navStyles.link}
+// // // // // // //                 >
+// // // // // // //                   {link.label}
+// // // // // // //                 </Link>
+// // // // // // //               ) : null
+// // // // // // //             ))}
+// // // // // // //             <ThemeToggle />
+// // // // // // //             {isAuthenticated ? (
+// // // // // // //               <button
+// // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
+// // // // // // //                 className={navStyles.button}
+// // // // // // //               >
+// // // // // // //                 {navLinks.authLinks.signOut.label}
+// // // // // // //               </button>
+// // // // // // //             ) : (
+// // // // // // //               <button
+// // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // //                   provider: 'github',
+// // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // //                 })}
+// // // // // // //                 className={navStyles.button}
+// // // // // // //               >
+// // // // // // //                 {navLinks.authLinks.signIn.label}
+// // // // // // //               </button>
+// // // // // // //             )}
+// // // // // // //           </div>
+// // // // // // //         </div>
+// // // // // // //       </div>
+// // // // // // //     </nav>
+// // // // // // //   )
+// // // // // // // }
+
+// // // // // // // // // src/components/Navbar.tsx
+// // // // // // // // 'use client'
+// // // // // // // // import Link from 'next/link'
+// // // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+
+// // // // // // // // export function Navbar() {
+// // // // // // // //   const { user, isAuthenticated } = useAuth()
+
+// // // // // // // //   return (
+// // // // // // // //     <nav className={navStyles.base}>
+// // // // // // // //       <div className={navStyles.container}>
+// // // // // // // //         <div className={navStyles.inner}>
+// // // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // // // // //             {navLinks.brand.label}
+// // // // // // // //           </Link>
+// // // // // // // //           <div className="flex items-center space-x-8">
+// // // // // // // //             {navLinks.mainLinks.map(link => (
+// // // // // // // //               !link.authRequired || isAuthenticated ? (
+// // // // // // // //                 <Link
+// // // // // // // //                   key={link.href}
+// // // // // // // //                   href={link.href}
+// // // // // // // //                   className={navStyles.link}
+// // // // // // // //                 >
+// // // // // // // //                   {link.label}
+// // // // // // // //                 </Link>
+// // // // // // // //               ) : null
+// // // // // // // //             ))}
+// // // // // // // //             <ThemeToggle />
+// // // // // // // //             {isAuthenticated ? (
+// // // // // // // //               <button
+// // // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // //                 className={navStyles.button}
+// // // // // // // //               >
+// // // // // // // //                 {navLinks.authLinks.signOut.label}
+// // // // // // // //               </button>
+// // // // // // // //             ) : (
+// // // // // // // //               <button
+// // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // //                   provider: 'github',
+// // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // //                 })}
+// // // // // // // //                 className={navStyles.button}
+// // // // // // // //               >
+// // // // // // // //                 {navLinks.authLinks.signIn.label}
+// // // // // // // //               </button>
+// // // // // // // //             )}
+// // // // // // // //           </div>
+// // // // // // // //         </div>
+// // // // // // // //       </div>
+// // // // // // // //     </nav>
+// // // // // // // //   )
+// // // // // // // // }
+
+// // // // // // // // // // src/components/Navbar.tsx
+// // // // // // // // // 'use client'
+// // // // // // // // // import Link from 'next/link'
+// // // // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // // // import { useTheme } from '@/contexts/ThemeContext'
+
+// // // // // // // // // export function Navbar() {
+// // // // // // // // //   const { user, isAuthenticated } = useAuth()
+// // // // // // // // //   const { isDark } = useTheme()
+
+// // // // // // // // //   return (
+// // // // // // // // //     <nav className={`${
+// // // // // // // // //       isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'
+// // // // // // // // //     } shadow-sm transition-colors`}>
+// // // // // // // // //       <div className="container mx-auto px-4">
+// // // // // // // // //         <div className="flex justify-between h-16">
+// // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
+// // // // // // // // //             My Blog
+// // // // // // // // //           </Link>
+// // // // // // // // //           <div className="flex items-center space-x-8">
+// // // // // // // // //             <Link href="/blog" className="hover:text-gray-600 dark:hover:text-gray-300">
+// // // // // // // // //               Blog
+// // // // // // // // //             </Link>
+// // // // // // // // //             <ThemeToggle />
+// // // // // // // // //             {isAuthenticated ? (
+// // // // // // // // //               <>
+// // // // // // // // //                 <Link href="/blog/new" className="hover:text-gray-600 dark:hover:text-gray-300">
+// // // // // // // // //                   New Post
+// // // // // // // // //                 </Link>
+// // // // // // // // //                 <button
+// // // // // // // // //                   onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // //                 >
+// // // // // // // // //                   Sign Out
+// // // // // // // // //                 </button>
+// // // // // // // // //               </>
+// // // // // // // // //             ) : (
+// // // // // // // // //               <button
+// // // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // // //                   provider: 'github',
+// // // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // // //                 })}
+// // // // // // // // //                 className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // //               >
+// // // // // // // // //                 Sign In
+// // // // // // // // //               </button>
+// // // // // // // // //             )}
+// // // // // // // // //           </div>
+// // // // // // // // //         </div>
+// // // // // // // // //       </div>
+// // // // // // // // //     </nav>
+// // // // // // // // //   )
+// // // // // // // // // }
+
+// // // // // // // // // // // src/components/Navbar.tsx - Updated to use ClientOnly
+// // // // // // // // // // 'use client'
+// // // // // // // // // // import Link from 'next/link'
+// // // // // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+
+// // // // // // // // // // export function Navbar() {
+// // // // // // // // // //   const { user, isAuthenticated } = useAuth()
+
+// // // // // // // // // //   return (
+// // // // // // // // // //    //  <nav className="bg-white shadow-sm">
+// // // // // // // // // //     <nav className="bg-white dark:bg-dark-primary shadow-sm transition-colors duration-200">
+// // // // // // // // // //       <div className="container mx-auto px-4">
+// // // // // // // // // //         <div className="flex justify-between h-16">
+// // // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
+// // // // // // // // // //             My Blog
+// // // // // // // // // //           </Link>
+// // // // // // // // // //           <ClientOnly>
+// // // // // // // // // //             <div className="flex items-center space-x-8">
+// // // // // // // // // //               <Link href="/blog" className="hover:text-gray-600">Blog</Link>
+// // // // // // // // // //               <ThemeToggle />
+// // // // // // // // // //               {isAuthenticated ? (
+// // // // // // // // // //                 <>
+// // // // // // // // // //                   <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
+// // // // // // // // // //                   <button
+// // // // // // // // // //                     onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // // //                     className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // //                   >
+// // // // // // // // // //                     Sign Out
+// // // // // // // // // //                   </button>
+// // // // // // // // // //                 </>
+// // // // // // // // // //               ) : (
+// // // // // // // // // //                 <button
+// // // // // // // // // //                   onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // // // //                     provider: 'github',
+// // // // // // // // // //                     options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // // // //                   })}
+// // // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // //                 >
+// // // // // // // // // //                   Sign In
+// // // // // // // // // //                 </button>
+// // // // // // // // // //               )}
+// // // // // // // // // //             </div>
+// // // // // // // // // //           </ClientOnly>
+// // // // // // // // // //         </div>
+// // // // // // // // // //       </div>
+// // // // // // // // // //     </nav>
+// // // // // // // // // //   )
+// // // // // // // // // // }
 
 ```
 
@@ -3424,60 +5051,65 @@ export function Navbar() {
 
 ```tsx
 // src/components/PostCard.tsx
-import Link from 'next/link';
-import Image from 'next/image';
-import { getCategoryName, getCategoryTextColor, CategoryId } from '@/data/categories';
+import styled from "styled-components";
+import Link from "next/link";
+import Image from "next/image";
+import { getCategoryName, getCategoryTextColor, CategoryId } from "@/data/categories";
 
 type PostCardProps = {
-  post: {
-    id: string;
-    title: string;
-    excerpt: string;
-    category: CategoryId;
-    date: string;
-    slug: string;
-    cover_image?: string;
-  };
+	post: {
+		id: string;
+		title: string;
+		excerpt: string;
+		category: CategoryId;
+		date: string;
+		slug: string;
+		cover_image?: string;
+	};
 };
 
-export function PostCard({ post }: PostCardProps) {
-  const categoryTextColor = getCategoryTextColor(post.category);
+const StyledCard = styled(Card)`
+	&:hover {
+		box-shadow: 0 4px 6px -1px ${({ theme }) => theme.colors.gray[300]};
+	}
+`;
 
-  return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-    >
-      <div className="aspect-[16/9] relative bg-gray-900">
-        {post.cover_image ? (
-          <Image
-            src={post.cover_image}
-            alt={post.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800" />
-        )}
-      </div>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className={`text-sm ${categoryTextColor}`}>
-            {getCategoryName(post.category)}
-          </span>
-          <span className="text-sm text-gray-400">{post.date}</span>
-        </div>
-        <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors">
-          {post.title}
-        </h3>
-        <p className="text-gray-300 text-sm line-clamp-2">
-          {post.excerpt}
-        </p>
-      </div>
-    </Link>
-  );
+export function PostCard({ post }: PostCardProps) {
+	const categoryTextColor = getCategoryTextColor(post.category);
+
+	return (
+		<Link
+			href={`/blog/${post.slug}`}
+			className='group bg-gray-800 rounded-lg overflow-hidden'
+		>
+			{/* className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"> */}
+			<StyledCard>
+				<div className='aspect-[16/9] relative bg-gray-900'>
+					{post.cover_image ? (
+						<Image
+							src={post.cover_image}
+							alt={post.title}
+							fill
+							className='object-cover'
+							sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+						/>
+					) : (
+						<div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />
+					)}
+				</div>
+				<div className='p-4'>
+					<div className='flex justify-between items-center mb-2'>
+						<span className={`text-sm ${categoryTextColor}`}>{getCategoryName(post.category)}</span>
+						<span className='text-sm text-gray-400'>{post.date}</span>
+					</div>
+					<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+					<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+				</div>
+			</StyledCard>
+		</Link>
+	);
 }
+
 ```
 
 # src/components/PostForm.tsx
@@ -4547,9 +6179,8 @@ export function PostForm() {
 // src/components/Reactions.tsx
 'use client'
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { supabaseClient } from '@/lib/auth'
-import { Heart, ThumbsUp, ThumbsDown, Star, Coffee } from 'lucide-react'
+import { Heart, ThumbsUp, Star, Coffee } from 'lucide-react'
 
 const REACTIONS = [
   { type: 'like', icon: ThumbsUp },
@@ -4558,15 +6189,13 @@ const REACTIONS = [
   { type: 'coffee', icon: Coffee },
 ] as const
 
+
 export function Reactions({ postId }: { postId: string }) {
-  const { user } = useAuth()
   const [counts, setCounts] = useState<Record<string, number>>({})
-  const [userReaction, setUserReaction] = useState<string | null>(null)
 
   useEffect(() => {
     loadReactions()
-    if (user) loadUserReaction()
-  }, [postId, user])
+  }, [postId])
 
   const loadReactions = async () => {
     const { data } = await supabaseClient
@@ -4581,39 +6210,14 @@ export function Reactions({ postId }: { postId: string }) {
     setCounts(newCounts)
   }
 
-  const loadUserReaction = async () => {
-    if (!user) return
-    const { data } = await supabaseClient
-      .from('reactions')
-      .select('type')
-      .eq('post_id', postId)
-      .eq('user_id', user.id)
-      .single()
-
-    setUserReaction(data?.type || null)
-  }
-
   const handleReaction = async (type: string) => {
-    if (!user) return
-
     try {
-      if (userReaction === type) {
-        await supabaseClient
-          .from('reactions')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id)
-        setUserReaction(null)
-      } else {
-        await supabaseClient
-          .from('reactions')
-          .upsert({
-            post_id: postId,
-            user_id: user.id,
-            type
-          })
-        setUserReaction(type)
-      }
+      await supabaseClient
+        .from('reactions')
+        .insert({
+          post_id: postId,
+          type
+        })
       loadReactions()
     } catch (error) {
       console.error('Error updating reaction:', error)
@@ -4626,10 +6230,8 @@ export function Reactions({ postId }: { postId: string }) {
         <button
           key={type}
           onClick={() => handleReaction(type)}
-          className={`flex items-center gap-1 p-2 rounded-full transition-colors
-            ${userReaction === type
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+          className="flex items-center gap-1 p-2 rounded-full transition-colors
+            bg-gray-800 text-gray-300 hover:bg-gray-700"
         >
           <Icon size={20} />
           <span className="text-sm">{counts[type] || 0}</span>
@@ -4638,6 +6240,101 @@ export function Reactions({ postId }: { postId: string }) {
     </div>
   )
 }
+
+// // src/components/Reactions.tsx
+// 'use client'
+// import { useState, useEffect } from 'react'
+// import { useAuth } from '@/hooks/useAuth'
+// import { supabaseClient } from '@/lib/auth'
+// import { Heart, ThumbsUp, ThumbsDown, Star, Coffee } from 'lucide-react'
+
+// const REACTIONS = [
+//   { type: 'like', icon: ThumbsUp },
+//   { type: 'love', icon: Heart },
+//   { type: 'star', icon: Star },
+//   { type: 'coffee', icon: Coffee },
+// ] as const
+
+// export function Reactions({ postId }: { postId: string }) {
+//   const { user } = useAuth()
+//   const [counts, setCounts] = useState<Record<string, number>>({})
+//   const [userReaction, setUserReaction] = useState<string | null>(null)
+
+//   useEffect(() => {
+//     loadReactions()
+//     if (user) loadUserReaction()
+//   }, [postId, user])
+
+//   const loadReactions = async () => {
+//     const { data } = await supabaseClient
+//       .from('reactions')
+//       .select('type')
+//       .eq('post_id', postId)
+
+//     const newCounts: Record<string, number> = {}
+//     data?.forEach(reaction => {
+//       newCounts[reaction.type] = (newCounts[reaction.type] || 0) + 1
+//     })
+//     setCounts(newCounts)
+//   }
+
+//   const loadUserReaction = async () => {
+//     if (!user) return
+//     const { data } = await supabaseClient
+//       .from('reactions')
+//       .select('type')
+//       .eq('post_id', postId)
+//       .eq('user_id', user.id)
+//       .single()
+
+//     setUserReaction(data?.type || null)
+//   }
+
+//   const handleReaction = async (type: string) => {
+//     if (!user) return
+
+//     try {
+//       if (userReaction === type) {
+//         await supabaseClient
+//           .from('reactions')
+//           .delete()
+//           .eq('post_id', postId)
+//           .eq('user_id', user.id)
+//         setUserReaction(null)
+//       } else {
+//         await supabaseClient
+//           .from('reactions')
+//           .upsert({
+//             post_id: postId,
+//             user_id: user.id,
+//             type
+//           })
+//         setUserReaction(type)
+//       }
+//       loadReactions()
+//     } catch (error) {
+//       console.error('Error updating reaction:', error)
+//     }
+//   }
+
+//   return (
+//     <div className="flex gap-4 items-center">
+//       {REACTIONS.map(({ type, icon: Icon }) => (
+//         <button
+//           key={type}
+//           onClick={() => handleReaction(type)}
+//           className={`flex items-center gap-1 p-2 rounded-full transition-colors
+//             ${userReaction === type
+//               ? 'bg-blue-500 text-white'
+//               : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+//         >
+//           <Icon size={20} />
+//           <span className="text-sm">{counts[type] || 0}</span>
+//         </button>
+//       ))}
+//     </div>
+//   )
+// }
 ```
 
 # src/components/RichMarkdownEditor.tsx
@@ -5231,6 +6928,153 @@ light theme's styles and settings.
 }
 ```
 
+# src/components/ThemeToggle.tsx
+
+```tsx
+// src/components/ThemeToggle.tsx
+'use client'
+import { Moon, Sun } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
+
+export function ThemeToggle() {
+  const { isDark, toggleTheme } = useTheme()
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      aria-label="Toggle theme"
+    >
+      {isDark ? (
+        <Sun className="h-5 w-5 text-yellow-500" />
+      ) : (
+        <Moon className="h-5 w-5 text-gray-700" />
+      )}
+    </button>
+  )
+}
+
+// // src/components/ThemeToggle.tsx
+// 'use client'
+// import { Moon, Sun } from 'lucide-react'
+// import { useTheme } from '@/hooks/useTheme'
+
+// export function ThemeToggle() {
+//   const { darkMode, toggleTheme, mounted } = useTheme()
+
+//   if (!mounted) return null
+
+//   return (
+//     <button
+//       onClick={toggleTheme}
+//       className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+//       aria-label="Toggle theme"
+//     >
+//       {darkMode ? (
+//         <Sun className="w-5 h-5 text-yellow-500" />
+//       ) : (
+//         <Moon className="w-5 h-5 text-gray-800" />
+//       )}
+//     </button>
+//   )
+// }
+// // // src/components/ThemeToggle.tsx
+// // 'use client'
+// // import { Moon, Sun } from 'lucide-react'
+// // import { useTheme } from '@/hooks/useTheme'
+
+// // export function ThemeToggle() {
+// //   const { theme, toggleTheme } = useTheme()
+
+// //   return (
+// //     <button
+// //       onClick={toggleTheme}
+// //       className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700"
+// //       aria-label="Toggle theme"
+// //     >
+// //       {theme.isDarkTheme ? (
+// //         <Sun className="w-5 h-5 text-yellow-400" />
+// //       ) : (
+// //         <Moon className="w-5 h-5 text-blue-400" />
+// //       )}
+// //     </button>
+// //   )
+// // }
+
+
+
+```
+
+# src/contexts/ThemeContext.tsx
+
+```tsx
+// src/contexts/ThemeContext.tsx
+'use client'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { lightTheme, darkTheme } from '@/lib/theme-config'
+import type { Theme } from '@/lib/types'
+
+type ThemeContextType = {
+  theme: Theme;
+  isDark: boolean;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | null>(null)
+
+export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+  const [isDark, setIsDark] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme)
+
+  useEffect(() => {
+    // Check local storage first
+    const stored = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+    const shouldBeDark = stored ? stored === 'dark' : prefersDark
+
+    setIsDark(shouldBeDark)
+    setCurrentTheme(shouldBeDark ? darkTheme : lightTheme)
+
+    if (shouldBeDark) {
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    setIsDark(prev => {
+      const newIsDark = !prev
+      const newTheme = newIsDark ? darkTheme : lightTheme
+
+      setCurrentTheme(newTheme)
+      localStorage.setItem('theme', newIsDark ? 'dark' : 'light')
+
+      if (newIsDark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+
+      return newIsDark
+    })
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (!context) {
+    throw new Error('useTheme must be used within ThemeContextProvider')
+  }
+  return context
+}
+```
+
 # src/data/categories.ts
 
 ```ts
@@ -5238,61 +7082,271 @@ light theme's styles and settings.
 import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
 
 export const categories = [
-  {
-    id: 'tech',
-    name: 'Tech Articles',
-    icon: Laptop,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-400',
-    gradient: 'from-blue-500 to-blue-700',
-    description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
-  },
-  {
-    id: 'media',
-    name: 'Other Media',
-    icon: Newspaper,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-400',
-    gradient: 'from-purple-500 to-purple-700',
-    description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
-  },
-  {
-    id: 'food',
-    name: 'Fusion Food',
-    icon: Coffee,
-    color: 'bg-orange-500',
-    textColor: 'text-orange-400',
-    gradient: 'from-orange-500 to-orange-700',
-    description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
-  },
-  {
-    id: 'personal',
-    name: 'Personal',
-    icon: User,
-    color: 'bg-green-500',
-    textColor: 'text-green-400',
-    gradient: 'from-green-500 to-green-700',
-    description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
-  }
+   {
+      id: 'tech',
+      name: 'Tech Articles',
+      icon: Laptop,
+      color: 'bg-primary-600',  // Using your primary colors
+      textColor: 'text-primary-400',
+      gradient: 'from-primary-500 to-primary-700',
+      description: 'Deep dives into software development, web technologies, and the latest tech trends.'
+   },
+   {
+      id: 'media',
+      name: 'Other Media',
+      icon: Newspaper,
+      color: 'bg-secondary-400',  // Using your secondary color
+      textColor: 'text-primary-400',
+      gradient: 'from-primary-400 to-primary-600', // Using primary as fallback since secondary doesn't have gradients
+      description: 'Exploring movies, books, games, and digital content.'
+   },
+   {
+      id: 'food',
+      name: 'Fusion Food',
+      icon: Coffee,
+      color: 'bg-accent-400',  // Using your accent color
+      textColor: 'text-accent',
+      gradient: 'from-primary-300 to-primary-500', // Using primary as fallback since accent doesn't have gradients
+      description: 'Creative recipes blending different culinary traditions.'
+   },
+   {
+      id: 'personal',
+      name: 'Personal',
+      icon: User,
+      color: 'bg-primary-400',  // Using another shade of primary
+      textColor: 'text-primary-300',
+      gradient: 'from-primary-200 to-primary-400',
+      description: 'Personal reflections, experiences, and life lessons.'
+   }
 ] as const;
 
 export type CategoryId = typeof categories[number]['id'];
 
-export function getCategoryById(id: CategoryId) {
-  return categories.find(category => category.id === id);
+// // // src/data/categories.ts
+// // import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
+// // import { Theme } from '@/lib/types';
+
+// // export const categories = [
+// //    {
+// //       id: 'tech',
+// //       name: 'Tech Articles',
+// //       icon: Laptop,
+// //       color: (theme: Theme) => theme.colors.primary[500],
+// //       textColor: (theme: Theme) => theme.colors.primary[400],
+// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[700]})`,
+// //       description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
+// //    },
+// //    {
+// //       id: 'media',
+// //       name: 'Other Media',
+// //       icon: Newspaper,
+// //       color: (theme: Theme) => theme.colors.secondary[500],
+// //       textColor: (theme: Theme) => theme.colors.secondary[400],
+// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.secondary[500]}, ${theme.colors.secondary[700]})`,
+// //       description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
+// //    },
+// //    {
+// //       id: 'food',
+// //       name: 'Fusion Food',
+// //       icon: Coffee,
+// //       color: (theme: Theme) => theme.colors.accent[500],
+// //       textColor: (theme: Theme) => theme.colors.accent[400],
+// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.accent[500]}, ${theme.colors.accent[700]})`,
+// //       description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
+// //    },
+// //    {
+// //       id: 'personal',
+// //       name: 'Personal',
+// //       icon: User,
+// //       color: (theme: Theme) => theme.colors.success[500],
+// //       textColor: (theme: Theme) => theme.colors.success[400],
+// //       gradient: (theme: Theme) => `linear-gradient(135deg, ${theme.colors.success[500]}, ${theme.colors.success[700]})`,
+// //       description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
+// //    }
+// // ] as const;
+
+// // export type CategoryId = typeof categories[number]['id'];
+
+// // export function getCategoryById(id: CategoryId) {
+// //    return categories.find(category => category.id === id);
+// // }
+
+// // export function getCategoryName(id: CategoryId) {
+// //    return getCategoryById(id)?.name || id;
+// // }
+
+// // export function getCategoryColor(id: CategoryId, theme: Theme) {
+// //    return getCategoryById(id)?.color(theme) || theme.colors.gray[500];
+// // }
+
+// // export function getCategoryTextColor(id: CategoryId, theme: Theme) {
+// //    return getCategoryById(id)?.textColor(theme) || theme.colors.gray[400];
+// // }
+
+// // export function getCategoryGradient(id: CategoryId, theme: Theme) {
+// //    return getCategoryById(id)?.gradient(theme) || `linear-gradient(135deg, ${theme.colors.gray[500]}, ${theme.colors.gray[700]})`;
+// // }
+
+// // src/data/categories.ts
+// import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
+
+// export const categories = [
+//    {
+//       id: 'tech',
+//       name: 'Tech Articles',
+//       icon: Laptop,
+//       color: 'bg-blue-500',
+//       textColor: 'text-primary-200',
+//       gradient: 'from-primary-500 to-primary-700',
+//       description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
+//    },
+//    {
+//       id: 'media',
+//       name: 'Other Media',
+//       icon: Newspaper,
+//       color: 'bg-primary-300',
+//       textColor: 'text-purple-400',
+//       gradient: 'from-purple-500 to-purple-700',
+//       description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
+//    },
+//    {
+//       id: 'food',
+//       name: 'Fusion Food',
+//       icon: Coffee,
+//       color: 'bg-orange-500',
+//       textColor: 'text-orange-400',
+//       gradient: 'from-orange-500 to-orange-700',
+//       description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
+//    },
+//    {
+//       id: 'personal',
+//       name: 'Personal',
+//       icon: User,
+//       color: 'bg-green-500',
+//       textColor: 'text-green-400',
+//       gradient: 'from-green-500 to-green-700',
+//       description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
+//    }
+// ] as const;
+
+// export type CategoryId = typeof categories[number]['id'];
+
+// export function getCategoryById(id: CategoryId) {
+//    return categories.find(category => category.id === id);
+// }
+
+// export function getCategoryName(id: CategoryId) {
+//    return getCategoryById(id)?.name || id;
+// }
+
+// export function getCategoryColor(id: CategoryId) {
+//    return getCategoryById(id)?.color || 'bg-gray-500';
+// }
+
+// export function getCategoryTextColor(id: CategoryId) {
+//    return getCategoryById(id)?.textColor || 'text-gray-400';
+// }
+```
+
+# src/data/navbarConfig.ts
+
+```ts
+// src/data/navbarConfig.ts
+import type { ReactNode } from 'react'
+import Image from 'next/image'
+
+export interface NavLink {
+  href: string
+  label: string
+  icon?: ReactNode
+  isButton?: boolean
+  authRequired?: boolean
 }
 
-export function getCategoryName(id: CategoryId) {
-  return getCategoryById(id)?.name || id;
-}
+export const navLinks = {
+  brand: {
+    href: '/',
+    label: 'Mash Media Studio',
+    logo: '/assets/MashMediaStudio.png'
+  },
+  mainLinks: [
+    {
+      href: '/blog',
+      label: 'Blog'
+    },
+    {
+      href: '/blog/new',
+      label: 'New Post',
+      authRequired: true
+    }
+  ],
+  authLinks: {
+    signIn: {
+      label: 'Sign In',
+      isButton: true
+    },
+    signOut: {
+      label: 'Sign Out',
+      isButton: true
+    }
+  }
+} as const;
 
-export function getCategoryColor(id: CategoryId) {
-  return getCategoryById(id)?.color || 'bg-gray-500';
-}
+export const navStyles = {
+  base: "bg-white dark:bg-gray-900 shadow-sm transition-colors",
+  container: "container mx-auto px-4",
+  inner: "flex justify-between h-16",
+  brand: "flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white",
+  link: "hover:text-gray-600 dark:hover:text-gray-300",
+  button: "bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+} as const;
+// // src/data/navbarConfig.ts
+// import type { ReactNode } from 'react'
 
-export function getCategoryTextColor(id: CategoryId) {
-  return getCategoryById(id)?.textColor || 'text-gray-400';
-}
+// export interface NavLink {
+//   href: string
+//   label: string
+//   icon?: ReactNode
+//   isButton?: boolean
+//   authRequired?: boolean
+// }
+
+// export const navLinks = {
+//   brand: {
+//     href: '/',
+//     label: 'MMS | MashMedia Studio'
+//   },
+//   mainLinks: [
+//     {
+//       href: '/blog',
+//       label: 'Blog'
+//     },
+//     {
+//       href: '/blog/new',
+//       label: 'New Post',
+//       authRequired: true
+//     }
+//   ],
+//   authLinks: {
+//     signIn: {
+//       label: 'Sign In',
+//       isButton: true
+//     },
+//     signOut: {
+//       label: 'Sign Out',
+//       isButton: true
+//     }
+//   }
+// } as const;
+
+// export const navStyles = {
+//   base: "bg-white dark:bg-gray-900 shadow-sm transition-colors",
+//   container: "container mx-auto px-4",
+//   inner: "flex justify-between h-16",
+//   brand: "flex items-center font-bold text-xl text-gray-900 dark:text-white",
+//   link: "hover:text-gray-600 dark:hover:text-gray-300",
+//   button: "bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// } as const;
 ```
 
 # src/hooks/useAuth.ts
@@ -5317,6 +7371,69 @@ export function useAuth() {
 
   return { user, isAuthenticated: !!user }
 }
+```
+
+# src/hooks/useTheme.ts
+
+```ts
+// src/hooks/useTheme.ts
+'use client'
+import { useState, useEffect } from 'react'
+
+export function useTheme() {
+  const [darkMode, setDarkMode] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark')
+    setDarkMode(isDark)
+    setMounted(true)
+  }, [])
+
+  const toggleTheme = () => {
+    const newDarkMode = !darkMode
+    setDarkMode(newDarkMode)
+
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }
+
+  return { darkMode, toggleTheme, mounted }
+}
+
+
+// // src/hooks/useTheme.ts
+// 'use client'
+// import { useState, useEffect } from 'react'
+// import { Theme } from '@/lib/types'
+// import { lightTheme, darkTheme } from '@/lib/theme-config'
+
+// export function useTheme() {
+//   const [theme, setTheme] = useState<Theme>(lightTheme)
+//   const [mounted, setMounted] = useState(false)
+
+//   useEffect(() => {
+//     const stored = localStorage.getItem('theme')
+//     if (stored === 'dark') {
+//       setTheme(darkTheme)
+//     }
+//     setMounted(true)
+//   }, [])
+
+//   const toggleTheme = () => {
+//     const newTheme = theme.isDarkTheme ? lightTheme : darkTheme
+//     setTheme(newTheme)
+//     localStorage.setItem('theme', newTheme.isDarkTheme ? 'dark' : 'light')
+//   }
+
+//   return { theme, toggleTheme, mounted }
+// }
+
 ```
 
 # src/lib/auth.ts
@@ -5488,18 +7605,20 @@ export const blogApi = {
 ```ts
 //src/lib/theme-config.ts : used for portfolio-theme.ts
 
- // Add Styled Components declaration
- declare module 'styled-components' {
-   export interface DefaultTheme extends Theme {}
- }
+// Add Styled Components declaration
+declare module 'styled-components' {
+   export interface DefaultTheme extends Theme { }
+}
 
- import {ThemeMode,
+import {
+   ThemeMode,
    ColorWithShades,
    ColorShades,
    BorderColors,
    // ColorPalette,
    // Typography,
-   Theme} from "./portfolio-theme";
+   Theme
+} from "./portfolio-theme";
 
 type HeadingSizes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 type BodySizes = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
@@ -5553,6 +7672,7 @@ export const colors = {
       700: '#503DBD',
       800: '#3629BA',
       900: '#1C15B7'
+
    },
    secondary: {
       100: '#E6FEFF',
@@ -5623,12 +7743,12 @@ export const colors = {
    // Add border configuration
    border: {
       light: {
-        primary: '#0F66AF'
+         primary: '#0F66AF'
       },
       dark: {
-        primary: '#0D94A0'
+         primary: '#0D94A0'
       }
-    }
+   }
 };
 
 // Theme definitions
@@ -5643,8 +7763,8 @@ export const lightTheme: Theme = {
       },
       text: {
          light: {
-            primary: '#3629BA',
-            secondary: '#F6F2C3CC',
+            primary: 'red',
+            secondary: 'yellow',
             accent: 'magenta',
             disabled: '#CCCCCC',
             svgColor1: "red",
@@ -5654,8 +7774,8 @@ export const lightTheme: Theme = {
             svgColor5: "green",
          },
          dark: {
-            primary: '#FFFFFF',
-            secondary: '#3AF1F9',
+            primary: '',
+            secondary: '',
             accent: '',
             svgColor1: "",
             svgColor2: "",
@@ -5689,8 +7809,8 @@ export const darkTheme: Theme = {
       },
       text: {
          light: {
-            primary: '#F46A47',
-            secondary: '#99FCFF91',
+            primary: '',
+            secondary: '',
             accent: '',
             svgColor1: "",
             svgColor2: "",
@@ -5700,7 +7820,8 @@ export const darkTheme: Theme = {
             disabled: ''
          },
          dark: {
-            primary: '#AF99DA',
+            primary: 'yellowGreen',
+            // primary: '#AF99DA',
             secondary: '#0d94a0cc',
             accent: 'yellowgreen',
             disabled: '#6E6E6E',
@@ -5750,8 +7871,8 @@ export const getColor = (
 // };
 const isColorShades = (color: unknown): color is ColorShades => {
    return typeof color === 'object' &&
-          color !== null &&
-          '500' in color;
+      color !== null &&
+      '500' in color;
 };
 
 // export const getBackgroundColor = (mode: ThemeMode): string => {
@@ -5761,12 +7882,12 @@ const isColorShades = (color: unknown): color is ColorShades => {
 export const getBackgroundColor = (
    mode: ThemeMode,
    type: 'default' | 'nav' = 'default'
- ): string => {
+): string => {
    if (type === 'nav') {
-     return theme.colors.backgrounds.nav;
+      return theme.colors.backgrounds.nav;
    }
    return theme.colors.backgrounds[mode];
- };
+};
 
 export const getTextColor = (
    mode: ThemeMode,
@@ -5777,7 +7898,7 @@ export const getTextColor = (
 
 export const getBorderColor = (mode: ThemeMode, variant: keyof BorderColors): string => {
    return theme.colors.border[mode][variant];
- };
+};
 
 export const getFontFamily = (
    type: "heading" | "body"
@@ -5948,6 +8069,67 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
 `
 
 export type { Theme }
+```
+
+# src/lib/ThemeContext.tsx
+
+```tsx
+// src/lib/ThemeContext.tsx
+'use client'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { lightTheme, darkTheme } from '@/lib/theme-config'
+import type { Theme } from '@/lib/types'
+
+interface ThemeContextType {
+  theme: Theme
+  toggleTheme: () => void
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>(lightTheme)
+
+  useEffect(() => {
+    // Check localStorage and system preference
+    const stored = localStorage.getItem('theme')
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+    if (stored === 'dark' || (!stored && systemDark)) {
+      setTheme(darkTheme)
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const newTheme = prev.isDarkTheme ? lightTheme : darkTheme
+      localStorage.setItem('theme', newTheme.isDarkTheme ? 'dark' : 'light')
+
+      if (newTheme.isDarkTheme) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+
+      return newTheme
+    })
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext)
+  if (!context) throw new Error('useTheme must be used within ThemeProvider')
+  return context
+}
+
+
 ```
 
 # src/lib/types.ts
@@ -6153,20 +8335,58 @@ import type { Config } from "tailwindcss";
 import typography from '@tailwindcss/typography';
 
 export default {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
-    },
-  },
-  plugins: [typography],
+   darkMode: 'class',
+   content: [
+      "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+      "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+      "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+   ],
+   theme: {
+      extend: {
+         colors: {
+            primary: {
+               50: '#f6f4fe',
+               100: '#efecfb',
+               200: '#dfdbf9',
+               300: '#c7bef4',
+               400: '#ab99ec',
+               500: '#8e6fe3',
+               600: '#8459d9',
+               700: '#6e3ec3',
+               800: '#5b33a4',
+               900: '#4c2c86',
+               950: '#2f1a5b',
+            },
+            secondary: {
+               50: '#fefde8',
+               100: '#fefbc3',
+               200: '#fef48a',
+               300: '#fde647',
+               400: '#fbd82d',
+               500: '#ebba07',
+               600: '#ca9004',
+               700: '#a16707',
+               800: '#85510e',
+               900: '#714212',
+               950: '#422206',
+            },
+            accent: {
+               50: '#fff3ed',
+               100: '#ffe4d4',
+               200: '#ffc5a8',
+               300: '#ff9c70',
+               400: '#ff6737',
+               500: '#ff3b0a',
+               600: '#f02506',
+               700: '#c71707',
+               800: '#9e140e',
+               900: '#7f150f',
+               950: '#450605',
+            },
+         }
+      }
+   },
+   plugins: [typography],
 } satisfies Config;
 ```
 

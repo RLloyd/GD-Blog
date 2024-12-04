@@ -1,59 +1,75 @@
 // src/data/categories.ts
-import { Newspaper, Coffee, Laptop, User } from 'lucide-react';
+import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
 export const categories = [
-  {
-    id: 'tech',
-    name: 'Tech Articles',
-    icon: Laptop,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-400',
-    gradient: 'from-blue-500 to-blue-700',
-    description: 'Deep dives into software development, web technologies, and the latest tech trends. From coding tutorials to architectural insights.'
-  },
-  {
-    id: 'media',
-    name: 'Other Media',
-    icon: Newspaper,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-400',
-    gradient: 'from-purple-500 to-purple-700',
-    description: 'Exploring movies, books, games, and digital content. Reviews, analyses, and discussions about storytelling across different mediums.'
-  },
-  {
-    id: 'food',
-    name: 'Fusion Food',
-    icon: Coffee,
-    color: 'bg-orange-500',
-    textColor: 'text-orange-400',
-    gradient: 'from-orange-500 to-orange-700',
-    description: 'Creative recipes blending different culinary traditions. Discover unique flavor combinations and cooking techniques from around the world.'
-  },
-  {
-    id: 'personal',
-    name: 'Personal',
-    icon: User,
-    color: 'bg-green-500',
-    textColor: 'text-green-400',
-    gradient: 'from-green-500 to-green-700',
-    description: 'Personal reflections, experiences, and life lessons. A space for sharing thoughts on growth, creativity, and everyday adventures.'
-  }
+   {
+      id: 'tech',
+      name: 'Tech Articles',
+      icon: Laptop,
+      description: 'Deep dives into software development, web technologies, and the latest tech trends.'
+   },
+   {
+      id: 'media',
+      name: 'Other Media',
+      icon: Newspaper,
+      description: 'Exploring movies, books, games, and digital content.'
+   },
+   {
+      id: 'food',
+      name: 'Fusion Food',
+      icon: Coffee,
+      description: 'Creative recipes blending different culinary traditions.'
+   },
+   {
+      id: 'personal',
+      name: 'Personal',
+      icon: User,
+      description: 'Personal reflections, experiences, and life lessons.'
+   }
 ] as const;
 
 export type CategoryId = typeof categories[number]['id'];
 
-export function getCategoryById(id: CategoryId) {
-  return categories.find(category => category.id === id);
-}
+// // src/data/categories.ts
+// import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
-export function getCategoryName(id: CategoryId) {
-  return getCategoryById(id)?.name || id;
-}
+// export const categories = [
+//    {
+//       id: 'tech',
+//       name: 'Tech Articles',
+//       icon: Laptop,
+//       color: 'bg-primary-600',
+//       textColor: 'text-primary-300',
+//       gradient: 'bg-gradient-to-br from-primary-500 to-primary-700',
+//       description: 'Deep dives into software development, web technologies, and the latest tech trends.'
+//    },
+//    {
+//       id: 'media',
+//       name: 'Other Media',
+//       icon: Newspaper,
+//       color: 'bg-secondary-600',
+//       textColor: 'text-secondary-300',
+//       gradient: 'bg-gradient-to-br from-secondary-500 to-secondary-700',
+//       description: 'Exploring movies, books, games, and digital content.'
+//    },
+//    {
+//       id: 'food',
+//       name: 'Fusion Food',
+//       icon: Coffee,
+//       color: 'bg-accent-600',
+//       textColor: 'text-accent-300',
+//       gradient: 'bg-gradient-to-br from-accent-500 to-accent-700',
+//       description: 'Creative recipes blending different culinary traditions.'
+//    },
+//    {
+//       id: 'personal',
+//       name: 'Personal',
+//       icon: User,
+//       color: 'bg-primary-500',
+//       textColor: 'text-primary-200',
+//       gradient: 'bg-gradient-to-br from-primary-400 to-primary-600',
+//       description: 'Personal reflections, experiences, and life lessons.'
+//    }
+// ] as const;
 
-export function getCategoryColor(id: CategoryId) {
-  return getCategoryById(id)?.color || 'bg-gray-500';
-}
-
-export function getCategoryTextColor(id: CategoryId) {
-  return getCategoryById(id)?.textColor || 'text-gray-400';
-}
+// export type CategoryId = typeof categories[number]['id'];

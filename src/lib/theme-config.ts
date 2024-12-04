@@ -1,17 +1,19 @@
 //src/lib/theme-config.ts : used for portfolio-theme.ts
 
- // Add Styled Components declaration
- declare module 'styled-components' {
-   export interface DefaultTheme extends Theme {}
- }
+// Add Styled Components declaration
+declare module 'styled-components' {
+   export interface DefaultTheme extends Theme { }
+}
 
- import {ThemeMode,
+import {
+   ThemeMode,
    ColorWithShades,
    ColorShades,
    BorderColors,
    // ColorPalette,
    // Typography,
-   Theme} from "./portfolio-theme";
+   Theme
+} from "./portfolio-theme";
 
 type HeadingSizes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 type BodySizes = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
@@ -65,6 +67,7 @@ export const colors = {
       700: '#503DBD',
       800: '#3629BA',
       900: '#1C15B7'
+
    },
    secondary: {
       100: '#E6FEFF',
@@ -135,12 +138,12 @@ export const colors = {
    // Add border configuration
    border: {
       light: {
-        primary: '#0F66AF'
+         primary: '#0F66AF'
       },
       dark: {
-        primary: '#0D94A0'
+         primary: '#0D94A0'
       }
-    }
+   }
 };
 
 // Theme definitions
@@ -155,8 +158,8 @@ export const lightTheme: Theme = {
       },
       text: {
          light: {
-            primary: '#3629BA',
-            secondary: '#F6F2C3CC',
+            primary: 'red',
+            secondary: 'yellow',
             accent: 'magenta',
             disabled: '#CCCCCC',
             svgColor1: "red",
@@ -166,8 +169,8 @@ export const lightTheme: Theme = {
             svgColor5: "green",
          },
          dark: {
-            primary: '#FFFFFF',
-            secondary: '#3AF1F9',
+            primary: '',
+            secondary: '',
             accent: '',
             svgColor1: "",
             svgColor2: "",
@@ -201,8 +204,8 @@ export const darkTheme: Theme = {
       },
       text: {
          light: {
-            primary: '#F46A47',
-            secondary: '#99FCFF91',
+            primary: '',
+            secondary: '',
             accent: '',
             svgColor1: "",
             svgColor2: "",
@@ -212,7 +215,8 @@ export const darkTheme: Theme = {
             disabled: ''
          },
          dark: {
-            primary: '#AF99DA',
+            primary: 'yellowGreen',
+            // primary: '#AF99DA',
             secondary: '#0d94a0cc',
             accent: 'yellowgreen',
             disabled: '#6E6E6E',
@@ -262,8 +266,8 @@ export const getColor = (
 // };
 const isColorShades = (color: unknown): color is ColorShades => {
    return typeof color === 'object' &&
-          color !== null &&
-          '500' in color;
+      color !== null &&
+      '500' in color;
 };
 
 // export const getBackgroundColor = (mode: ThemeMode): string => {
@@ -273,12 +277,12 @@ const isColorShades = (color: unknown): color is ColorShades => {
 export const getBackgroundColor = (
    mode: ThemeMode,
    type: 'default' | 'nav' = 'default'
- ): string => {
+): string => {
    if (type === 'nav') {
-     return theme.colors.backgrounds.nav;
+      return theme.colors.backgrounds.nav;
    }
    return theme.colors.backgrounds[mode];
- };
+};
 
 export const getTextColor = (
    mode: ThemeMode,
@@ -289,7 +293,7 @@ export const getTextColor = (
 
 export const getBorderColor = (mode: ThemeMode, variant: keyof BorderColors): string => {
    return theme.colors.border[mode][variant];
- };
+};
 
 export const getFontFamily = (
    type: "heading" | "body"

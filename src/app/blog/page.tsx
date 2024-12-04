@@ -56,12 +56,12 @@ export default async function BlogList() {
     <div className="max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8 px-4">
         <h1 className="text-3xl font-bold">Blog Posts</h1>
-        <Link
+        {/* <Link
           href="/blog/new"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Write Post
-        </Link>
+        </Link> */}
       </div>
 
       <BlogDashboard
