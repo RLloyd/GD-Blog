@@ -14,8 +14,7 @@ export type Post = {
    slug: string
    content: string
    excerpt?: string
-   // category: string // Add this line
-   category: CategoryId;  // This enforces the proper category types
+   category: CategoryId
    published: boolean
    created_at: string
    updated_at: string
@@ -23,52 +22,77 @@ export type Post = {
 
 // API functions for posts
 export const blogApi = {
-  // Get all posts
-  async getAllPosts() {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
+   // Get all posts
+   async getAllPosts() {
+      const { data, error } = await supabase
+         .from('posts')
+         .select('*')
+         .eq('published', true)
+         .order('created_at', { ascending: false })
 
-    if (error) throw error
-    return data as Post[]
-  },
+      if (error) throw error
+      return data as Post[]
+   },
 
-  // Get single post by slug
-  async getPostBySlug(slug: string) {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('slug', slug)
-      .single()
+   // Get single post by slug
+   async getPostBySlug(slug: string) {
+      const { data, error } = await supabase
+         .from('posts')
+         .select('*')
+         .eq('slug', slug)
+         .single()
 
-    if (error) throw error
-    return data as Post
-  },
+      if (error) throw error
+      return data as Post
+   },
 
-  // Create new post
-  async createPost(post: Omit<Post, 'id' | 'created_at' | 'updated_at'>) {
-    const { data, error } = await supabase
-      .from('posts')
-      .insert([post])
-      .select()
-      .single()
+   // Create new post
+   async createPost(post: Omit<Post, 'id' | 'created_at' | 'updated_at'>) {
+      const { data, error } = await supabase
+         .from('posts')
+         .insert([post])
+         .select()
+         .single()
 
-    if (error) throw error
-    return data as Post
-  },
+      if (error) throw error
+      return data as Post
+   },
 
-  // Update post
-  async updatePost(id: string, updates: Partial<Post>) {
-    const { data, error } = await supabase
-      .from('posts')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+   // Update post
+   async updatePost(id: string, updates: Partial<Post>) {
+      const { data, error } = await supabase
+         .from('posts')
+         .update(updates)
+         .eq('id', id)
+         .select()
+         .single()
 
-    if (error) throw error
-    return data as Post
-  }
+      if (error) throw error
+      return data as Post
+   },
+
+   // Delete post
+   async deletePost(id: string) {
+      const { error } = await supabase
+         .from('posts')
+         .delete()
+         .eq('id', id)
+
+      if (error) throw error
+
+      // Call revalidation endpoint
+      const res = await fetch('/api/revalidate', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ path: '/blog' })
+      })
+
+      if (!res.ok) {
+         throw new Error('Failed to revalidate cache')
+      }
+
+      return true
+   }
 }

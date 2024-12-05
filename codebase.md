@@ -117,7 +117,6 @@ export default nextConfig;
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.46.2",
-    "@types/styled-components": "^5.1.34",
     "encoding": "^0.1.13",
     "lucide-react": "^0.462.0",
     "next": "15.0.3",
@@ -126,8 +125,7 @@ export default nextConfig;
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
     "rehype-prism-plus": "^2.0.0",
-    "remark-gfm": "^4.0.0",
-    "styled-components": "^6.1.13"
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
@@ -922,15 +920,23 @@ greet("World");
 <p style="color: orange; font-size:1.5rem; padding-top:2rem;">
 December 04, 2024
 </p>
-- <span style=color:red;  font-size:1.25rem">Claude kicked me out! 7:30pm - 9:00pm</span> **#😭**
+<span style=color:red;  font-size:1.25rem">Claude kicked me out! 7:30pm - 9:00pm</span> **#😭**
 <p></p>
-- New comments are not showing up
+- New comments are not showing up ✅ Done!
+- Remove all refernces to Styled-Components ✅ Done!
+- Text field in Edit mode should be white and black text
+- Establish a theme for buttons
+- Headers should be "Libre Baskerville" Text "Open Sans"
 
 <p style="color: orange; font-size:1.5rem; padding-top:4rem;">
 Future requirements:
 </p>
 - Add ARIA
 - Login implementation
+
+### December 05, 2024
+
+- Staging area for post that are create but not published
 
 ```
 
@@ -1712,125 +1718,120 @@ This is a binary file of the type: Binary
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground: #ededed;
-  --background: #152327;
+@layer base {
+	html {
+		min-height: 100vh;
+	}
+
+	body {
+		@apply min-h-screen flex flex-col;
+		@apply bg-white text-gray-900;
+		@apply dark:bg-gray-900 dark:text-white;
+	}
+
+	main {
+		@apply flex-1;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
+	}
+
+	h1 {
+		@apply text-4xl mb-6;
+	}
+	h2 {
+		@apply text-3xl mb-5;
+	}
+	h3 {
+		@apply text-2xl mb-4;
+	}
+	h4 {
+		@apply text-xl mb-3;
+	}
+	h5 {
+		@apply text-lg mb-2;
+	}
+	h6 {
+		@apply text-base mb-2;
+	}
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
+.prose {
+	@apply max-w-none;
 }
 
-/* Prism.js syntax highlighting customization */
-pre[class*="language-"] {
-  background: #2d2d2d !important;
-  border-radius: 0.5rem;
-  margin: 1.5rem 0 !important;
-  padding: 1rem !important;
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+	@apply font-baskerville text-primary-600 dark:text-primary-400;
 }
-
-code[class*="language-"] {
-  background: transparent !important;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-  font-size: 0.875rem !important;
-  line-height: 1.5 !important;
-}
-
-:not(pre) > code[class*="language-"] {
-  background: #2d2d2d !important;
-  color: #e0e0e0 !important;
-  padding: 0.2em 0.4em !important;
-  border-radius: 0.25rem !important;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-  color: #999 !important;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol {
-  color: #f08d49 !important;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin {
-  color: #7ec699 !important;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.token.variable {
-  color: #67cdcc !important;
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-  color: #cc99cd !important;
-}
-
-/* src/app/globals.css */
 
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground: #ededed;
-  --background: #152327;
+@layer base {
+	html {
+		min-height: 100vh;
+	}
+
+	body {
+		@apply min-h-screen flex flex-col bg-white dark:bg-gray-900;
+	}
+
+	main {
+		@apply flex-1;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
+	}
+
+	h1 {
+		@apply text-4xl mb-6;
+	}
+	h2 {
+		@apply text-3xl mb-5;
+	}
+	h3 {
+		@apply text-2xl mb-4;
+	}
+	h4 {
+		@apply text-xl mb-3;
+	}
+	h5 {
+		@apply text-lg mb-2;
+	}
+	h6 {
+		@apply text-base mb-2;
+	}
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-} */
-
-/* Add these utility classes */
-/* .text-light {
-  color: #ededed;
+.prose {
+	@apply max-w-none;
 }
 
-.bg-dark {
-  background-color: #242424;
-} */
-
- /* Update components with lighter text: */
- /* In blog/[slug]/page.tsx, navbar, postform, and anywhere else using text-gray-600: */
- /* Change text-gray-600 to text-gray-300 */
- /* Change bg-white to bg-dark */
-
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+	@apply font-baskerville text-primary-600 dark:text-primary-400;
 } */
 
 ```
@@ -1839,28 +1840,15 @@ body {
 
 ```tsx
 // src/app/layout.tsx
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Libre_Baskerville } from "next/font/google";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
-const geistSans = localFont({
-	src: "./fonts/GeistVF.woff",
-	variable: "--font-geist-sans",
-	weight: "100 900",
+const baskerville = Libre_Baskerville({
+	subsets: ["latin"],
+	weight: ["400", "700"],
 });
-
-const geistMono = localFont({
-	src: "./fonts/GeistMonoVF.woff",
-	variable: "--font-geist-mono",
-	weight: "100 900",
-});
-
-export const metadata: Metadata = {
-	title: "My Blog",
-	description: "A personal blog built with Next.js",
-};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
@@ -1872,40 +1860,43 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<script
 					dangerouslySetInnerHTML={{
 						__html: `
-               if (localStorage.theme === 'dark') {
-                 document.documentElement.classList.add('dark')
-               } else {
-                 document.documentElement.classList.remove('dark')
-                 localStorage.setItem('theme', 'light')
-               }
-             `,
+              if (localStorage.theme === 'dark') {
+                document.documentElement.classList.add('dark')
+              } else {
+                document.documentElement.classList.remove('dark')
+                localStorage.setItem('theme', 'light')
+              }
+            `,
 					}}
 				/>
 			</head>
 			<body
-				className={`
-        ${geistSans.variable}
-        ${geistMono.variable}
-        bg-white text-gray-900
-        dark:bg-gray-900 dark:text-white
-        transition-colors duration-200
-      `}
+				className={baskerville.className}
 				suppressHydrationWarning
 			>
 				<Providers>
-					<Navbar />
-					<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+					<div className='min-h-screen flex flex-col'>
+						<Navbar />
+						<main className='flex-1 container mx-auto px-4 py-8'>{children}</main>
+					</div>
 				</Providers>
 			</body>
 		</html>
 	);
 }
+
 // // src/app/layout.tsx
 // import type { Metadata } from "next";
 // import localFont from "next/font/local";
 // import { Providers } from "./providers";
 // import { Navbar } from "@/components/Navbar";
 // import "./globals.css";
+// import { Libre_Baskerville } from "next/font/google";
+
+// const baskerville = Libre_Baskerville({
+// 	subsets: ["latin"],
+// 	weight: ["400", "700"],
+// });
 
 // const geistSans = localFont({
 // 	src: "./fonts/GeistVF.woff",
@@ -1930,14 +1921,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // 			lang='en'
 // 			suppressHydrationWarning
 // 		>
+// 			<head>
+// 				<script
+// 					dangerouslySetInnerHTML={{
+// 						__html: `
+//                if (localStorage.theme === 'dark') {
+//                  document.documentElement.classList.add('dark')
+//                } else {
+//                  document.documentElement.classList.remove('dark')
+//                  localStorage.setItem('theme', 'light')
+//                }
+//              `,
+// 					}}
+// 				/>
+// 			</head>
 // 			<body
-// 				className={`${geistSans.variable} ${geistMono.variable}`}
+// 				className={`${baskerville.className} bg-white text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-200`}
 // 				suppressHydrationWarning
 // 			>
-// 				<Providers>
-// 					<Navbar />
-// 					<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
-// 				</Providers>
+// 				<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
 // 			</body>
 // 		</html>
 // 	);
@@ -1945,6 +1947,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // // // src/app/layout.tsx
 // // import type { Metadata } from "next";
 // // import localFont from "next/font/local";
+// // import { Providers } from "./providers";
 // // import { Navbar } from "@/components/Navbar";
 // // import "./globals.css";
 
@@ -1969,57 +1972,98 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // // 	return (
 // // 		<html
 // // 			lang='en'
-// // 			className='light'
+// // 			suppressHydrationWarning
 // // 		>
-// // 			<body className={`${geistSans.variable} ${geistMono.variable} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
-// // 				<Navbar />
-// // 				<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+// // 			<body
+// // 				className={`${geistSans.variable} ${geistMono.variable}`}
+// // 				suppressHydrationWarning
+// // 			>
+// // 				<Providers>
+// // 					<Navbar />
+// // 					<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+// // 				</Providers>
 // // 			</body>
 // // 		</html>
 // // 	);
 // // }
-
-// // // // src/app/layout.tsx - Updated with strict CSR marking
-
-// // // import type { Metadata } from "next"
-// // // import localFont from "next/font/local"
-// // // import { Providers } from './providers'
-// // // import { Navbar } from '@/components/Navbar'
-// // // import "@/styles/globals.css"
+// // // // src/app/layout.tsx
+// // // import type { Metadata } from "next";
+// // // import localFont from "next/font/local";
+// // // import { Navbar } from "@/components/Navbar";
+// // // import "./globals.css";
 
 // // // const geistSans = localFont({
-// // //   src: "./fonts/GeistVF.woff",
-// // //   variable: "--font-geist-sans",
-// // //   weight: "100 900",
-// // // })
+// // // 	src: "./fonts/GeistVF.woff",
+// // // 	variable: "--font-geist-sans",
+// // // 	weight: "100 900",
+// // // });
 
 // // // const geistMono = localFont({
-// // //   src: "./fonts/GeistMonoVF.woff",
-// // //   variable: "--font-geist-mono",
-// // //   weight: "100 900",
-// // // })
+// // // 	src: "./fonts/GeistMonoVF.woff",
+// // // 	variable: "--font-geist-mono",
+// // // 	weight: "100 900",
+// // // });
 
 // // // export const metadata: Metadata = {
-// // //   title: "My Blog",
-// // //   description: "A personal blog built with Next.js and Styled Components",
+// // // 	title: "My Blog",
+// // // 	description: "A personal blog built with Next.js",
+// // // };
+
+// // // export default function RootLayout({ children }: { children: React.ReactNode }) {
+// // // 	return (
+// // // 		<html
+// // // 			lang='en'
+// // // 			className='light'
+// // // 		>
+// // // 			<body className={`${geistSans.variable} ${geistMono.variable} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
+// // // 				<Navbar />
+// // // 				<main className='flex-grow container mx-auto px-4 py-8'>{children}</main>
+// // // 			</body>
+// // // 		</html>
+// // // 	);
 // // // }
 
-// // // export default function RootLayout({
-// // //   children,
-// // // }: {
-// // //   children: React.ReactNode
-// // // }) {
-// // //   return (
-// // //     <html lang="en" suppressHydrationWarning>
-// // //       <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
-// // //         <Providers>
-// // //           <Navbar />
-// // //           {children}
-// // //         </Providers>
-// // //       </body>
-// // //     </html>
-// // //   )
-// // // }
+// // // // // src/app/layout.tsx - Updated with strict CSR marking
+
+// // // // import type { Metadata } from "next"
+// // // // import localFont from "next/font/local"
+// // // // import { Providers } from './providers'
+// // // // import { Navbar } from '@/components/Navbar'
+// // // // import "@/styles/globals.css"
+
+// // // // const geistSans = localFont({
+// // // //   src: "./fonts/GeistVF.woff",
+// // // //   variable: "--font-geist-sans",
+// // // //   weight: "100 900",
+// // // // })
+
+// // // // const geistMono = localFont({
+// // // //   src: "./fonts/GeistMonoVF.woff",
+// // // //   variable: "--font-geist-mono",
+// // // //   weight: "100 900",
+// // // // })
+
+// // // // export const metadata: Metadata = {
+// // // //   title: "My Blog",
+// // // //   description: "A personal blog built with Next.js and Styled Components",
+// // // // }
+
+// // // // export default function RootLayout({
+// // // //   children,
+// // // // }: {
+// // // //   children: React.ReactNode
+// // // // }) {
+// // // //   return (
+// // // //     <html lang="en" suppressHydrationWarning>
+// // // //       <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+// // // //         <Providers>
+// // // //           <Navbar />
+// // // //           {children}
+// // // //         </Providers>
+// // // //       </body>
+// // // //     </html>
+// // // //   )
+// // // // }
 
 ```
 
@@ -2028,8 +2072,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```tsx
 // src/app/page.tsx
 "use client";
-import { ThemeProvider } from "styled-components";
-import { lightTheme } from "@/lib/theme-config";
+// import { ThemeProvider } from "styled-components";
+// import { lightTheme } from "@/lib/theme-config";
 
 /*---==================================================================
 The homepage serves as the entry point to our blog platform, providing:
@@ -2039,25 +2083,44 @@ The homepage serves as the entry point to our blog platform, providing:
 ==================================================================---*/
 export default function HomePage() {
 	return (
-		<ThemeProvider theme={lightTheme}>
-			<main className="container mx-auto px-4 py-8">
-				<section className="max-w-4xl mx-auto space-y-8">
-					<h1 className="text-4xl font-bold mb-4">Welcome to My Blog</h1>
-					<div className="text-xl">
-						Dive into a world of creativity, innovation, and flavors! Here, you’ll find:
-						<ul>
-							<li>Tech Tutorials: Simplifying coding concepts and showcasing CSS & JavaScript animations to bring your web designs to life.</li>
-							<li>Other Media: Explore the art of video production and animations, where visuals tell the story.</li>
-							<li>Fusion Food: Savor the blend of Asian-inspired cuisine and global tastes for a culinary adventure.</li>
-							<li>Personal Stories: A window into my journey, thoughts, and experiences.</li>
-						</ul>
-						<p>Whether you’re here to learn, create, or simply be inspired, there’s something for everyone. Let’s explore together!</p>
-					</div>
-				</section>
-			</main>
-		</ThemeProvider>
+		<main className='container mx-auto px-4 py-8'>
+			<section className='max-w-4xl mx-auto space-y-8'>
+				<h1 className='text-4xl font-bold mb-4'>Welcome to My Blog</h1>
+				<div className='text-xl space-y-4'>
+					<p>Dive into a world of creativity, innovation, and flavors! Here, you\'ll find:</p>
+					<ul className='space-y-2'>
+						<li>Tech Tutorials: Simplifying coding concepts and showcasing CSS & JavaScript animations</li>
+						<li>Other Media: Explore the art of video production and animations</li>
+						<li>Fusion Food: Savor the blend of Asian-inspired cuisine and global tastes</li>
+						<li>Personal Stories: A window into my journey, thoughts, and experiences</li>
+					</ul>
+					<p>Whether you\'re here to learn, create, or simply be inspired, there\'s something for everyone.</p>
+				</div>
+			</section>
+		</main>
 	);
 }
+// export default function HomePage() {
+// 	return (
+// 		<ThemeProvider theme={lightTheme}>
+// 			<main className='container mx-auto px-4 py-8'>
+// 				<section className='max-w-4xl mx-auto space-y-8'>
+// 					<h1 className='text-4xl font-bold mb-4'>Welcome to My Blog</h1>
+// 					<div className='text-xl'>
+// 						Dive into a world of creativity, innovation, and flavors! Here, you’ll find:
+// 						<ul>
+// 							<li>Tech Tutorials: Simplifying coding concepts and showcasing CSS & JavaScript animations to bring your web designs to life.</li>
+// 							<li>Other Media: Explore the art of video production and animations, where visuals tell the story.</li>
+// 							<li>Fusion Food: Savor the blend of Asian-inspired cuisine and global tastes for a culinary adventure.</li>
+// 							<li>Personal Stories: A window into my journey, thoughts, and experiences.</li>
+// 						</ul>
+// 						<p>Whether you’re here to learn, create, or simply be inspired, there’s something for everyone. Let’s explore together!</p>
+// 					</div>
+// 				</section>
+// 			</main>
+// 		</ThemeProvider>
+// 	);
+// }
 
 ```
 
@@ -2068,162 +2131,170 @@ export default function HomePage() {
 "use client";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
-// Comment out styled-components imports
-// import { ThemeProvider } from 'styled-components'
-// import StyledComponentsRegistry from '@/lib/registry'
-// import { GlobalStyle } from '@/lib/theme'
-// import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
-
 export function Providers({ children }: { children: React.ReactNode }) {
-	// Temporarily just return children
 	return <ThemeContextProvider>{children}</ThemeContextProvider>;
-
-	// Comment out the previous providers
-	// return (
-	//   <StyledComponentsRegistry>
-	//     <ThemeContextProvider>
-	//       <ThemedContent>{children}</ThemedContent>
-	//     </ThemeContextProvider>
-	//   </StyledComponentsRegistry>
-	// )
 }
+
 // // src/app/providers.tsx
-// 'use client'
-// import { ThemeProvider } from 'styled-components'
-// import StyledComponentsRegistry from '@/lib/registry'
-// import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
-// import { GlobalStyle } from '@/lib/theme'
+// "use client";
+// import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
-// function ThemedContent({ children }: { children: React.ReactNode }) {
-//   const { theme } = useTheme()
-
-//   return (
-//     <ThemeProvider theme={theme}>
-//       <GlobalStyle />
-//       {children}
-//     </ThemeProvider>
-//   )
-// }
+// // Comment out styled-components imports
+// // import { ThemeProvider } from 'styled-components'
+// // import StyledComponentsRegistry from '@/lib/registry'
+// // import { GlobalStyle } from '@/lib/theme'
+// // import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
 
 // export function Providers({ children }: { children: React.ReactNode }) {
-//   return (
-//     <StyledComponentsRegistry>
-//       <ThemeContextProvider>
-//         <ThemedContent>{children}</ThemedContent>
-//       </ThemeContextProvider>
-//     </StyledComponentsRegistry>
-//   )
-// }
+// 	// Temporarily just return children
+// 	return <ThemeContextProvider>{children}</ThemeContextProvider>;
 
+// 	// Comment out the previous providers
+// 	// return (
+// 	//   <StyledComponentsRegistry>
+// 	//     <ThemeContextProvider>
+// 	//       <ThemedContent>{children}</ThemedContent>
+// 	//     </ThemeContextProvider>
+// 	//   </StyledComponentsRegistry>
+// 	// )
+// }
 // // // src/app/providers.tsx
 // // 'use client'
-// // import { useEffect } from 'react'
+// // import { ThemeProvider } from 'styled-components'
 // // import StyledComponentsRegistry from '@/lib/registry'
+// // import { ThemeContextProvider, useTheme } from '@/contexts/ThemeContext'
+// // import { GlobalStyle } from '@/lib/theme'
 
-// // export function Providers({ children }: { children: React.ReactNode }) {
-// //   useEffect(() => {
-// //     const theme = localStorage.getItem('theme')
-// //     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-// //       document.documentElement.classList.add('dark')
-// //     }
-// //   }, [])
+// // function ThemedContent({ children }: { children: React.ReactNode }) {
+// //   const { theme } = useTheme()
 
 // //   return (
-// //     <StyledComponentsRegistry>
+// //     <ThemeProvider theme={theme}>
+// //       <GlobalStyle />
 // //       {children}
+// //     </ThemeProvider>
+// //   )
+// // }
+
+// // export function Providers({ children }: { children: React.ReactNode }) {
+// //   return (
+// //     <StyledComponentsRegistry>
+// //       <ThemeContextProvider>
+// //         <ThemedContent>{children}</ThemedContent>
+// //       </ThemeContextProvider>
 // //     </StyledComponentsRegistry>
 // //   )
 // // }
 
 // // // // src/app/providers.tsx
 // // // 'use client'
-// // // import { ThemeProvider as StyledThemeProvider } from 'styled-components'
-// // // import { ThemeProvider } from '@/lib/ThemeContext'
+// // // import { useEffect } from 'react'
 // // // import StyledComponentsRegistry from '@/lib/registry'
-// // // import { GlobalStyle } from '@/lib/theme'
-// // // import { useTheme } from '@/lib/ThemeContext'
-
-// // // function StyledProviders({ children }: { children: React.ReactNode }) {
-// // //   const { theme } = useTheme()
-
-// // //   return (
-// // //     <StyledThemeProvider theme={theme}>
-// // //       <GlobalStyle />
-// // //       {children}
-// // //     </StyledThemeProvider>
-// // //   )
-// // // }
 
 // // // export function Providers({ children }: { children: React.ReactNode }) {
+// // //   useEffect(() => {
+// // //     const theme = localStorage.getItem('theme')
+// // //     if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+// // //       document.documentElement.classList.add('dark')
+// // //     }
+// // //   }, [])
+
 // // //   return (
 // // //     <StyledComponentsRegistry>
-// // //       <ThemeProvider>
-// // //         <StyledProviders>
-// // //           {children}
-// // //         </StyledProviders>
-// // //       </ThemeProvider>
+// // //       {children}
 // // //     </StyledComponentsRegistry>
 // // //   )
 // // // }
-// // // // // src/app/providers.tsx - Updated to prevent hydration mismatches
+
+// // // // // src/app/providers.tsx
 // // // // 'use client'
-// // // // import { useState, useEffect, useCallback } from 'react'
-// // // // import { useTheme } from '@/hooks/useTheme'
-// // // // import { ThemeProvider } from 'styled-components'
-// // // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // // import { ThemeProvider as StyledThemeProvider } from 'styled-components'
+// // // // import { ThemeProvider } from '@/lib/ThemeContext'
 // // // // import StyledComponentsRegistry from '@/lib/registry'
 // // // // import { GlobalStyle } from '@/lib/theme'
+// // // // import { useTheme } from '@/lib/ThemeContext'
 
-// // // // export function Providers({ children }: { children: React.ReactNode }) {
-// // // //    const { theme, mounted } = useTheme()
-
-// // // //   if (!mounted) {
-// // // //     return null
-// // // //   }
+// // // // function StyledProviders({ children }: { children: React.ReactNode }) {
+// // // //   const { theme } = useTheme()
 
 // // // //   return (
+// // // //     <StyledThemeProvider theme={theme}>
+// // // //       <GlobalStyle />
+// // // //       {children}
+// // // //     </StyledThemeProvider>
+// // // //   )
+// // // // }
+
+// // // // export function Providers({ children }: { children: React.ReactNode }) {
+// // // //   return (
 // // // //     <StyledComponentsRegistry>
-// // // //       <ThemeProvider theme={theme}>
-// // // //         <GlobalStyle />
-// // // //         {children}
+// // // //       <ThemeProvider>
+// // // //         <StyledProviders>
+// // // //           {children}
+// // // //         </StyledProviders>
 // // // //       </ThemeProvider>
 // // // //     </StyledComponentsRegistry>
 // // // //   )
 // // // // }
+// // // // // // src/app/providers.tsx - Updated to prevent hydration mismatches
+// // // // // 'use client'
+// // // // // import { useState, useEffect, useCallback } from 'react'
+// // // // // import { useTheme } from '@/hooks/useTheme'
+// // // // // import { ThemeProvider } from 'styled-components'
+// // // // // import { lightTheme, darkTheme } from '@/lib/theme-config'
+// // // // // import StyledComponentsRegistry from '@/lib/registry'
+// // // // // import { GlobalStyle } from '@/lib/theme'
 
-// // // // //   // Use null initial state to prevent hydration mismatch
-// // // // //   const [mounted, setMounted] = useState(false)
-// // // // //   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
+// // // // // export function Providers({ children }: { children: React.ReactNode }) {
+// // // // //    const { theme, mounted } = useTheme()
 
-// // // // //   // Move theme detection to a separate effect
-// // // // //   useEffect(() => {
-// // // // //     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-// // // // //     setIsDarkMode(darkModeQuery.matches)
-
-// // // // //     const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
-// // // // //     darkModeQuery.addEventListener('change', handleChange)
-// // // // //     return () => darkModeQuery.removeEventListener('change', handleChange)
-// // // // //   }, [])
-
-// // // // //   // Separate mount effect to ensure sequential execution
-// // // // //   useEffect(() => {
-// // // // //     setMounted(true)
-// // // // //   }, [])
-
-// // // // //   // Render nothing until mounted and theme is detected
-// // // // //   if (!mounted || isDarkMode === null) {
+// // // // //   if (!mounted) {
 // // // // //     return null
 // // // // //   }
 
 // // // // //   return (
 // // // // //     <StyledComponentsRegistry>
-// // // // //       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+// // // // //       <ThemeProvider theme={theme}>
 // // // // //         <GlobalStyle />
 // // // // //         {children}
 // // // // //       </ThemeProvider>
 // // // // //     </StyledComponentsRegistry>
 // // // // //   )
 // // // // // }
+
+// // // // // //   // Use null initial state to prevent hydration mismatch
+// // // // // //   const [mounted, setMounted] = useState(false)
+// // // // // //   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null)
+
+// // // // // //   // Move theme detection to a separate effect
+// // // // // //   useEffect(() => {
+// // // // // //     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+// // // // // //     setIsDarkMode(darkModeQuery.matches)
+
+// // // // // //     const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches)
+// // // // // //     darkModeQuery.addEventListener('change', handleChange)
+// // // // // //     return () => darkModeQuery.removeEventListener('change', handleChange)
+// // // // // //   }, [])
+
+// // // // // //   // Separate mount effect to ensure sequential execution
+// // // // // //   useEffect(() => {
+// // // // // //     setMounted(true)
+// // // // // //   }, [])
+
+// // // // // //   // Render nothing until mounted and theme is detected
+// // // // // //   if (!mounted || isDarkMode === null) {
+// // // // // //     return null
+// // // // // //   }
+
+// // // // // //   return (
+// // // // // //     <StyledComponentsRegistry>
+// // // // // //       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+// // // // // //         <GlobalStyle />
+// // // // // //         {children}
+// // // // // //       </ThemeProvider>
+// // // // // //     </StyledComponentsRegistry>
+// // // // // //   )
+// // // // // // }
 
 ```
 
@@ -3132,70 +3203,12 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 
 ```
 
-# src/components/BlogPost.styles.ts
-
-```ts
-// src/components/BlogPost.styles.ts
-'use client'
-import styled from 'styled-components'
-import type { Theme } from '@/lib/types'
-
-export const Article = styled.article`
-  max-width: 65ch;
-  margin: 0 auto;
-
-  header {
-    margin-bottom: ${({ theme }) => theme.typography.heading.sizes.h2};
-  }
-`
-
-export const Title = styled.h1<{ theme: Theme }>`
-  font-family: ${({ theme }) => theme.typography.heading.fontFamily};
-  font-size: ${({ theme }) => theme.typography.heading.sizes.h1};
-  color: ${({ theme }) => theme.isDarkTheme ?
-    theme.colors.text.dark.primary :
-    theme.colors.text.light.primary};
-  margin-bottom: ${({ theme }) => theme.typography.heading.sizes.h6};
-`
-
-export const Metadata = styled.div<{ theme: Theme }>`
-  font-size: ${({ theme }) => theme.typography.body.sizes.sm};
-  color: ${({ theme }) => theme.isDarkTheme ?
-    theme.colors.text.dark.secondary :
-    theme.colors.text.light.secondary};
-`
-
-export const Content = styled.div<{ theme: Theme }>`
-  font-family: ${({ theme }) => theme.typography.body.fontFamily};
-  font-size: ${({ theme }) => theme.typography.body.sizes.lg};
-  line-height: 1.75;
-
-  h2 {
-    font-family: ${({ theme }) => theme.typography.heading.fontFamily};
-    font-size: ${({ theme }) => theme.typography.heading.sizes.h2};
-    margin-top: 2em;
-    margin-bottom: 1em;
-  }
-
-  p {
-    margin-bottom: 1.5em;
-  }
-
-  a {
-    color: ${({ theme }) => theme.colors.primary[500]};
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
-  }
-`
-
-```
-
 # src/components/BlogPostContent.tsx
 
 ```tsx
 // src/components/BlogPostContent.tsx
 "use client";
-import BlogPostLayout from "./BlogPostLayout";
+import { useState } from "react";
 import Link from "next/link";
 import { ImageWithFallback } from "@/components/ImageWithFallback";
 import { Reactions } from "@/components/Reactions";
@@ -3256,101 +3269,164 @@ export default function BlogPostContent({ post }: { post: Post }) {
 							/>
 						</div>
 					)}
-
+					{/* Content */}
 					<div className='prose prose-lg dark:prose-invert max-w-none'>
 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
-							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
 						</div>
 
 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
 
-						<div className='mt-8 content'>{post.content}</div>
+						<div className='mt-8'>{post.content}</div>
 
 						{/* Engagement Bar */}
-						<div className='sticky bottom-0 bg-gray-200/80 backdrop-blur mt-8 p-4 rounded-lg'>
+						<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
 							<Reactions postId={post.id} />
 						</div>
 					</div>
 				</article>
 
 				{/* Right Column - Comments */}
-				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 p-4 rounded-lg'>
+				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
 					<Comments postId={post.id} />
 				</div>
 			</div>
 		</div>
 	);
 }
+
 // // src/components/BlogPostContent.tsx
 // "use client";
 // import BlogPostLayout from "./BlogPostLayout";
+// import Link from "next/link";
+// import { ImageWithFallback } from "@/components/ImageWithFallback";
+// import { Reactions } from "@/components/Reactions";
+// import { Comments } from "@/components/Comments";
+// import { useAuth } from "@/hooks/useAuth";
+// import { DeletePost } from "./DeletePost";
 
-// type BlogPostProps = {
-// 	post: {
-// 		id: string;
-// 		title: string;
-// 		content: string;
-// 		excerpt?: string;
-// 		cover_image?: string;
-// 		created_at: string;
-// 		slug: string;
-// 		profiles?: {
-// 			username?: string;
-// 		};
+// type Post = {
+// 	id: string;
+// 	title: string;
+// 	content: string;
+// 	excerpt?: string;
+// 	cover_image?: string;
+// 	created_at: string;
+// 	slug: string;
+// 	profiles?: {
+// 		username?: string;
 // 	};
 // };
 
-// export default function BlogPostContent({ post }: BlogPostProps) {
+// export default function BlogPostContent({ post }: { post: Post }) {
+// 	const { isAuthenticated } = useAuth();
+
 // 	return (
-// 		<article className='max-w-3xl mx-auto'>
-// 			<header className='mb-8'>
-// 				<h1 className='text-4xl font-bold mb-4'>{post.title}</h1>
-// 				<div className='text-sm text-gray-600 dark:text-gray-400'>
-// 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-// 				</div>
-// 			</header>
-
-// 			{post.excerpt && <p className='text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
-
-// 			<div className='prose dark:prose-invert max-w-none'>
-// 				{/* Your content rendering here */}
-// 				{post.content}
+// 		<div className='max-w-screen-2xl mx-auto px-4'>
+// 			{/* Header Section */}
+// 			<div className='flex justify-between items-center mb-8'>
+// 				<Link
+// 					href='/blog'
+// 					className='text-primary-400 hover:text-primary-300'
+// 				>
+// 					← Back to posts
+// 				</Link>
+// 				{isAuthenticated && (
+// 					<div className='space-x-4'>
+// 						<Link
+// 							href={`/blog/edit/${post.slug}`}
+// 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// 						>
+// 							Edit Post
+// 						</Link>
+// 						<DeletePost postId={post.id} />
+// 					</div>
+// 				)}
 // 			</div>
-// 		</article>
+
+// 			{/* Main Content Grid */}
+// 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// 				{/* Left Column - Article Content */}
+// 				<article className='relative'>
+// 					{post.cover_image && (
+// 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// 							<ImageWithFallback
+// 								src={post.cover_image}
+// 								alt={post.title}
+// 								className='w-full h-full object-cover'
+// 								priority
+// 							/>
+// 						</div>
+// 					)}
+
+// 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// 							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+// 						</div>
+
+// 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// 						<div className='mt-8 content'>{post.content}</div>
+
+// 						{/* Engagement Bar */}
+// 						<div className='sticky bottom-0 bg-gray-200/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// 							<Reactions postId={post.id} />
+// 						</div>
+// 					</div>
+// 				</article>
+
+// 				{/* Right Column - Comments */}
+// 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 p-4 rounded-lg'>
+// 					<Comments postId={post.id} />
+// 				</div>
+// 			</div>
+// 		</div>
 // 	);
 // }
-
 // // // src/components/BlogPostContent.tsx
 // // "use client";
 // // import BlogPostLayout from "./BlogPostLayout";
 
-// // type Post = {
-// // 	id: string;
-// // 	title: string;
-// // 	content: string;
-// // 	excerpt?: string;
-// // 	cover_image?: string;
-// // 	created_at: string;
-// // 	slug: string;
-// // 	profiles?: {
-// // 		username?: string;
+// // type BlogPostProps = {
+// // 	post: {
+// // 		id: string;
+// // 		title: string;
+// // 		content: string;
+// // 		excerpt?: string;
+// // 		cover_image?: string;
+// // 		created_at: string;
+// // 		slug: string;
+// // 		profiles?: {
+// // 			username?: string;
+// // 		};
 // // 	};
 // // };
 
-// // export default function BlogPostContent({ post }: { post: Post }) {
-// // 	return <BlogPostLayout post={post} />;
+// // export default function BlogPostContent({ post }: BlogPostProps) {
+// // 	return (
+// // 		<article className='max-w-3xl mx-auto'>
+// // 			<header className='mb-8'>
+// // 				<h1 className='text-4xl font-bold mb-4'>{post.title}</h1>
+// // 				<div className='text-sm text-gray-600 dark:text-gray-400'>
+// // 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+// // 				</div>
+// // 			</header>
+
+// // 			{post.excerpt && <p className='text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // 			<div className='prose dark:prose-invert max-w-none'>
+// // 				{/* Your content rendering here */}
+// // 				{post.content}
+// // 			</div>
+// // 		</article>
+// // 	);
 // // }
-// // // // src/components/BlogPostContent.tsx - Client Component
+
+// // // // src/components/BlogPostContent.tsx
 // // // "use client";
-// // // import { Article, Title, Metadata, Content } from "./BlogPost.styles";
-// // // import { MarkdownContent } from "@/components/MarkdownContent";
-// // // import { ImageWithFallback } from "@/components/ImageWithFallback";
-// // // import { Reactions } from "@/components/Reactions";
-// // // import { Comments } from "@/components/Comments";
-// // // import Link from "next/link";
-// // // import { DeletePost } from "@/components/DeletePost";
-// // // import { useAuth } from "@/hooks/useAuth";
+// // // import BlogPostLayout from "./BlogPostLayout";
 
 // // // type Post = {
 // // // 	id: string;
@@ -3365,130 +3441,157 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // // // 	};
 // // // };
 
-// // // /*-=====================================================================================
-// // // BlogPostContent component serves as the main display template for individual blog posts,
-// // // combining content presentation with interactive features.
-// // // ======================================================================================-*/
 // // // export default function BlogPostContent({ post }: { post: Post }) {
-// // //    const { isAuthenticated } = useAuth();
-
-// // // 	return (
-// // // 		<Article>
-// // // 			<div className="flex justify-between items-center mb-8">
-// // // 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
-// // // 					← Back to posts
-// // // 				</Link>
-// // // 				{isAuthenticated && (
-// // // 					<div className="space-x-4">
-// // // 						<Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// // // 							Edit Post
-// // // 						</Link>
-// // // 						<DeletePost postId={post.id} />
-// // // 					</div>
-// // // 				)}
-// // // 			</div>
-
-// // // 			{post.cover_image && (
-// // // 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-// // // 					<ImageWithFallback src={post.cover_image} alt={post.title} className="w-full h-full" priority />
-// // // 				</div>
-// // // 			)}
-
-// // // 			<header>
-// // // 				<Title>{post.title}</Title>
-// // // 				<Metadata>
-// // // 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-// // // 				</Metadata>
-// // // 			</header>
-
-// // // 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
-
-// // // 			<Content>
-// // // 				<MarkdownContent content={post.content} />
-// // // 				<div className="mt-8 border-t border-gray-700 pt-8">
-// // // 					<Reactions postId={post.id} />
-// // // 				</div>
-// // // 			</Content>
-
-// // // 			<Comments postId={post.id} />
-// // // 		</Article>
-// // // 	);
+// // // 	return <BlogPostLayout post={post} />;
 // // // }
-
 // // // // // src/components/BlogPostContent.tsx - Client Component
-// // // // 'use client'
-// // // // import { Article, Title, Metadata, Content } from './BlogPost.styles'
-// // // // import { MarkdownContent } from '@/components/MarkdownContent'
-// // // // import { ImageWithFallback } from '@/components/ImageWithFallback'
-// // // // import { Reactions } from '@/components/Reactions'
-// // // // import { Comments } from '@/components/Comments'
-// // // // import Link from 'next/link'
-// // // // import { DeletePost } from '@/components/DeletePost'
+// // // // "use client";
+// // // // import { Article, Title, Metadata, Content } from "./BlogPost.styles";
+// // // // import { MarkdownContent } from "@/components/MarkdownContent";
+// // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // import { Reactions } from "@/components/Reactions";
+// // // // import { Comments } from "@/components/Comments";
+// // // // import Link from "next/link";
+// // // // import { DeletePost } from "@/components/DeletePost";
+// // // // import { useAuth } from "@/hooks/useAuth";
 
 // // // // type Post = {
-// // // //   id: string
-// // // //   title: string
-// // // //   content: string
-// // // //   excerpt?: string
-// // // //   cover_image?: string
-// // // //   created_at: string
-// // // //   slug: string
-// // // //   profiles?: {
-// // // //     username?: string
-// // // //   }
-// // // // }
+// // // // 	id: string;
+// // // // 	title: string;
+// // // // 	content: string;
+// // // // 	excerpt?: string;
+// // // // 	cover_image?: string;
+// // // // 	created_at: string;
+// // // // 	slug: string;
+// // // // 	profiles?: {
+// // // // 		username?: string;
+// // // // 	};
+// // // // };
 
+// // // // /*-=====================================================================================
+// // // // BlogPostContent component serves as the main display template for individual blog posts,
+// // // // combining content presentation with interactive features.
+// // // // ======================================================================================-*/
 // // // // export default function BlogPostContent({ post }: { post: Post }) {
-// // // //   return (
-// // // //     <Article>
-// // // //       <div className="flex justify-between items-center mb-8">
-// // // //         <Link href="/blog" className="text-blue-400 hover:text-blue-300">
-// // // //           ← Back to posts
-// // // //         </Link>
-// // // //         <div className="space-x-4">
-// // // //           <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-// // // //             Edit Post
-// // // //           </Link>
-// // // //           <DeletePost postId={post.id} />
-// // // //         </div>
-// // // //       </div>
+// // // //    const { isAuthenticated } = useAuth();
 
-// // // //       {post.cover_image && (
-// // // //         <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
-// // // //           <ImageWithFallback
-// // // //             src={post.cover_image}
-// // // //             alt={post.title}
-// // // //             className="w-full h-full"
-// // // //             priority
-// // // //           />
-// // // //         </div>
-// // // //       )}
+// // // // 	return (
+// // // // 		<Article>
+// // // // 			<div className="flex justify-between items-center mb-8">
+// // // // 				<Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// // // // 					← Back to posts
+// // // // 				</Link>
+// // // // 				{isAuthenticated && (
+// // // // 					<div className="space-x-4">
+// // // // 						<Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// // // // 							Edit Post
+// // // // 						</Link>
+// // // // 						<DeletePost postId={post.id} />
+// // // // 					</div>
+// // // // 				)}
+// // // // 			</div>
 
-// // // //       <header>
-// // // //         <Title>{post.title}</Title>
-// // // //         <Metadata>
-// // // //           {new Date(post.created_at).toLocaleDateString()} •
-// // // //           {post.profiles?.username || 'Anonymous'}
-// // // //         </Metadata>
-// // // //       </header>
+// // // // 			{post.cover_image && (
+// // // // 				<div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// // // // 					<ImageWithFallback src={post.cover_image} alt={post.title} className="w-full h-full" priority />
+// // // // 				</div>
+// // // // 			)}
 
-// // // //       {post.excerpt && (
-// // // //         <p className="text-xl text-gray-300 mb-8 font-serif italic">
-// // // //           {post.excerpt}
-// // // //         </p>
-// // // //       )}
+// // // // 			<header>
+// // // // 				<Title>{post.title}</Title>
+// // // // 				<Metadata>
+// // // // 					{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
+// // // // 				</Metadata>
+// // // // 			</header>
 
-// // // //       <Content>
-// // // //         <MarkdownContent content={post.content} />
-// // // //         <div className="mt-8 border-t border-gray-700 pt-8">
-// // // //           <Reactions postId={post.id} />
-// // // //         </div>
-// // // //       </Content>
+// // // // 			{post.excerpt && <p className="text-xl text-gray-300 mb-8 font-serif italic">{post.excerpt}</p>}
 
-// // // //       <Comments postId={post.id} />
-// // // //     </Article>
-// // // //   )
+// // // // 			<Content>
+// // // // 				<MarkdownContent content={post.content} />
+// // // // 				<div className="mt-8 border-t border-gray-700 pt-8">
+// // // // 					<Reactions postId={post.id} />
+// // // // 				</div>
+// // // // 			</Content>
+
+// // // // 			<Comments postId={post.id} />
+// // // // 		</Article>
+// // // // 	);
 // // // // }
+
+// // // // // // src/components/BlogPostContent.tsx - Client Component
+// // // // // 'use client'
+// // // // // import { Article, Title, Metadata, Content } from './BlogPost.styles'
+// // // // // import { MarkdownContent } from '@/components/MarkdownContent'
+// // // // // import { ImageWithFallback } from '@/components/ImageWithFallback'
+// // // // // import { Reactions } from '@/components/Reactions'
+// // // // // import { Comments } from '@/components/Comments'
+// // // // // import Link from 'next/link'
+// // // // // import { DeletePost } from '@/components/DeletePost'
+
+// // // // // type Post = {
+// // // // //   id: string
+// // // // //   title: string
+// // // // //   content: string
+// // // // //   excerpt?: string
+// // // // //   cover_image?: string
+// // // // //   created_at: string
+// // // // //   slug: string
+// // // // //   profiles?: {
+// // // // //     username?: string
+// // // // //   }
+// // // // // }
+
+// // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // //   return (
+// // // // //     <Article>
+// // // // //       <div className="flex justify-between items-center mb-8">
+// // // // //         <Link href="/blog" className="text-blue-400 hover:text-blue-300">
+// // // // //           ← Back to posts
+// // // // //         </Link>
+// // // // //         <div className="space-x-4">
+// // // // //           <Link href={`/blog/edit/${post.slug}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+// // // // //             Edit Post
+// // // // //           </Link>
+// // // // //           <DeletePost postId={post.id} />
+// // // // //         </div>
+// // // // //       </div>
+
+// // // // //       {post.cover_image && (
+// // // // //         <div className="relative rounded-lg overflow-hidden mb-8 aspect-video">
+// // // // //           <ImageWithFallback
+// // // // //             src={post.cover_image}
+// // // // //             alt={post.title}
+// // // // //             className="w-full h-full"
+// // // // //             priority
+// // // // //           />
+// // // // //         </div>
+// // // // //       )}
+
+// // // // //       <header>
+// // // // //         <Title>{post.title}</Title>
+// // // // //         <Metadata>
+// // // // //           {new Date(post.created_at).toLocaleDateString()} •
+// // // // //           {post.profiles?.username || 'Anonymous'}
+// // // // //         </Metadata>
+// // // // //       </header>
+
+// // // // //       {post.excerpt && (
+// // // // //         <p className="text-xl text-gray-300 mb-8 font-serif italic">
+// // // // //           {post.excerpt}
+// // // // //         </p>
+// // // // //       )}
+
+// // // // //       <Content>
+// // // // //         <MarkdownContent content={post.content} />
+// // // // //         <div className="mt-8 border-t border-gray-700 pt-8">
+// // // // //           <Reactions postId={post.id} />
+// // // // //         </div>
+// // // // //       </Content>
+
+// // // // //       <Comments postId={post.id} />
+// // // // //     </Article>
+// // // // //   )
+// // // // // }
 
 ```
 
@@ -3643,19 +3746,32 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 import { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";
 
+type Comment = {
+	id: string;
+	post_id: string;
+	content: string;
+	author_name?: string;
+	created_at: string;
+};
+
 export function Comments({ postId }: { postId: string }) {
-	const [comments, setComments] = useState<any[]>([]);
+	const [comments, setComments] = useState<Comment[]>([]);
 	const [content, setContent] = useState("");
 	const [authorName, setAuthorName] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		loadComments();
 	}, [postId]);
 
 	const loadComments = async () => {
-		const { data } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
+		const { data, error } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
 
+		if (error) {
+			setError("Failed to load comments");
+			return;
+		}
 		setComments(data || []);
 	};
 
@@ -3664,14 +3780,24 @@ export function Comments({ postId }: { postId: string }) {
 		if (!content.trim() || !authorName.trim()) return;
 
 		setIsSubmitting(true);
+		setError(null);
+
 		try {
-			await supabaseClient.from("comments").insert({
-				content: content.trim(),
+			const { error: insertError } = await supabaseClient.from("comments").insert({
 				post_id: postId,
+				content: content.trim(),
 				author_name: authorName.trim(),
+				created_at: new Date().toISOString(),
 			});
+
+			if (insertError) throw insertError;
+
 			setContent("");
-			loadComments();
+			setAuthorName("");
+			await loadComments();
+		} catch (err) {
+			setError("Failed to post comment");
+			console.error(err);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -3680,7 +3806,7 @@ export function Comments({ postId }: { postId: string }) {
 	return (
 		<div className='mt-12'>
 			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
-
+			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
 			<form
 				onSubmit={handleSubmit}
 				className='mb-8 space-y-4'
@@ -3733,215 +3859,547 @@ export function Comments({ postId }: { postId: string }) {
 		</div>
 	);
 }
-
 // // src/components/Comments.tsx
-// 'use client'
-// import { useState, useEffect } from 'react'
-// import { useAuth } from '@/hooks/useAuth'
-// import { supabaseClient } from '@/lib/auth'
+// "use client";
+// import { useState, useEffect } from "react";
+// import { supabaseClient } from "@/lib/auth";
+
+// type Comment = {
+// 	id: string;
+// 	post_id: string;
+// 	content: string;
+// 	author_name: string;
+// 	created_at: string;
+// };
 
 // export function Comments({ postId }: { postId: string }) {
-//   const { user } = useAuth()
-//   const [comments, setComments] = useState<any[]>([])
-//   const [content, setContent] = useState('')
-//   const [isSubmitting, setIsSubmitting] = useState(false)
+// 	const [comments, setComments] = useState<Comment[]>([]);
+// 	const [content, setContent] = useState("");
+// 	const [authorName, setAuthorName] = useState("");
+// 	const [isSubmitting, setIsSubmitting] = useState(false);
+// 	const [error, setError] = useState<string | null>(null);
 
-//   useEffect(() => {
-//     loadComments()
-//   }, [postId])
+// 	useEffect(() => {
+// 		loadComments();
+// 	}, [postId]);
 
-//   const loadComments = async () => {
-//     const { data } = await supabaseClient
-//       .from('comments')
-//       .select('*, profiles(username)')
-//       .eq('post_id', postId)
-//       .order('created_at', { ascending: true })
+// 	const loadComments = async () => {
+// 		try {
+// 			const { data, error } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
 
-//     setComments(data || [])
-//   }
+// 			if (error) throw error;
+// 			setComments(data || []);
+// 		} catch (err) {
+// 			setError("Failed to load comments");
+// 			console.error(err);
+// 		}
+// 	};
 
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault()
-//     if (!user || !content.trim()) return
+// 	const handleSubmit = async (e: React.FormEvent) => {
+// 		e.preventDefault();
+// 		setError(null);
 
-//     setIsSubmitting(true)
-//     try {
-//       await supabaseClient.from('comments').insert({
-//         content: content.trim(),
-//         post_id: postId,
-//         author_id: user.id
-//       })
-//       setContent('')
-//       loadComments()
-//     } finally {
-//       setIsSubmitting(false)
-//     }
-//   }
+// 		if (!content.trim() || !authorName.trim()) return;
 
-//   return (
-//    <div className="mt-12">
-//      <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
+// 		setIsSubmitting(true);
+// 		try {
+// 			// First create the comment
+// 			const { error: insertError } = await supabaseClient.from("comments").insert({
+// 				post_id: postId,
+// 				content: content.trim(),
+// 				author_name: authorName.trim(),
+// 			});
 
-//      {user ? (
-//        <form onSubmit={handleSubmit} className="mb-8">
-//          <textarea
-//            value={content}
-//            onChange={(e) => setContent(e.target.value)}
-//            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
-//            rows={3}
-//            required
-//            placeholder="Write a comment..."
-//          />
-//          <button
-//            type="submit"
-//            disabled={isSubmitting}
-//            className="mt-2 bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-//          >
-//            {isSubmitting ? 'Posting...' : 'Post Comment'}
-//          </button>
-//        </form>
-//      ) : (
-//        <p className="mb-8 text-gray-300">Please sign in to comment</p>
-//      )}
+// 			if (insertError) throw insertError;
 
-//      <div className="space-y-4">
-//        {comments.map((comment) => (
-//          <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
-//            <div className="text-sm text-gray-400 mb-2">
-//              {comment.profiles?.username || 'Anonymous'} • {' '}
-//              {new Date(comment.created_at).toLocaleDateString()}
-//            </div>
-//            <p className="text-gray-200">{comment.content}</p>
-//          </div>
-//        ))}
-//        {comments.length === 0 && (
-//          <p className="text-gray-400">No comments yet</p>
-//        )}
-//      </div>
-//    </div>
-//  )
+// 			// Clear form and reload comments
+// 			setContent("");
+// 			setAuthorName("");
+// 			await loadComments();
+// 		} catch (err) {
+// 			console.error("Insert error:", err);
+// 			setError("Failed to post comment. Please try again.");
+// 		} finally {
+// 			setIsSubmitting(false);
+// 		}
+// 	};
 
-// //   return (
-// //     <div className="mt-12">
-// //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+// 	return (
+// 		<div className='mt-12'>
+// 			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
 
-// //       {user ? (
-// //         <form onSubmit={handleSubmit} className="mb-8">
-// //           <textarea
-// //             value={content}
-// //             onChange={(e) => setContent(e.target.value)}
-// //             className="w-full p-2 border rounded bg-white text-gray-900"
-// //             rows={3}
-// //             required
-// //             placeholder="Write a comment..."
-// //           />
-// //           <button
-// //             type="submit"
-// //             disabled={isSubmitting}
-// //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-// //           >
-// //             {isSubmitting ? 'Posting...' : 'Post Comment'}
-// //           </button>
-// //         </form>
-// //       ) : (
-// //         <p className="mb-8 text-gray-600">Please sign in to comment</p>
-// //       )}
+// 			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
 
-// //       <div className="space-y-4">
-// //         {comments.map((comment) => (
-// //           <div key={comment.id} className="border rounded p-4 bg-white">
-// //             <div className="text-sm text-gray-600 mb-2">
-// //               {comment.profiles?.username || 'Anonymous'} • {' '}
-// //               {new Date(comment.created_at).toLocaleDateString()}
-// //             </div>
-// //             <p>{comment.content}</p>
-// //           </div>
-// //         ))}
-// //         {comments.length === 0 && (
-// //           <p className="text-gray-500">No comments yet</p>
-// //         )}
-// //       </div>
-// //     </div>
-// //   )
-// // }
-// // 'use client'
-// // import { useState } from 'react'
-// // import { useAuth } from '@/hooks/useAuth'
-// // import { supabaseClient } from '@/lib/auth'
+// 			<form
+// 				onSubmit={handleSubmit}
+// 				className='mb-8 space-y-4'
+// 			>
+// 				<div>
+// 					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+// 					<input
+// 						type='text'
+// 						value={authorName}
+// 						onChange={(e) => setAuthorName(e.target.value)}
+// 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// 						required
+// 						placeholder='Your name'
+// 					/>
+// 				</div>
+// 				<div>
+// 					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+// 					<textarea
+// 						value={content}
+// 						onChange={(e) => setContent(e.target.value)}
+// 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// 						rows={3}
+// 						required
+// 						placeholder='Write a comment...'
+// 					/>
+// 				</div>
+// 				<button
+// 					type='submit'
+// 					disabled={isSubmitting}
+// 					className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'
+// 				>
+// 					{isSubmitting ? "Posting..." : "Post Comment"}
+// 				</button>
+// 			</form>
+
+// 			<div className='space-y-4'>
+// 				{comments.map((comment) => (
+// 					<div
+// 						key={comment.id}
+// 						className='border border-gray-700 rounded p-4 bg-gray-800'
+// 					>
+// 						<div className='text-sm text-gray-400 mb-2'>
+// 							{comment.author_name} • {new Date(comment.created_at).toLocaleDateString()}
+// 						</div>
+// 						<p className='text-gray-200'>{comment.content}</p>
+// 					</div>
+// 				))}
+// 				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+// 			</div>
+// 		</div>
+// 	);
+// }
+
+// // // src/components/Comments.tsx
+// // "use client";
+// // import { useState, useEffect } from "react";
+// // import { supabaseClient } from "@/lib/auth";
 
 // // export function Comments({ postId }: { postId: string }) {
-// //   const { user } = useAuth()
-// //   const [comments, setComments] = useState<any[]>([])
-// //   const [content, setContent] = useState('')
-// //   const [isSubmitting, setIsSubmitting] = useState(false)
+// // 	const [comments, setComments] = useState<any[]>([]);
+// // 	const [content, setContent] = useState("");
+// // 	const [authorName, setAuthorName] = useState("");
+// // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// // 	const [error, setError] = useState<string | null>(null);
 
-// //   const loadComments = async () => {
-// //     const { data } = await supabaseClient
-// //       .from('comments')
-// //       .select('*, profiles(username)')
-// //       .eq('post_id', postId)
-// //       .order('created_at', { ascending: true })
+// // 	useEffect(() => {
+// // 		loadComments();
+// // 	}, [postId]);
 
-// //     setComments(data || [])
-// //   }
+// // 	const loadComments = async () => {
+// // 		try {
+// // 			const { data, error } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
 
-// //   const handleSubmit = async (e: React.FormEvent) => {
-// //     e.preventDefault()
-// //     if (!user || !content.trim()) return
+// // 			if (error) throw error;
+// // 			setComments(data || []);
+// // 		} catch (err) {
+// // 			setError("Failed to load comments. Please try refreshing the page.");
+// // 		}
+// // 	};
 
-// //     setIsSubmitting(true)
-// //     try {
-// //       await supabaseClient.from('comments').insert({
-// //         content: content.trim(),
-// //         post_id: postId,
-// //         author_id: user.id
-// //       })
-// //       setContent('')
-// //       loadComments()
-// //     } finally {
-// //       setIsSubmitting(false)
-// //     }
-// //   }
+// // 	const handleSubmit = async (e: React.FormEvent) => {
+// // 		e.preventDefault();
+// // 		setError(null);
+// // 		if (!content.trim() || !authorName.trim()) return;
 
-// //   return (
-// //     <div className="mt-12">
-// //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+// // 		setIsSubmitting(true);
+// // 		try {
+// // 			const { error: insertError } = await supabaseClient.from("comments").insert([
+// // 				{
+// // 					content: content.trim(),
+// // 					post_id: postId,
+// // 					author_name: authorName.trim(),
+// // 					created_at: new Date().toISOString(),
+// // 				},
+// // 			]);
 
-// //       {user ? (
-// //         <form onSubmit={handleSubmit} className="mb-8">
-// //           <textarea
-// //             value={content}
-// //             onChange={(e) => setContent(e.target.value)}
-// //             className="w-full p-2 border rounded bg-white text-gray-900"
-// //             rows={3}
-// //             required
-// //           />
-// //           <button
-// //             type="submit"
-// //             disabled={isSubmitting}
-// //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-// //           >
-// //             {isSubmitting ? 'Posting...' : 'Post Comment'}
-// //           </button>
-// //         </form>
-// //       ) : (
-// //         <p>Please sign in to comment</p>
-// //       )}
+// // 			if (insertError) throw insertError;
 
-// //       <div className="space-y-4">
-// //         {comments.map((comment) => (
-// //           <div key={comment.id} className="border rounded p-4">
-// //             <div className="text-sm text-gray-600 mb-2">
-// //               {comment.profiles?.username || 'Anonymous'} •
-// //               {new Date(comment.created_at).toLocaleDateString()}
-// //             </div>
-// //             <p>{comment.content}</p>
-// //           </div>
-// //         ))}
-// //       </div>
-// //     </div>
-// //   )
+// // 			setContent("");
+// // 			setAuthorName("");
+// // 			await loadComments();
+// // 		} catch (err) {
+// // 			setError(err instanceof Error ? err.message : "Failed to post comment. Please try again.");
+// // 		} finally {
+// // 			setIsSubmitting(false);
+// // 		}
+// // 	};
+
+// // 	return (
+// // 		<div className='mt-12'>
+// // 			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
+
+// // 			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
+
+// // 			<form
+// // 				onSubmit={handleSubmit}
+// // 				className='mb-8 space-y-4'
+// // 			>
+// // 				<div>
+// // 					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+// // 					<input
+// // 						type='text'
+// // 						value={authorName}
+// // 						onChange={(e) => setAuthorName(e.target.value)}
+// // 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// // 						required
+// // 						placeholder='Your name'
+// // 					/>
+// // 				</div>
+// // 				<div>
+// // 					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+// // 					<textarea
+// // 						value={content}
+// // 						onChange={(e) => setContent(e.target.value)}
+// // 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// // 						rows={3}
+// // 						required
+// // 						placeholder='Write a comment...'
+// // 					/>
+// // 				</div>
+// // 				<button
+// // 					type='submit'
+// // 					disabled={isSubmitting}
+// // 					className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'
+// // 				>
+// // 					{isSubmitting ? "Posting..." : "Post Comment"}
+// // 				</button>
+// // 			</form>
+
+// // 			<div className='space-y-4'>
+// // 				{comments.map((comment) => (
+// // 					<div
+// // 						key={comment.id}
+// // 						className='border border-gray-700 rounded p-4 bg-gray-800'
+// // 					>
+// // 						<div className='text-sm text-gray-400 mb-2'>
+// // 							{comment.author_name} • {new Date(comment.created_at).toLocaleDateString()}
+// // 						</div>
+// // 						<p className='text-gray-200'>{comment.content}</p>
+// // 					</div>
+// // 				))}
+// // 				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+// // 			</div>
+// // 		</div>
+// // 	);
 // // }
+// // // // src/components/Comments.tsx
+// // // "use client";
+// // // import { useState, useEffect } from "react";
+// // // import { supabaseClient } from "@/lib/auth";
+
+// // // export function Comments({ postId }: { postId: string }) {
+// // // 	const [comments, setComments] = useState<any[]>([]);
+// // // 	const [content, setContent] = useState("");
+// // // 	const [authorName, setAuthorName] = useState("");
+// // // 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+// // // 	useEffect(() => {
+// // // 		loadComments();
+// // // 	}, [postId]);
+
+// // // 	const loadComments = async () => {
+// // // 		const { data } = await supabaseClient.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
+
+// // // 		setComments(data || []);
+// // // 	};
+
+// // // 	const handleSubmit = async (e: React.FormEvent) => {
+// // // 		e.preventDefault();
+// // // 		if (!content.trim() || !authorName.trim()) return;
+
+// // // 		setIsSubmitting(true);
+// // // 		try {
+// // // 			await supabaseClient.from("comments").insert({
+// // // 				content: content.trim(),
+// // // 				post_id: postId,
+// // // 				author_name: authorName.trim(),
+// // // 			});
+// // // 			setContent("");
+// // // 			loadComments();
+// // // 		} finally {
+// // // 			setIsSubmitting(false);
+// // // 		}
+// // // 	};
+
+// // // 	return (
+// // // 		<div className='mt-12'>
+// // // 			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
+
+// // // 			<form
+// // // 				onSubmit={handleSubmit}
+// // // 				className='mb-8 space-y-4'
+// // // 			>
+// // // 				<div>
+// // // 					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+// // // 					<input
+// // // 						type='text'
+// // // 						value={authorName}
+// // // 						onChange={(e) => setAuthorName(e.target.value)}
+// // // 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// // // 						required
+// // // 						placeholder='Your name'
+// // // 					/>
+// // // 				</div>
+// // // 				<div>
+// // // 					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+// // // 					<textarea
+// // // 						value={content}
+// // // 						onChange={(e) => setContent(e.target.value)}
+// // // 						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+// // // 						rows={3}
+// // // 						required
+// // // 						placeholder='Write a comment...'
+// // // 					/>
+// // // 				</div>
+// // // 				<button
+// // // 					type='submit'
+// // // 					disabled={isSubmitting}
+// // // 					className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'
+// // // 				>
+// // // 					{isSubmitting ? "Posting..." : "Post Comment"}
+// // // 				</button>
+// // // 			</form>
+
+// // // 			<div className='space-y-4'>
+// // // 				{comments.map((comment) => (
+// // // 					<div
+// // // 						key={comment.id}
+// // // 						className='border border-gray-700 rounded p-4 bg-gray-800'
+// // // 					>
+// // // 						<div className='text-sm text-gray-400 mb-2'>
+// // // 							{comment.author_name || "Anonymous"} • {new Date(comment.created_at).toLocaleDateString()}
+// // // 						</div>
+// // // 						<p className='text-gray-200'>{comment.content}</p>
+// // // 					</div>
+// // // 				))}
+// // // 				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+// // // 			</div>
+// // // 		</div>
+// // // 	);
+// // // }
+
+// // // // // src/components/Comments.tsx
+// // // // 'use client'
+// // // // import { useState, useEffect } from 'react'
+// // // // import { useAuth } from '@/hooks/useAuth'
+// // // // import { supabaseClient } from '@/lib/auth'
+
+// // // // export function Comments({ postId }: { postId: string }) {
+// // // //   const { user } = useAuth()
+// // // //   const [comments, setComments] = useState<any[]>([])
+// // // //   const [content, setContent] = useState('')
+// // // //   const [isSubmitting, setIsSubmitting] = useState(false)
+
+// // // //   useEffect(() => {
+// // // //     loadComments()
+// // // //   }, [postId])
+
+// // // //   const loadComments = async () => {
+// // // //     const { data } = await supabaseClient
+// // // //       .from('comments')
+// // // //       .select('*, profiles(username)')
+// // // //       .eq('post_id', postId)
+// // // //       .order('created_at', { ascending: true })
+
+// // // //     setComments(data || [])
+// // // //   }
+
+// // // //   const handleSubmit = async (e: React.FormEvent) => {
+// // // //     e.preventDefault()
+// // // //     if (!user || !content.trim()) return
+
+// // // //     setIsSubmitting(true)
+// // // //     try {
+// // // //       await supabaseClient.from('comments').insert({
+// // // //         content: content.trim(),
+// // // //         post_id: postId,
+// // // //         author_id: user.id
+// // // //       })
+// // // //       setContent('')
+// // // //       loadComments()
+// // // //     } finally {
+// // // //       setIsSubmitting(false)
+// // // //     }
+// // // //   }
+
+// // // //   return (
+// // // //    <div className="mt-12">
+// // // //      <h2 className="text-2xl font-bold mb-6 text-gray-100">Comments</h2>
+
+// // // //      {user ? (
+// // // //        <form onSubmit={handleSubmit} className="mb-8">
+// // // //          <textarea
+// // // //            value={content}
+// // // //            onChange={(e) => setContent(e.target.value)}
+// // // //            className="w-full p-2 border rounded bg-gray-800 text-gray-200 border-gray-700"
+// // // //            rows={3}
+// // // //            required
+// // // //            placeholder="Write a comment..."
+// // // //          />
+// // // //          <button
+// // // //            type="submit"
+// // // //            disabled={isSubmitting}
+// // // //            className="mt-2 bg-blue-500 text-gray-100 px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // //          >
+// // // //            {isSubmitting ? 'Posting...' : 'Post Comment'}
+// // // //          </button>
+// // // //        </form>
+// // // //      ) : (
+// // // //        <p className="mb-8 text-gray-300">Please sign in to comment</p>
+// // // //      )}
+
+// // // //      <div className="space-y-4">
+// // // //        {comments.map((comment) => (
+// // // //          <div key={comment.id} className="border border-gray-700 rounded p-4 bg-gray-800">
+// // // //            <div className="text-sm text-gray-400 mb-2">
+// // // //              {comment.profiles?.username || 'Anonymous'} • {' '}
+// // // //              {new Date(comment.created_at).toLocaleDateString()}
+// // // //            </div>
+// // // //            <p className="text-gray-200">{comment.content}</p>
+// // // //          </div>
+// // // //        ))}
+// // // //        {comments.length === 0 && (
+// // // //          <p className="text-gray-400">No comments yet</p>
+// // // //        )}
+// // // //      </div>
+// // // //    </div>
+// // // //  )
+
+// // // // //   return (
+// // // // //     <div className="mt-12">
+// // // // //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+
+// // // // //       {user ? (
+// // // // //         <form onSubmit={handleSubmit} className="mb-8">
+// // // // //           <textarea
+// // // // //             value={content}
+// // // // //             onChange={(e) => setContent(e.target.value)}
+// // // // //             className="w-full p-2 border rounded bg-white text-gray-900"
+// // // // //             rows={3}
+// // // // //             required
+// // // // //             placeholder="Write a comment..."
+// // // // //           />
+// // // // //           <button
+// // // // //             type="submit"
+// // // // //             disabled={isSubmitting}
+// // // // //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // // //           >
+// // // // //             {isSubmitting ? 'Posting...' : 'Post Comment'}
+// // // // //           </button>
+// // // // //         </form>
+// // // // //       ) : (
+// // // // //         <p className="mb-8 text-gray-600">Please sign in to comment</p>
+// // // // //       )}
+
+// // // // //       <div className="space-y-4">
+// // // // //         {comments.map((comment) => (
+// // // // //           <div key={comment.id} className="border rounded p-4 bg-white">
+// // // // //             <div className="text-sm text-gray-600 mb-2">
+// // // // //               {comment.profiles?.username || 'Anonymous'} • {' '}
+// // // // //               {new Date(comment.created_at).toLocaleDateString()}
+// // // // //             </div>
+// // // // //             <p>{comment.content}</p>
+// // // // //           </div>
+// // // // //         ))}
+// // // // //         {comments.length === 0 && (
+// // // // //           <p className="text-gray-500">No comments yet</p>
+// // // // //         )}
+// // // // //       </div>
+// // // // //     </div>
+// // // // //   )
+// // // // // }
+// // // // // 'use client'
+// // // // // import { useState } from 'react'
+// // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // import { supabaseClient } from '@/lib/auth'
+
+// // // // // export function Comments({ postId }: { postId: string }) {
+// // // // //   const { user } = useAuth()
+// // // // //   const [comments, setComments] = useState<any[]>([])
+// // // // //   const [content, setContent] = useState('')
+// // // // //   const [isSubmitting, setIsSubmitting] = useState(false)
+
+// // // // //   const loadComments = async () => {
+// // // // //     const { data } = await supabaseClient
+// // // // //       .from('comments')
+// // // // //       .select('*, profiles(username)')
+// // // // //       .eq('post_id', postId)
+// // // // //       .order('created_at', { ascending: true })
+
+// // // // //     setComments(data || [])
+// // // // //   }
+
+// // // // //   const handleSubmit = async (e: React.FormEvent) => {
+// // // // //     e.preventDefault()
+// // // // //     if (!user || !content.trim()) return
+
+// // // // //     setIsSubmitting(true)
+// // // // //     try {
+// // // // //       await supabaseClient.from('comments').insert({
+// // // // //         content: content.trim(),
+// // // // //         post_id: postId,
+// // // // //         author_id: user.id
+// // // // //       })
+// // // // //       setContent('')
+// // // // //       loadComments()
+// // // // //     } finally {
+// // // // //       setIsSubmitting(false)
+// // // // //     }
+// // // // //   }
+
+// // // // //   return (
+// // // // //     <div className="mt-12">
+// // // // //       <h2 className="text-2xl font-bold mb-6">Comments</h2>
+
+// // // // //       {user ? (
+// // // // //         <form onSubmit={handleSubmit} className="mb-8">
+// // // // //           <textarea
+// // // // //             value={content}
+// // // // //             onChange={(e) => setContent(e.target.value)}
+// // // // //             className="w-full p-2 border rounded bg-white text-gray-900"
+// // // // //             rows={3}
+// // // // //             required
+// // // // //           />
+// // // // //           <button
+// // // // //             type="submit"
+// // // // //             disabled={isSubmitting}
+// // // // //             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+// // // // //           >
+// // // // //             {isSubmitting ? 'Posting...' : 'Post Comment'}
+// // // // //           </button>
+// // // // //         </form>
+// // // // //       ) : (
+// // // // //         <p>Please sign in to comment</p>
+// // // // //       )}
+
+// // // // //       <div className="space-y-4">
+// // // // //         {comments.map((comment) => (
+// // // // //           <div key={comment.id} className="border rounded p-4">
+// // // // //             <div className="text-sm text-gray-600 mb-2">
+// // // // //               {comment.profiles?.username || 'Anonymous'} •
+// // // // //               {new Date(comment.created_at).toLocaleDateString()}
+// // // // //             </div>
+// // // // //             <p>{comment.content}</p>
+// // // // //           </div>
+// // // // //         ))}
+// // // // //       </div>
+// // // // //     </div>
+// // // // //   )
+// // // // // }
 
 ```
 
@@ -3963,13 +4421,25 @@ export function DeletePost({ postId }: { postId: string }) {
 
     setIsDeleting(true)
     try {
-      await supabaseClient.from('posts').delete().eq('id', postId)
-      router.push('/blog')
+      const { error } = await supabaseClient
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+
+      if (error) throw error
+
+      // Push to blog page first
+      await router.push('/blog')
+      // Then refresh and revalidate
       router.refresh()
+      await fetch('/api/revalidate', { method: 'POST' })
+
     } catch (error) {
-      alert('Failed to delete post')
+      console.error('Error deleting post:', error)
+      alert(`Failed to delete post: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsDeleting(false)
     }
-    setIsDeleting(false)
   }
 
   return (
@@ -3982,6 +4452,141 @@ export function DeletePost({ postId }: { postId: string }) {
     </button>
   )
 }
+// // src/components/DeletePost.tsx
+// "use client";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { supabaseClient } from "@/lib/auth";
+
+// export function DeletePost({ postId }: { postId: string }) {
+// 	const [isDeleting, setIsDeleting] = useState(false);
+// 	const router = useRouter();
+
+// 	const handleDelete = async () => {
+// 		if (!confirm("Are you sure you want to delete this post?")) return;
+
+// 		setIsDeleting(true);
+// 		try {
+// 			// Log pre-delete info
+// 			console.log("Attempting to delete post:", postId);
+
+// 			const { data, error } = await supabaseClient.from("posts").delete().eq("id", postId).select();
+
+// 			console.log("Delete response:", { data, error });
+
+// 			if (error) throw error;
+
+// 			// Call revalidation API
+// 			const revalidateResponse = await fetch("/api/revalidate", {
+// 				method: "POST",
+// 				headers: {
+// 					"Content-Type": "application/json",
+// 				},
+// 				body: JSON.stringify({ path: "/blog" }),
+// 			});
+
+// 			console.log("Revalidate response:", await revalidateResponse.json());
+
+// 			router.push("/blog");
+// 			router.refresh();
+// 		} catch (error) {
+// 			console.error("Error deleting post:", error);
+// 			alert(`Failed to delete post: ${error instanceof Error ? error.message : "Unknown error"}`);
+// 			setIsDeleting(false);
+// 		}
+// 	};
+
+// 	return (
+// 		<button
+// 			onClick={handleDelete}
+// 			disabled={isDeleting}
+// 			className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50'
+// 		>
+// 			{isDeleting ? "Deleting..." : "Delete Post"}
+// 		</button>
+// 	);
+// }
+// // // src/components/DeletePost.tsx
+// // 'use client'
+// // import { useState } from 'react'
+// // import { useRouter } from 'next/navigation'
+// // import { supabaseClient } from '@/lib/auth'
+
+// // export function DeletePost({ postId }: { postId: string }) {
+// //   const [isDeleting, setIsDeleting] = useState(false)
+// //   const router = useRouter()
+
+// //   const handleDelete = async () => {
+// //     if (!confirm('Are you sure you want to delete this post?')) return
+
+// //     setIsDeleting(true)
+// //     try {
+// //       const { error } = await supabaseClient
+// //         .from('posts')
+// //         .delete()
+// //         .eq('id', postId)
+
+// //       if (error) throw error
+
+// //       // Call revalidation API
+// //       await fetch('/api/revalidate', { method: 'POST' })
+
+// //       router.push('/blog')
+// //       router.refresh()
+// //     } catch (error) {
+// //       console.error('Error deleting post:', error)
+// //       alert('Failed to delete post')
+// //     } finally {
+// //       setIsDeleting(false)
+// //     }
+// //   }
+
+// //   return (
+// //     <button
+// //       onClick={handleDelete}
+// //       disabled={isDeleting}
+// //       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+// //     >
+// //       {isDeleting ? 'Deleting...' : 'Delete Post'}
+// //     </button>
+// //   )
+// // }
+
+// // // // src/components/DeletePost.tsx
+// // // 'use client'
+// // // import { useState } from 'react'
+// // // import { useRouter } from 'next/navigation'
+// // // import { supabaseClient } from '@/lib/auth'
+
+// // // export function DeletePost({ postId }: { postId: string }) {
+// // //   const [isDeleting, setIsDeleting] = useState(false)
+// // //   const router = useRouter()
+
+// // //   const handleDelete = async () => {
+// // //     if (!confirm('Are you sure you want to delete this post?')) return
+
+// // //     setIsDeleting(true)
+// // //     try {
+// // //       await supabaseClient.from('posts').delete().eq('id', postId)
+// // //       router.push('/blog')
+// // //       router.refresh()
+// // //     } catch (error) {
+// // //       alert('Failed to delete post')
+// // //     }
+// // //     setIsDeleting(false)
+// // //   }
+
+// // //   return (
+// // //     <button
+// // //       onClick={handleDelete}
+// // //       disabled={isDeleting}
+// // //       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+// // //     >
+// // //       {isDeleting ? 'Deleting...' : 'Delete Post'}
+// // //     </button>
+// // //   )
+// // // }
+
 ```
 
 # src/components/EditForm.tsx
@@ -5410,7 +6015,6 @@ export function Navbar() {
 
 ```tsx
 // src/components/PostCard.tsx
-import styled from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
 import { getCategoryName, getCategoryTextColor, CategoryId } from "@/data/categories";
@@ -5427,47 +6031,98 @@ type PostCardProps = {
 	};
 };
 
-const StyledCard = styled(Card)`
-	&:hover {
-		box-shadow: 0 4px 6px -1px ${({ theme }) => theme.colors.gray[300]};
-	}
-`;
-
 export function PostCard({ post }: PostCardProps) {
 	const categoryTextColor = getCategoryTextColor(post.category);
 
 	return (
 		<Link
 			href={`/blog/${post.slug}`}
-			className='group bg-gray-800 rounded-lg overflow-hidden'
+			className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'
 		>
-			{/* className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"> */}
-			<StyledCard>
-				<div className='aspect-[16/9] relative bg-gray-900'>
-					{post.cover_image ? (
-						<Image
-							src={post.cover_image}
-							alt={post.title}
-							fill
-							className='object-cover'
-							sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-						/>
-					) : (
-						<div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />
-					)}
+			<div className='aspect-[16/9] relative bg-gray-900'>
+				{post.cover_image ? (
+					<Image
+						src={post.cover_image}
+						alt={post.title}
+						fill
+						className='object-cover'
+						sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+					/>
+				) : (
+					<div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />
+				)}
+			</div>
+			<div className='p-4'>
+				<div className='flex justify-between items-center mb-2'>
+					<span className={`text-sm ${categoryTextColor}`}>{getCategoryName(post.category)}</span>
+					<span className='text-sm text-gray-400'>{post.date}</span>
 				</div>
-				<div className='p-4'>
-					<div className='flex justify-between items-center mb-2'>
-						<span className={`text-sm ${categoryTextColor}`}>{getCategoryName(post.category)}</span>
-						<span className='text-sm text-gray-400'>{post.date}</span>
-					</div>
-					<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
-					<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
-				</div>
-			</StyledCard>
+				<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+				<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+			</div>
 		</Link>
 	);
 }
+
+// // src/components/PostCard.tsx
+// import styled from "styled-components";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { getCategoryName, getCategoryTextColor, CategoryId } from "@/data/categories";
+
+// type PostCardProps = {
+// 	post: {
+// 		id: string;
+// 		title: string;
+// 		excerpt: string;
+// 		category: CategoryId;
+// 		date: string;
+// 		slug: string;
+// 		cover_image?: string;
+// 	};
+// };
+
+// const StyledCard = styled(Card)`
+// 	&:hover {
+// 		box-shadow: 0 4px 6px -1px ${({ theme }) => theme.colors.gray[300]};
+// 	}
+// `;
+
+// export function PostCard({ post }: PostCardProps) {
+// 	const categoryTextColor = getCategoryTextColor(post.category);
+
+// 	return (
+// 		<Link
+// 			href={`/blog/${post.slug}`}
+// 			className='group bg-gray-800 rounded-lg overflow-hidden'
+// 		>
+// 			{/* className="group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"> */}
+// 			<StyledCard>
+// 				<div className='aspect-[16/9] relative bg-gray-900'>
+// 					{post.cover_image ? (
+// 						<Image
+// 							src={post.cover_image}
+// 							alt={post.title}
+// 							fill
+// 							className='object-cover'
+// 							sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+// 						/>
+// 					) : (
+// 						<div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />
+// 					)}
+// 				</div>
+// 				<div className='p-4'>
+// 					<div className='flex justify-between items-center mb-2'>
+// 						<span className={`text-sm ${categoryTextColor}`}>{getCategoryName(post.category)}</span>
+// 						<span className='text-sm text-gray-400'>{post.date}</span>
+// 					</div>
+// 					<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+// 					<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+// 				</div>
+// 			</StyledCard>
+// 		</Link>
+// 	);
+// }
 
 ```
 
@@ -7925,42 +8580,6 @@ export type {
 
 ```
 
-# src/lib/registry.tsx
-
-```tsx
-// src/lib/registry.tsx
-'use client'
-import React, { useState } from 'react'
-import { useServerInsertedHTML } from 'next/navigation'
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components'
-
-export default function StyledComponentsRegistry({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  // Only create stylesheet once with lazy initial state
-  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet())
-
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement()
-    styledComponentsStyleSheet.instance.clearTag()
-    return <>{styles}</>
-  })
-
-  if (typeof window !== 'undefined') {
-    return <>{children}</>
-  }
-
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance} enableVendorPrefixes>
-      {children}
-    </StyleSheetManager>
-  )
-}
-
-```
-
 # src/lib/supabase.ts
 
 ```ts
@@ -8773,6 +9392,9 @@ export default {
    ],
    theme: {
       extend: {
+         fontFamily: {
+            baskerville: ['Libre Baskerville', 'serif'],
+         },
          colors: {
             primary: {
                50: '#f6f4fe',
