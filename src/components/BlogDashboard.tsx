@@ -25,7 +25,8 @@ const FeaturedCard = ({ post, category, size = "medium", title, description }: {
 		{post ? (
 			<Link
 				href={`/blog/${post.slug}`}
-				className='buttonContainer group block h-[250px] aspect-[16/9]'
+				// className='buttonContainer group block h-[250px] aspect-[16/9]'
+				className='featuredGroup group block h-96 aspect-[16/9]'
 			>
 				{post.cover_image ? (
 					<div className='absolute inset-0'>
@@ -43,14 +44,18 @@ const FeaturedCard = ({ post, category, size = "medium", title, description }: {
 				) : (
 					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
 				)}
-				<div className='absolute inset-0 p-6 flex flex-col justify-end'>
-					<div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div>
-					{/* <div className={`text-sm font-medium text-primary-300 mb-2`}>{title || category.name}</div> */}
-					{/* <div className={`text-sm font-medium ${category.textColor} mb-2`}>{title || category.name}</div> */}
-					<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
-					{/* bg-brand-primary text-white */}
-					{/* <h3 className='text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3> */}
-					<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+				<div className='featuredContainer absolute inset-0 p-6 flex flex-col justify-end'>
+					{/*--=== Featured text container ===--*/}
+					<div className='featuredTextContainer flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-10 bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'>
+						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
+						<h3 className='text-2xl font-bold text-white group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+					</div>
+					{/* <div className='featuredTextContainer inline-block border border-primary-200/20 rounded-lg p-4 bg-gradient-to-t from-primary-800/70 via-primary-600/70 to-primary-400/70'>
+						<div className={`text-sm font-medium text-primary-300 mb-2`}>{title || category.name}</div>
+						<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+					</div> */}
 				</div>
 			</Link>
 		) : (
@@ -101,9 +106,9 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 			case "tech":
 				return "text-primary-300";
 			case "media":
-				return "text-secondary-300";
+				return "text-primary-300";
 			case "food":
-				return "text-accent-300";
+				return "text-primary-300";
 			case "personal":
 				return "text-primary-200";
 			default:
@@ -152,15 +157,17 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 				})}
 			</div>
 
-			{/* Featured Posts Grid */}
+			{/*---== Featured Posts Grid ===---*/}
 			{!activeCategory && (
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
 					{techPost && (
-						<div className='md:col-span-2 md:row-span-2'>
+						// <div className='md:col-span-4 md:row-span-2'>
+						<div className='md:col-span-2 lg:col-span-2 lg:col-start-1'>
 							<FeaturedCard
 								post={techPost}
 								category={categories[0]}
-								size='large'
+								size='full'
+								// size='large'
 								title='Featured Tech Article'
 							/>
 						</div>
@@ -188,17 +195,18 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 				</div>
 			)}
 
-			{/* Regular Posts Grid */}
+			{/*---== Regular Posts Grid ===---*/}
 			<div>
 				<h2 className='text-2xl font-bold mb-6'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
-				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
+				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
 					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
 						<Link
 							key={post.id}
 							href={`/blog/${post.slug}`}
-							className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'
+							/*-= Individual post container template style =-*/
+							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
 						>
-							<div className='aspect-[16/9] relative bg-gray-900'>
+							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
 								{post.cover_image && (
 									<Image
 										src={post.cover_image}

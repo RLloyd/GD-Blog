@@ -70,7 +70,8 @@ export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) 
 
 					<div className='prose prose-lg max-w-none'>
 						{/* <Title>{post.title}</Title> • styled-components */}
-						<h1 className='text-3xl font-bold mb-4 text-primary-500 dark:text-primary-400'>{post.title}</h1>
+						{/* <h1 className='text-3xl font-bold mb-4 text-primary-500 dark:text-primary-400'>{post.title}</h1> */}
+						<h1 className='text-3xl font-bold mb-4'>{post.title}XSX</h1>
 						<Metadata>
 							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
 						</Metadata>

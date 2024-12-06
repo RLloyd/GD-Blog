@@ -10,8 +10,10 @@
 
 	body {
 		@apply min-h-screen flex flex-col;
-		@apply bg-white text-gray-900;
-		@apply dark:bg-gray-900 dark:text-white;
+		@apply bg-primary-50/20 min-h-screen text-primary-900;
+		/* @apply bg-gradient-to-t from-red-300 to-primary-100 min-h-screen text-primary-900; */
+		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
+		/* @apply dark:bg-primary-950 dark:text-primary-50; */
 	}
 
 	main {
@@ -24,6 +26,7 @@
 	h4,
 	h5,
 	h6 {
+		/* @apply font-baskerville text-primary-100 dark:text-primary-400 font-bold; */
 		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
 	}
 
