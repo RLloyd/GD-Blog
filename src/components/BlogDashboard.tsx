@@ -126,7 +126,8 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 	const remainingPosts = posts.filter((post) => !featuredIds.includes(post.id));
 
 	return (
-		<div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+		// <div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+		<div className='max-w-page mx-auto px-4 py-8 space-y-12'>
 			{/* Category buttons */}
 			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
 				{categories.map((category) => {
@@ -197,7 +198,11 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 
 			{/*---== Regular Posts Grid ===---*/}
 			<div>
-				<h2 className='text-2xl font-bold mb-6'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+				{/*-== Category title ==-*/}
+				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+				{/*-== Category description ==-*/}
+				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-20'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
+				{/*-== Category all posts ==-*/}
 				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
 					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
 						<Link

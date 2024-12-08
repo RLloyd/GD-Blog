@@ -65,7 +65,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
     }
 
     p {
-      font-size: ${({ theme }) => theme.typography.body.sizes.lg};
+      font-size: ${({ theme }) => theme.typography.body.sizes.base};
       line-height: 1.75;
       margin-bottom: 1.5rem;
     }

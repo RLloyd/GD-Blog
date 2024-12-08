@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";
+import Image from "next/image";
 
 type Comment = {
 	id: string;
@@ -62,14 +63,14 @@ export function Comments({ postId }: { postId: string }) {
 
 	return (
 		<div className='mt-12'>
-			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
+			<h2 className='text-2xl font-bold mb-6 text-gray-500'>Comments</h2>
 			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
 			<form
 				onSubmit={handleSubmit}
 				className='mb-8 space-y-4'
 			>
 				<div>
-					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Name</label>
 					<input
 						type='text'
 						value={authorName}
@@ -80,7 +81,7 @@ export function Comments({ postId }: { postId: string }) {
 					/>
 				</div>
 				<div>
-					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Comment</label>
 					<textarea
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
@@ -99,7 +100,7 @@ export function Comments({ postId }: { postId: string }) {
 				</button>
 			</form>
 
-			<div className='space-y-4'>
+			{/* <div className='space-y-4'>
 				{comments.map((comment) => (
 					<div
 						key={comment.id}
@@ -112,6 +113,33 @@ export function Comments({ postId }: { postId: string }) {
 					</div>
 				))}
 				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+			</div> */}
+
+			<div className='space-y-4'>
+				{comments.length === 0 ? (
+					<div className='text-center'>
+						<Image
+							src='/assets/Be-the-first.png'
+							alt='Be the first to comment'
+							width={200}
+							height={150}
+							className='mx-auto mb-4'
+						/>
+						<p className='text-gray-400'>No comments yet</p>
+					</div>
+				) : (
+					comments.map((comment) => (
+						<div
+							key={comment.id}
+							className='border border-gray-700 rounded p-4 bg-gray-800'
+						>
+							<div className='text-sm text-gray-400 mb-2'>
+								{comment.author_name || "Anonymous"} • {new Date(comment.created_at).toLocaleDateString()}
+							</div>
+							<p className='text-gray-200'>{comment.content}</p>
+						</div>
+					))
+				)}
 			</div>
 		</div>
 	);

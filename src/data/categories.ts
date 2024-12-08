@@ -10,9 +10,9 @@ export const categories = [
    },
    {
       id: 'media',
-      name: 'Other Media',
+      name: 'Visual Media',
       icon: Newspaper,
-      description: 'Exploring movies, books, games, and digital content.'
+      description: 'In this section, I share my experiences working on creative projects like video editing with DaVinci Resolve, creating simple animations, designing clean static layouts, and developing intros for corporate presentations. It’s a place to explore the practical side of visual storytelling and design.'
    },
    {
       id: 'food',
@@ -24,7 +24,7 @@ export const categories = [
       id: 'personal',
       name: 'Personal',
       icon: User,
-      description: 'Personal reflections, experiences, and life lessons.'
+      description: 'Personal reflections, experiences, and life lessons. In this section, I share my thoughts, experiences, and lessons I’ve learned along the way. It’s a place for personal stories and reflections on everyday life, offering a glimpse into my journey and the moments that matter most to me.'
    }
 ] as const;
 

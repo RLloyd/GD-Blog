@@ -12,7 +12,8 @@ The homepage serves as the entry point to our blog platform, providing:
 export default function HomePage() {
 	return (
 		<main className='container mx-auto px-4 py-8'>
-			<section className='max-w-4xl mx-auto space-y-8'>
+			{/* <section className='max-w-4xl mx-auto space-y-8'> */}
+			<section className='max-w-page mx-auto space-y-8'>
 				<h1 className='text-4xl font-bold mb-4'>Welcome to My Blog</h1>
 				<div className='text-xl space-y-4'>
 					<p>Dive into a world of creativity, innovation, and flavors! Here, you\'ll find:</p>

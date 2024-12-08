@@ -14,7 +14,7 @@ export const navLinks = {
    brand: {
       href: '/',
       label: 'Mash Media Studio',
-      logo: '/assets/MashMediaStudio.png'
+      logo: '/assets/GD-Fusion-logo.png'
    },
    mainLinks: [
       {
@@ -46,7 +46,8 @@ export const navLinks = {
 
 export const navStyles = {
    base: "bg-white dark:bg-gray-900 shadow-lg transition-colors",
-   container: "container mx-auto px-4",
+   // container: "container mx-auto px-4",
+   container: "max-w-page mx-auto px-4",
    inner: "flex justify-between h-16",
    brand: "flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white",
    link: "hover:text-gray-600 dark:hover:text-gray-300",

@@ -7,8 +7,12 @@ export default {
    content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
    theme: {
       extend: {
+         maxWidth: {
+            'page': 'var(--page-width)',
+         },
          fontFamily: {
-            baskerville: ["Libre Baskerville", "serif"],
+            baskerville: ["var(--font-baskerville)", "serif"],
+            opensans: ["var(--font-opensans)", "system-ui", "sans-serif"],
          },
          colors: {
             primary: {
@@ -108,6 +112,16 @@ export default {
                950: "#1b3201",
             },
          },
+         typography: {
+            DEFAULT: {
+               css: {
+                  fontSize: '1rem',
+                  p: {
+                     fontSize: '1rem',
+                  }
+               }
+            }
+         }
       },
    },
    plugins: [typography],

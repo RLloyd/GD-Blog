@@ -54,7 +54,8 @@ export default async function BlogList() {
 		})) || [];
 
 	return (
-		<div className='max-w-7xl mx-auto'>
+		// <div className='max-w-7xl mx-auto'>
+		<div className='max-w-page mx-auto'>
 			<div className='flex justify-between items-center mb-8 px-4'>
 				<h1 className='text-3xl font-bold'>Blog Posts</h1>
 			</div>

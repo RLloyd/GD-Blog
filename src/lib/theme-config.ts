@@ -1,9 +1,9 @@
 //src/lib/theme-config.ts : used for portfolio-theme.ts
 
 // Add Styled Components declaration
-declare module 'styled-components' {
-   export interface DefaultTheme extends Theme { }
-}
+// declare module 'styled-components' {
+//    export interface DefaultTheme extends Theme { }
+// }
 
 import {
    ThemeMode,
