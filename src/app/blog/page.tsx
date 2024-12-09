@@ -1,10 +1,11 @@
 // src/app/blog/page.tsx
 import Link from "next/link";
 import { supabaseClient } from "@/lib/auth";
-import BlogDashboard from "@/components/BlogDashboard";
+// import BlogDashboard from "@/components/BlogDashboard";
 import { CategoryId } from "@/data/categories";
 import { GridSize } from "@/components/BlogDashboard";
 import { unstable_noStore } from "next/cache";
+import BlogDashboard from "@/components/blog/dashboard";
 
 // Define featured setup type
 type FeaturedSetup = {
@@ -61,7 +62,7 @@ export default async function BlogList() {
 			</div>
 
 			<BlogDashboard
-				posts={formattedPosts}
+				posts={posts}
 				featuredSetup={featuredSetup}
 			/>
 		</div>
