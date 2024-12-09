@@ -1,8 +1,10 @@
 // src/app/layout.tsx
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import { Providers } from "./providers";
-import { Navbar } from "@/components/Navbar";
+// import { Navbar } from "@/components/Navbar";
 import "./globals.css";
+// import MobileNavbar from "@/components/MobileNavbar";
+import { Navbar } from "@/components/MobileNavbar";
 
 const baskerville = Libre_Baskerville({
 	subsets: ["latin"],
@@ -44,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<Providers>
 					<div className='min-h-screen flex flex-col'>
 						<Navbar />
+						{/* <MobileNavbar /> */}
 						<main className='flex-1 container mx-auto px-4 py-8'>{children}</main>
 					</div>
 				</Providers>
@@ -89,7 +92,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // 			>
 // 				<Providers>
 // 					<div className='min-h-screen flex flex-col'>
-// 						<Navbar />
+{
+	/* <Navbar />; */
+}
 // 						<main className='flex-1 container mx-auto px-4 py-8'>{children}</main>
 // 					</div>
 // 				</Providers>

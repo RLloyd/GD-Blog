@@ -76,15 +76,18 @@ public/notes/*
 
 ```ts
 // next.config.ts
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  images: {
-    domains: [
-      'localhost',
-      process.env.NEXT_PUBLIC_SUPABASE_URL!.replace('https://', ''),
-    ],
-  },
+   images: {
+      domains: ['example.com', 'localhost', 'images.unsplash.com'],
+      remotePatterns: [
+         {
+            protocol: 'https',
+            hostname: '**',
+         },
+      ],
+   },
 };
 
 export default nextConfig;
@@ -94,11 +97,25 @@ export default nextConfig;
 
 // const nextConfig: NextConfig = {
 //   images: {
-//     domains: ['https://cwqfksyohgvbvojewrzr.supabase.co'], // Replace with your actual Supabase domain
+//     domains: [
+//       'localhost',
+//       process.env.NEXT_PUBLIC_SUPABASE_URL!.replace('https://', ''),
+//     ],
 //   },
 // };
 
 // export default nextConfig;
+
+// // // next.config.ts
+// // import type { NextConfig } from "next";
+
+// // const nextConfig: NextConfig = {
+// //   images: {
+// //     domains: ['https://cwqfksyohgvbvojewrzr.supabase.co'], // Replace with your actual Supabase domain
+// //   },
+// // };
+
+// // export default nextConfig;
 ```
 
 # package.json
@@ -117,14 +134,22 @@ export default nextConfig;
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.46.2",
+    "@types/prismjs": "^1.26.5",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "encoding": "^0.1.13",
+    "highlight.js": "^11.10.0",
     "lucide-react": "^0.462.0",
     "next": "15.0.3",
     "prismjs": "^1.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "recharts": "^2.14.1",
+    "rehype-highlight": "^7.0.1",
     "rehype-prism-plus": "^2.0.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
@@ -176,6 +201,18 @@ datasource db {
 }
 
 ```
+
+# public/assets/Be-the-first.png
+
+This is a binary file of the type: Image
+
+# public/assets/GD-Fusion-logo.png
+
+This is a binary file of the type: Image
+
+# public/assets/LittleLloyd-FB.jpg
+
+This is a binary file of the type: Image
 
 # public/assets/MashMediaStudio.png
 
@@ -237,30 +274,141 @@ body {
 # public/notes/misc.tsx
 
 ```tsx
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabaseClient } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
+import { ImageUpload } from "@/components/ImageUpload";
+import { ImageWithFallback } from "@/components/ImageWithFallback";
+import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+import { Loader2 } from "lucide-react";
+import { categories, CategoryId } from "@/data/categories";
+
+type ReactComponentData = {
+	name: string;
+	props: Record<string, any>;
+	code: string;
+};
+
+function parseReactComponent(content: string): ReactComponentData {
+	try {
+		const nameMatch = content.match(/(?:function|const)\s+(\w+)/);
+		const name = nameMatch ? nameMatch[1] : "MyComponent";
+
+		const propsMatch = content.match(/(?:function|const)\s+\w+\s*\((\{[^}]*\})\)/);
+		const propsString = propsMatch ? propsMatch[1] : "{}";
+		const props = Function(`return ${propsString}`)();
+
+		return { name, props, code: content };
+	} catch (e) {
+		return { name: "MyComponent", props: {}, code: content };
+	}
+}
+
+function generateReactComponent(name: string, props: Record<string, any>, code: string): string {
+	if (!code.includes("export default")) {
+		const propsString = Object.keys(props).length ? `{ ${Object.keys(props).join(", ")} }` : "props";
+		return `export default function ${name}(${propsString}) {
+  return (
+    ${code}
+  );
+}`;
+	}
+	return code;
+}
+
+export function EditForm({ post }: { post: Post }) {
+	const router = useRouter();
+	const { user } = useAuth();
+	const [contentFormat, setContentFormat] = useState(() => {
+		return post.content.includes("export default") ? "react" : "markdown";
+	});
+
+	const [componentData, setComponentData] = useState<ReactComponentData>(() => {
+		return contentFormat === "react" ? parseReactComponent(post.content) : { name: "MyComponent", props: {}, code: "" };
+	});
+
+	const [formData, setFormData] = useState({
+		title: post.title,
+		content: post.content,
+		excerpt: post.excerpt || "",
+		cover_image: post.cover_image || "",
+		category: post.category || ("tech" as CategoryId),
+	});
+
+	const handleComponentChange = (field: keyof ReactComponentData, value: any) => {
+		setComponentData((prev) => {
+			const updated = { ...prev, [field]: value };
+			const newContent = generateReactComponent(updated.name, updated.props, updated.code);
+			setFormData((prev) => ({ ...prev, content: newContent }));
+			return updated;
+		});
+	};
+
+	// Rest of the component remains the same until the return statement
+
+	return (
+		<form
+			onSubmit={handleSubmit}
+			className='space-y-6 max-w-4xl mx-auto px-4'
+		>
+			{/* Previous form fields remain the same */}
+
+			<div>
+				<label className='block text-sm font-medium mb-2'>Content</label>
+				{contentFormat === "react" ? (
+					<div className='space-y-4'>
+						<div>
+							<label className='block text-sm font-medium mb-2'>Component Name</label>
+							<input
+								type='text'
+								value={componentData.name}
+								onChange={(e) => handleComponentChange("name", e.target.value)}
+								className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+							/>
+						</div>
+						<div>
+							<label className='block text-sm font-medium mb-2'>Component Props (JSON)</label>
+							<textarea
+								value={JSON.stringify(componentData.props, null, 2)}
+								onChange={(e) => {
+									try {
+										const props = JSON.parse(e.target.value);
+										handleComponentChange("props", props);
+									} catch {} // Ignore invalid JSON while typing
+								}}
+								className='w-full h-32 p-2 font-mono text-sm bg-white dark:bg-gray-800 border rounded border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+								spellCheck={false}
+							/>
+						</div>
+						<div>
+							<label className='block text-sm font-medium mb-2'>Component Code</label>
+							<textarea
+								value={componentData.code}
+								onChange={(e) => handleComponentChange("code", e.target.value)}
+								className='w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 border rounded border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+								spellCheck={false}
+							/>
+						</div>
+					</div>
+				) : (
+					<RichMarkdownEditor
+						initialContent={formData.content}
+						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+					/>
+				)}
+			</div>
+
+			{/* Submit buttons remain the same */}
+		</form>
+	);
+}
 
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
-// src/components/ThemeToggle.tsx
-"use client";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
-
-export function ThemeToggle() {
-	const { isDark, toggleTheme } = useTheme();
-
-	return (
-		<button
-			onClick={toggleTheme}
-			className='p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
-			aria-label='Toggle theme'
-		>
-			{isDark ? <Sun className='h-5 w-5 text-yellow-500' /> : <Moon className='h-5 w-5 text-gray-700' />}
-		</button>
-	);
-}
 
 ```
 
@@ -683,130 +831,6 @@ strong {
 
 ```
 
-# public/notes/Theme Implementation Doc.md
-
-```md
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-
-/* Base styles */
-body {
-  font-family: 'Libre Baskerville', serif;
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #2D3748;
-  max-width: 50rem;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #FFFDF7;
-}
-
-</style>
-
-<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
-
-# Theme Implementation Documentation
-
-## ThemeContext and Hook
-\`\`\`typescript
-// contexts/ThemeContext.tsx
-
-// Context Type
-type ThemeContextType = {
-  theme: Theme;
-  isDark: boolean;
-  toggleTheme: () => void;
-}
-
-// Hook Implementation
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeContextProvider')
-  }
-  return context
-}
-
-// Usage Example
-function Component() {
-  const { theme, isDark, toggleTheme } = useTheme()
-  return <button onClick={toggleTheme}>Toggle</button>
-}
-\`\`\`
-
-## ThemeProvider Implementation
-\`\`\`typescript
-export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false)
-  const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const shouldBeDark = stored ? stored === 'dark' : prefersDark
-
-    setIsDark(shouldBeDark)
-    setCurrentTheme(shouldBeDark ? darkTheme : lightTheme)
-
-    if (shouldBeDark) document.documentElement.classList.add('dark')
-  }, [])
-
-  const toggleTheme = () => {
-    setIsDark(prev => {
-      const newIsDark = !prev
-      const newTheme = newIsDark ? darkTheme : lightTheme
-      setCurrentTheme(newTheme)
-      localStorage.setItem('theme', newIsDark ? 'dark' : 'light')
-      document.documentElement.classList.toggle('dark')
-      return newIsDark
-    })
-  }
-
-  return (
-    <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
-\`\`\`
-
-## Integration Points
-
-### Styled Components
-\`\`\`typescript
-const StyledComponent = styled.div<{ theme: Theme }>`
-  color: ${({ theme }) => theme.isDark ? theme.colors.text.dark : theme.colors.text.light};
-`
-\`\`\`
-
-### Tailwind CSS
-\`\`\`typescript
-function Component() {
-  const { isDark } = useTheme()
-  return (
-    <div className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-      {/* Content */}
-    </div>
-  )
-}
-\`\`\`
-
-## Features
-- System theme detection
-- Theme persistence
-- Type-safe theme access
-- Synchronized styling
-- No flash on page load
-- Error boundary for hook usage
-
-## Best Practices
-1. Always use hook within ThemeProvider
-2. Access theme values through hook
-3. Combine with Tailwind for responsive design
-4. Use theme object for complex dynamic styles
-5. Maintain TypeScript types for theme objects
-```
-
 # public/notes/To-Do.md
 
 ```md
@@ -937,6 +961,20 @@ Future requirements:
 ### December 05, 2024
 
 - Staging area for post that are created but not published
+
+### December 06, 2024
+
+- // src/components/BlogDashboard.tsx
+- Adjusted Featured text area container to wrap around content {/_---== Featured Posts Grid ===---_/}
+- Adjusted the all posts layout template to accomodate padding and changed background {/_---== Regular Posts Grid ===---_/}
+- Changed the light & dark mode background : /_ src/app/globals.css _/
+- Markdwon wasn't working:
+  - Changed BlogPostContent.tsx code
+
+### December 07, 2024
+
+- Change content area font:size to 1rem instead of the regular blog font size of 1.125rem
+-
 
 ```
 
@@ -1287,6 +1325,144 @@ Requires Supabase RLS policy to be set up for post deletion.
 
 ```
 
+# public/project-summaries/Markdown Implementation.md
+
+```md
+# Markdown Implementation in Blog Platform
+
+## Final Solution
+
+- Added rehype-highlight for syntax highlighting
+- Integrated with ReactMarkdown for content rendering
+- Implemented custom styling for markdown elements
+
+## Required Dependencies
+
+\`\`\`bash
+npm install react-markdown rehype-highlight highlight.js
+\`\`\`
+
+## Core Implementation
+
+\`\`\`typescript
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github-dark.css"; // or other themes
+
+<ReactMarkdown
+	rehypePlugins={[rehypeHighlight]}
+	components={{
+		p: ({ children }) => <p className='text-gray-300 mb-4'>{children}</p>,
+		h2: ({ children }) => <h2 className='text-2xl font-bold mt-8 mb-4'>{children}</h2>,
+		// Other component styles...
+	}}
+>
+	{content}
+</ReactMarkdown>;
+\`\`\`
+
+## Available Dark Code Themes
+
+- github-dark.css
+- monokai-sublime.css
+- tokyo-night-dark.css
+- base16/material-darker.css
+- base16/tomorrow-night.css
+
+## Markdown Features
+
+- Headers (#, ##, ###)
+- Code blocks (\`\`\`)
+- Lists (-, 1.)
+- Blockquotes (>)
+- Inline styles (**bold**, _italic_)
+
+```
+
+# public/project-summaries/Project-Structure-Overview.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+# Project Structure Overview:
+
+Pages:
+
+- `/` (HomePage)
+
+  - Landing page introducing blog categories and content overview
+  - Simple welcome section with categories highlights
+
+- `/blog` (BlogList)
+
+  - Main blog dashboard with categorized posts
+  - Featured posts grid and filterable post list
+  - Category-based navigation
+
+- `/blog/[slug]` (BlogPost)
+
+  - Individual post display with full content
+  - Comments and reactions
+  - Author info and metadata
+
+- `/blog/new` (NewPost)
+
+  - Post creation form for authenticated users
+  - Rich markdown editor
+  - Image upload capability
+
+- `/blog/edit/[slug]` (EditPost)
+
+  - Post editing interface
+  - Pre-populated form with existing content
+  - Update/delete functionality
+
+- `/blog/drafts` (DraftsPage)
+  - Draft posts management
+  - Publishing controls
+  - Preview capabilities
+
+Key Components:
+
+- `BlogDashboard`: Category-based post display manager
+- `BlogPostContent`: Post display with formatting
+- `PostForm`: Shared form for creating/editing posts
+- `Comments`: Comment system interface
+- `Reactions`: Post reaction/likes system
+- `Navbar`: Site navigation with auth controls
+- `RichMarkdownEditor`: Text editor with markdown support
+- `ImageUpload`: Image upload handling
+- `StagingArea`: Draft post management interface
+- `ThemeToggle`: Dark/light mode switcher
+
+Core Features:
+
+- Authentication (GitHub)
+- Post CRUD operations
+- Comments & Reactions
+- Category Management
+- Image Uploads
+- Dark/Light Themes
+- Draft System
+
+```
+
 # public/project-summaries/Resolving-Hydration-Styling-Issues.md
 
 ```md
@@ -1345,6 +1521,129 @@ Outstanding tasks:
 6. Implement proper metadata
 
 Would you like to proceed with any of these tasks?
+```
+
+# public/project-summaries/Theme Implementation Doc.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+
+</style>
+
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+# Theme Implementation Documentation
+
+## ThemeContext and Hook
+
+\`\`\`typescript
+// contexts/ThemeContext.tsx
+
+// Context Type
+type ThemeContextType = {
+	theme: Theme;
+	isDark: boolean;
+	toggleTheme: () => void;
+};
+
+// Hook Implementation
+export function useTheme() {
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error("useTheme must be used within ThemeContextProvider");
+	}
+	return context;
+}
+
+// Usage Example
+function Component() {
+	const { theme, isDark, toggleTheme } = useTheme();
+	return <button onClick={toggleTheme}>Toggle</button>;
+}
+\`\`\`
+
+## ThemeProvider Implementation
+
+\`\`\`typescript
+export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
+	const [isDark, setIsDark] = useState(false);
+	const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme);
+
+	useEffect(() => {
+		const stored = localStorage.getItem("theme");
+		const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		const shouldBeDark = stored ? stored === "dark" : prefersDark;
+
+		setIsDark(shouldBeDark);
+		setCurrentTheme(shouldBeDark ? darkTheme : lightTheme);
+
+		if (shouldBeDark) document.documentElement.classList.add("dark");
+	}, []);
+
+	const toggleTheme = () => {
+		setIsDark((prev) => {
+			const newIsDark = !prev;
+			const newTheme = newIsDark ? darkTheme : lightTheme;
+			setCurrentTheme(newTheme);
+			localStorage.setItem("theme", newIsDark ? "dark" : "light");
+			document.documentElement.classList.toggle("dark");
+			return newIsDark;
+		});
+	};
+
+	return <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
+}
+\`\`\`
+
+## Integration Points
+
+### Styled Components
+
+\`\`\`typescript
+const StyledComponent = styled.div<{ theme: Theme }>`
+	color: ${({ theme }) => (theme.isDark ? theme.colors.text.dark : theme.colors.text.light)};
+`;
+\`\`\`
+
+### Tailwind CSS
+
+\`\`\`typescript
+function Component() {
+	const { isDark } = useTheme();
+	return <div className='bg-white text-gray-900 dark:bg-gray-900 dark:text-white'>{/* Content */}</div>;
+}
+\`\`\`
+
+## Features
+
+- System theme detection
+- Theme persistence
+- Type-safe theme access
+- Synchronized styling
+- No flash on page load
+- Error boundary for hook usage
+
+## Best Practices
+
+1. Always use hook within ThemeProvider
+2. Access theme values through hook
+3. Combine with Tailwind for responsive design
+4. Use theme object for complex dynamic styles
+5. Maintain TypeScript types for theme objects
+
 ```
 
 # public/vercel.svg
@@ -1704,7 +2003,8 @@ export default async function BlogList() {
 		})) || [];
 
 	return (
-		<div className='max-w-7xl mx-auto'>
+		// <div className='max-w-7xl mx-auto'>
+		<div className='max-w-page mx-auto'>
 			<div className='flex justify-between items-center mb-8 px-4'>
 				<h1 className='text-3xl font-bold'>Blog Posts</h1>
 			</div>
@@ -1739,15 +2039,20 @@ This is a binary file of the type: Binary
 @tailwind components;
 @tailwind utilities;
 
+:root {
+	--nav-height: 80px;
+	--page-width: 1080px;
+}
+
 @layer base {
 	html {
 		min-height: 100vh;
 	}
 
 	body {
-		@apply min-h-screen flex flex-col;
-		@apply bg-white text-gray-900;
-		@apply dark:bg-gray-900 dark:text-white;
+		@apply min-h-screen flex flex-col font-opensans;
+		@apply bg-primary-50/20 min-h-screen text-primary-900;
+		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
 	}
 
 	main {
@@ -1760,7 +2065,59 @@ This is a binary file of the type: Binary
 	h4,
 	h5,
 	h6 {
-		/* @apply font-baskerville text-primary-100 dark:text-primary-400 font-bold; */
+		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
+	}
+
+	p,
+	span,
+	div,
+	li,
+	a {
+		@apply font-opensans;
+	}
+
+	h1 {
+		@apply text-4xl mb-6;
+	}
+	h2 {
+		@apply text-3xl mb-5;
+	}
+	h3 {
+		@apply text-2xl mb-4;
+	}
+	h4 {
+		@apply text-xl mb-3;
+	}
+	h5 {
+		@apply text-lg mb-2;
+	}
+	h6 {
+		@apply text-base mb-2;
+	}
+}
+
+/*
+@layer base {
+	html {
+		min-height: 100vh;
+	}
+
+	body {
+		@apply min-h-screen flex flex-col;
+		@apply bg-primary-50/20 min-h-screen text-primary-900;
+		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
+	}
+
+	main {
+		@apply flex-1;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
 		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
 	}
 
@@ -1795,7 +2152,7 @@ This is a binary file of the type: Binary
 .prose h5,
 .prose h6 {
 	@apply font-baskerville text-primary-600 dark:text-primary-400;
-}
+} */
 
 ```
 
@@ -1803,14 +2160,23 @@ This is a binary file of the type: Binary
 
 ```tsx
 // src/app/layout.tsx
-import { Libre_Baskerville } from "next/font/google";
+import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import { Providers } from "./providers";
-import { Navbar } from "@/components/Navbar";
+// import { Navbar } from "@/components/Navbar";
 import "./globals.css";
+// import MobileNavbar from "@/components/MobileNavbar";
+import { Navbar } from "@/components/MobileNavbar";
 
 const baskerville = Libre_Baskerville({
 	subsets: ["latin"],
 	weight: ["400", "700"],
+	variable: "--font-baskerville",
+});
+
+const openSans = Open_Sans({
+	subsets: ["latin"],
+	weight: ["400", "500", "600", "700"],
+	variable: "--font-opensans",
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -1818,6 +2184,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html
 			lang='en'
 			suppressHydrationWarning
+			className={`${baskerville.variable} ${openSans.variable}`}
 		>
 			<head>
 				<script
@@ -1834,12 +2201,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				/>
 			</head>
 			<body
-				className={baskerville.className}
+				className={openSans.className}
 				suppressHydrationWarning
 			>
 				<Providers>
 					<div className='min-h-screen flex flex-col'>
 						<Navbar />
+						{/* <MobileNavbar /> */}
 						<main className='flex-1 container mx-auto px-4 py-8'>{children}</main>
 					</div>
 				</Providers>
@@ -1847,6 +2215,54 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		</html>
 	);
 }
+
+// // src/app/layout.tsx
+// import { Libre_Baskerville } from "next/font/google";
+// import { Providers } from "./providers";
+// import { Navbar } from "@/components/Navbar";
+// import "./globals.css";
+
+// const baskerville = Libre_Baskerville({
+// 	subsets: ["latin"],
+// 	weight: ["400", "700"],
+// });
+
+// export default function RootLayout({ children }: { children: React.ReactNode }) {
+// 	return (
+// 		<html
+// 			lang='en'
+// 			suppressHydrationWarning
+// 		>
+// 			<head>
+// 				<script
+// 					dangerouslySetInnerHTML={{
+// 						__html: `
+//               if (localStorage.theme === 'dark') {
+//                 document.documentElement.classList.add('dark')
+//               } else {
+//                 document.documentElement.classList.remove('dark')
+//                 localStorage.setItem('theme', 'light')
+//               }
+//             `,
+// 					}}
+// 				/>
+// 			</head>
+// 			<body
+// 				className={baskerville.className}
+// 				suppressHydrationWarning
+// 			>
+// 				<Providers>
+// 					<div className='min-h-screen flex flex-col'>
+{
+	/* <Navbar />; */
+}
+// 						<main className='flex-1 container mx-auto px-4 py-8'>{children}</main>
+// 					</div>
+// 				</Providers>
+// 			</body>
+// 		</html>
+// 	);
+// }
 
 ```
 
@@ -1867,7 +2283,8 @@ The homepage serves as the entry point to our blog platform, providing:
 export default function HomePage() {
 	return (
 		<main className='container mx-auto px-4 py-8'>
-			<section className='max-w-4xl mx-auto space-y-8'>
+			{/* <section className='max-w-4xl mx-auto space-y-8'> */}
+			<section className='max-w-page mx-auto space-y-8'>
 				<h1 className='text-4xl font-bold mb-4'>Welcome to My Blog</h1>
 				<div className='text-xl space-y-4'>
 					<p>Dive into a world of creativity, innovation, and flavors! Here, you\'ll find:</p>
@@ -1938,16 +2355,1981 @@ export function AuthButton() {
 
 ```
 
+# src/components/blog-components/CodeBlock.tsx
+
+```tsx
+// src/components/blog-components/CodeBlock.tsx
+"use client";
+import Prism from "prismjs";
+import { useState, useEffect } from "react";
+import { Copy, CheckCircle } from "lucide-react";
+import "prismjs/themes/prism-tomorrow.css";
+// import "prismjs/themes/prism-okaidia.css";
+import "prismjs/components/prism-markup"; // For HTML
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/plugins/normalize-whitespace/prism-normalize-whitespace";
+
+// type Theme = "tomorrow" | "twilight" | "okaidia" | "dark" | "funky";
+
+type CodeBlockProps = {
+	code: string;
+	language?: string;
+	fontSize?: string;
+};
+
+export function CodeBlock({
+	code,
+	language = "typescript",
+	fontSize = "0.875rem", // Default size (14px)
+}: CodeBlockProps) {
+	const [copied, setCopied] = useState(false);
+
+	// useEffect(() => {
+	// 	Prism.highlightAll();
+	// }, [code]);
+	useEffect(() => {
+		Prism.plugins.NormalizeWhitespace.setDefaults({
+			"remove-trailing": true,
+			"remove-indent": true,
+			"left-trim": true,
+			"right-trim": true,
+		});
+
+		Prism.highlightAll();
+	}, [code]);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(code);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className='relative group my-6'>
+			<div className='absolute right-2 top-2 flex items-center space-x-2'>
+				<span className='text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded'>{language}</span>
+				<button
+					onClick={handleCopy}
+					className='p-2 text-gray-400 hover:text-white transition-colors'
+				>
+					{copied ? (
+						<CheckCircle
+							size={16}
+							className='text-green-500'
+						/>
+					) : (
+						<Copy size={16} />
+					)}
+				</button>
+			</div>
+
+			<pre
+				className='!mt-0 !bg-[#282c34]'
+				style={{ fontSize }}
+			>
+				<code className={`language-${language}`}>{code}</code>
+			</pre>
+		</div>
+	);
+}
+
+// Usage:
+{
+	/* <CodeBlock
+  code={sampleCode}
+  language="javascript"
+  fontSize="1rem" // 16px
+/> */
+}
+// // src/components/blog-components/CodeBlock.tsx
+// "use client";
+// import { useEffect, useState } from "react";
+// import { Copy, CheckCircle } from "lucide-react";
+// import Prism from "prismjs";
+// import "prismjs/themes/prism-tomorrow.css";
+// // import "prismjs/themes/prism-funky.css";
+// // Import language support
+// import "prismjs/components/prism-typescript";
+// import "prismjs/components/prism-javascript";
+// import "prismjs/components/prism-jsx";
+// import "prismjs/components/prism-tsx";
+// import "prismjs/components/prism-css";
+// import "prismjs/components/prism-json";
+
+// type Theme = "tomorrow" | "twilight" | "okaidia" | "dark" | "funky";
+
+// type CodeBlockProps = {
+// 	code: string;
+// 	language?: string;
+// 	theme?: Theme;
+// 	showLineNumbers?: boolean;
+// };
+
+// export function CodeBlock({ code, language = "typescript", showLineNumbers = true }: CodeBlockProps) {
+// 	const [copied, setCopied] = useState(false);
+
+// 	useEffect(() => {
+// 		Prism.highlightAll();
+// 	}, [code]);
+
+// 	const handleCopy = async () => {
+// 		await navigator.clipboard.writeText(code);
+// 		setCopied(true);
+// 		setTimeout(() => setCopied(false), 2000);
+// 	};
+
+// 	return (
+// 		<div className='relative group my-6'>
+// 			<div className='absolute right-2 top-2 flex items-center space-x-2'>
+// 				<span className='text-xs text-primary-400 bg-gray-800/50 px-2 py-1 rounded'>{language}</span>
+// 				<button
+// 					onClick={handleCopy}
+// 					className='p-2 text-primary-400 hover:text-white transition-colors'
+// 				>
+// 					{copied ? (
+// 						<CheckCircle
+// 							size={16}
+// 							className='text-green-500'
+// 						/>
+// 					) : (
+// 						<Copy size={16} />
+// 					)}
+// 				</button>
+// 			</div>
+
+// 			<pre className='!mt-0 !bg-[#282c34]'>
+// 				<code className={`language-${language}`}>{code}</code>
+// 			</pre>
+// 		</div>
+// 	);
+// }
+// // // src/components/blog-components/CodeBlock.tsx
+// // "use client";
+// // import { useState } from "react";
+// // import { Copy, CheckCircle } from "lucide-react";
+
+// // type Theme = "monokai" | "github-dark" | "dracula" | "nord" | "one-dark";
+
+// // type CodeBlockProps = {
+// // 	code: string;
+// // 	language?: string;
+// // 	theme?: Theme;
+// // };
+
+// // const themes = {
+// // 	monokai: {
+// // 		bg: "bg-[#272822]",
+// // 		text: "text-[#F8F8F2]",
+// // 		lineNumbers: "text-[#75715E]",
+// // 		keywords: "text-[#F92672]",
+// // 		strings: "text-[#E6DB74]",
+// // 		numbers: "text-[#AE81FF]",
+// // 		comments: "text-[#75715E]",
+// // 	},
+// // 	"github-dark": {
+// // 		bg: "bg-[#24292e]",
+// // 		text: "text-[#e1e4e8]",
+// // 		lineNumbers: "text-[#6a737d]",
+// // 		keywords: "text-[#ff7b72]",
+// // 		strings: "text-[#a5d6ff]",
+// // 		numbers: "text-[#79c0ff]",
+// // 		comments: "text-[#8b949e]",
+// // 	},
+// // 	dracula: {
+// // 		bg: "bg-[#282a36]",
+// // 		text: "text-[#f8f8f2]",
+// // 		lineNumbers: "text-[#6272a4]",
+// // 		keywords: "text-[#ff79c6]",
+// // 		strings: "text-[#f1fa8c]",
+// // 		numbers: "text-[#bd93f9]",
+// // 		comments: "text-[#6272a4]",
+// // 	},
+// // 	nord: {
+// // 		bg: "bg-[#2e3440]",
+// // 		text: "text-[#d8dee9]",
+// // 		lineNumbers: "text-[#4c566a]",
+// // 		keywords: "text-[#81a1c1]",
+// // 		strings: "text-[#a3be8c]",
+// // 		numbers: "text-[#b48ead]",
+// // 		comments: "text-[#4c566a]",
+// // 	},
+// // 	"one-dark": {
+// // 		bg: "bg-[#282c34]",
+// // 		text: "text-[#abb2bf]",
+// // 		lineNumbers: "text-[#495162]",
+// // 		keywords: "text-[#c678dd]",
+// // 		strings: "text-[#98c379]",
+// // 		numbers: "text-[#d19a66]",
+// // 		comments: "text-[#7f848e]",
+// // 	},
+// // };
+
+// // export function CodeBlock({ code, language = "typescript", theme = "github-dark" }: CodeBlockProps) {
+// // 	const [copied, setCopied] = useState(false);
+// // 	const lines = code.split("\n");
+// // 	const currentTheme = themes[theme];
+
+// // 	const handleCopy = async () => {
+// // 		await navigator.clipboard.writeText(code);
+// // 		setCopied(true);
+// // 		setTimeout(() => setCopied(false), 2000);
+// // 	};
+
+// // 	return (
+// // 		<div className='relative group my-6'>
+// // 			<div className='absolute right-2 top-2 flex items-center space-x-2 z-10'>
+// // 				<span className={`text-xs ${currentTheme.text} px-2 py-1 rounded-md bg-opacity-50 ${currentTheme.bg}`}>{language}</span>
+// // 				<button
+// // 					onClick={handleCopy}
+// // 					className={`p-2 ${currentTheme.text} hover:opacity-80 transition-opacity rounded-md`}
+// // 					aria-label='Copy code'
+// // 				>
+// // 					{copied ? (
+// // 						<CheckCircle
+// // 							size={16}
+// // 							className='text-green-500'
+// // 						/>
+// // 					) : (
+// // 						<Copy size={16} />
+// // 					)}
+// // 				</button>
+// // 			</div>
+
+// // 			<pre className={`${currentTheme.bg} rounded-lg p-4 overflow-x-auto`}>
+// // 				<code className='block'>
+// // 					{lines.map((line, i) => (
+// // 						<div
+// // 							key={i}
+// // 							className='table-row'
+// // 						>
+// // 							<span className={`table-cell text-right pr-4 ${currentTheme.lineNumbers} select-none w-8`}>{i + 1}</span>
+// // 							<span className={`table-cell pl-4 ${currentTheme.text}`}>{line || "\n"}</span>
+// // 						</div>
+// // 					))}
+// // 				</code>
+// // 			</pre>
+// // 		</div>
+// // 	);
+// // }
+
+// // // Usage example:
+// // // export default function TechnicalPost() {
+// // // 	const sampleCode = `function example() {
+// // //   const greeting = "Hello World";
+// // //   console.log(greeting);
+// // //   return greeting;
+// // // }`;
+
+// // // 	return (
+// // // 		<div className='space-y-6'>
+// // // 			<h2>Monokai Theme</h2>
+// // // 			<CodeBlock
+// // // 				code={sampleCode}
+// // // 				language='javascript'
+// // // 				theme='monokai'
+// // // 			/>
+
+// // // 			<h2>GitHub Dark Theme</h2>
+// // // 			<CodeBlock
+// // // 				code={sampleCode}
+// // // 				language='javascript'
+// // // 				theme='github-dark'
+// // // 			/>
+
+// // // 			<h2>Dracula Theme</h2>
+// // // 			<CodeBlock
+// // // 				code={sampleCode}
+// // // 				language='javascript'
+// // // 				theme='dracula'
+// // // 			/>
+// // // 		</div>
+// // // 	);
+// // // }
+// // // // src/components/blog-components/CodeBlock.tsx
+// // // "use client";
+// // // import { useState } from "react";
+// // // import { Copy, CheckCircle } from "lucide-react";
+
+// // // type CodeBlockProps = {
+// // // 	code: string;
+// // // 	language?: string;
+// // // };
+
+// // // export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
+// // // 	const [copied, setCopied] = useState(false);
+// // // 	const lines = code.split("\n");
+
+// // // 	const handleCopy = async () => {
+// // // 		await navigator.clipboard.writeText(code);
+// // // 		setCopied(true);
+// // // 		setTimeout(() => setCopied(false), 2000);
+// // // 	};
+
+// // // 	return (
+// // // 		<div className='relative group my-6'>
+// // // 			<div className='absolute right-2 top-2 flex items-center space-x-2'>
+// // // 				<span className='text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded'>{language}</span>
+// // // 				<button
+// // // 					onClick={handleCopy}
+// // // 					className='p-2 text-gray-400 hover:text-white transition-colors'
+// // // 					aria-label='Copy code'
+// // // 				>
+// // // 					{copied ? (
+// // // 						<CheckCircle
+// // // 							size={16}
+// // // 							className='text-green-500'
+// // // 						/>
+// // // 					) : (
+// // // 						<Copy size={16} />
+// // // 					)}
+// // // 				</button>
+// // // 			</div>
+
+// // // 			<pre className='bg-gray-900 rounded-lg p-4 overflow-x-auto'>
+// // // 				<code>
+// // // 					{lines.map((line, i) => (
+// // // 						<div
+// // // 							key={i}
+// // // 							className='table-row'
+// // // 						>
+// // // 							<span className='table-cell text-right pr-4 text-gray-500 select-none w-8'>{i + 1}</span>
+// // // 							<span className='table-cell pl-4 text-gray-200'>{line || "\n"}</span>
+// // // 						</div>
+// // // 					))}
+// // // 				</code>
+// // // 			</pre>
+// // // 		</div>
+// // // 	);
+// // // }
+
+```
+
+# src/components/blog-components/InteractiveChartPost.tsx
+
+```tsx
+// src/components/blog-components/InteractiveChartPost.tsx
+"use client";
+import React, { useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+export default function InteractiveChartPost() {
+	const [timeframe, setTimeframe] = useState("1y");
+
+	// Sample data - in real usage, this would be passed as props
+	const data = {
+		"1m": [
+			{ date: "1/1", users: 1200, revenue: 5400 },
+			{ date: "1/8", users: 1400, revenue: 6200 },
+			{ date: "1/15", users: 1800, revenue: 7800 },
+			{ date: "1/22", users: 1600, revenue: 7200 },
+		],
+		"6m": [
+			{ date: "Jul", users: 1000, revenue: 4000 },
+			{ date: "Aug", users: 1500, revenue: 6000 },
+			{ date: "Sep", users: 2000, revenue: 8000 },
+			{ date: "Oct", users: 2500, revenue: 10000 },
+			{ date: "Nov", users: 3000, revenue: 12000 },
+			{ date: "Dec", users: 3500, revenue: 14000 },
+		],
+		"1y": [
+			{ date: "Jan", users: 1000, revenue: 4000 },
+			{ date: "Mar", users: 2000, revenue: 8000 },
+			{ date: "Jun", users: 3000, revenue: 12000 },
+			{ date: "Sep", users: 4000, revenue: 16000 },
+			{ date: "Dec", users: 5000, revenue: 20000 },
+		],
+	};
+
+	return (
+		<div className='bg-white dark:bg-gray-800 rounded-lg p-6 space-y-6'>
+			<div className='flex justify-between items-center'>
+				<h2 className='text-2xl font-bold text-gray-900 dark:text-white'>Growth Metrics</h2>
+				<div className='flex gap-2'>
+					{["1m", "6m", "1y"].map((period) => (
+						<button
+							key={period}
+							onClick={() => setTimeframe(period)}
+							className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
+                ${timeframe === period ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"}`}
+						>
+							{period}
+						</button>
+					))}
+				</div>
+			</div>
+
+			<div className='h-80'>
+				<ResponsiveContainer
+					width='100%'
+					height='100%'
+				>
+					<LineChart
+						data={data[timeframe]}
+						margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+					>
+						<CartesianGrid
+							strokeDasharray='3 3'
+							stroke='#374151'
+						/>
+						<XAxis
+							dataKey='date'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
+						<YAxis
+							yAxisId='left'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
+						<YAxis
+							yAxisId='right'
+							orientation='right'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
+						<Tooltip
+							contentStyle={{
+								backgroundColor: "#1F2937",
+								border: "none",
+								borderRadius: "0.5rem",
+								color: "#F3F4F6",
+							}}
+						/>
+						<Legend />
+						<Line
+							yAxisId='left'
+							type='monotone'
+							dataKey='users'
+							stroke='#3B82F6'
+							strokeWidth={2}
+							dot={{ fill: "#3B82F6", strokeWidth: 2 }}
+							activeDot={{ r: 8 }}
+						/>
+						<Line
+							yAxisId='right'
+							type='monotone'
+							dataKey='revenue'
+							stroke='#10B981'
+							strokeWidth={2}
+							dot={{ fill: "#10B981", strokeWidth: 2 }}
+							activeDot={{ r: 8 }}
+						/>
+					</LineChart>
+				</ResponsiveContainer>
+			</div>
+
+			<div className='space-y-4 text-gray-600 dark:text-gray-300'>
+				<p>This interactive chart shows our growth in users and revenue over time. You can toggle between different timeframes to see the trends.</p>
+				<ul className='list-disc pl-5 space-y-2'>
+					<li>The blue line represents active users</li>
+					<li>The green line represents revenue in USD</li>
+					<li>Hover over data points to see exact values</li>
+				</ul>
+			</div>
+		</div>
+	);
+}
+
+```
+
+# src/components/blog-components/InteractiveCounterPost.tsx
+
+```tsx
+"use client";
+import { useState } from "react";
+// import LoadingSpinner from "../blog/articles/LoadingSpinner";
+import Spinner from "../blog/articles/Spinner";
+
+export default function InteractiveCounterPost() {
+	const [count, setCount] = useState(0);
+	const [theme, setTheme] = useState("blue");
+
+	const colors = {
+		blue: "bg-blue-500 hover:bg-blue-600",
+		green: "bg-green-500 hover:bg-green-600",
+		purple: "bg-purple-500 hover:bg-purple-600",
+	};
+
+	return (
+		<>
+			<div className='bg-white dark:bg-gray-800 rounded-lg p-6 space-y-6'>
+				<div className='flex justify-between items-center'>
+					<h2 className='text-2xl font-bold text-gray-900 dark:text-white'>Interactive Counter Demo</h2>
+					<div className='flex gap-2'>
+						{Object.keys(colors).map((color) => (
+							<button
+								key={color}
+								onClick={() => setTheme(color)}
+								className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
+                  ${theme === color ? `${colors[color]} text-white` : "bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300"}`}
+							>
+								{color}
+							</button>
+						))}
+					</div>
+				</div>
+
+				<div className='flex flex-col items-center gap-4 py-8'>
+					<div className='text-6xl font-bold text-gray-900 dark:text-white'>{count}</div>
+					<div className='flex gap-2'>
+						<button
+							onClick={() => setCount((c) => c - 1)}
+							className={`px-4 py-2 rounded text-white ${colors[theme]}`}
+						>
+							Decrease
+						</button>
+						<button
+							onClick={() => setCount(0)}
+							className='px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white'
+						>
+							Reset
+						</button>
+						<button
+							onClick={() => setCount((c) => c + 1)}
+							className={`px-4 py-2 rounded text-white ${colors[theme]}`}
+						>
+							Increase
+						</button>
+					</div>
+				</div>
+
+				<div className='space-y-4 text-gray-600 dark:text-gray-300'>
+					<p>This is a simple interactive component demonstrating how React components can be embedded in blog posts. Try these features:</p>
+					<ul className='list-disc pl-5 space-y-2'>
+						<li>Click the buttons to change the counter value</li>
+						<li>Use the color buttons to change the theme</li>
+						<li>Notice how the component maintains state</li>
+					</ul>
+				</div>
+			</div>
+			{/* <LoadingSpinner /> */}
+			<Spinner />
+		</>
+	);
+}
+
+```
+
+# src/components/blog/articles/CodeModal.js
+
+```js
+// src/components/blog/articles/CodeModal.js
+import React, { useState } from "react";
+
+function CodeModal() {
+	const [showModal, setShowModal] = useState(false);
+
+	const handleShowModal = () => {
+		setShowModal(true);
+	};
+
+	const handleCloseModal = () => {
+		setShowModal(false);
+	};
+
+	return (
+		<div>
+			{/* ... other content */}
+			<button
+				id='showModal'
+				onClick={handleShowModal}
+			>
+				Show Code
+			</button>
+
+			{showModal && (
+				<div className='modal'>
+					<div className='modal-content'>
+						{/* Your code snippet or other content here */}
+						<pre>
+							<code>
+								{/* Your code snippet */}
+								<div
+									id='codeModal'
+									style='display: none;'
+								>
+									<h2>Code Snippet</h2>
+									<pre>
+										\`\`\`html
+										<div class='loader'></div>
+										\`\`\`
+                              \`\`\`css
+                              .loader {
+                                    border: 16px solid #f3f3f3; /* Light grey */
+                                    border-top: 16px solid #3498db; /* Blue */
+                                    border-radius: 50%;
+                                    width: 120px;
+                                    height: 120px;
+                                    animation: spin 2s linear infinite;
+                                    }
+
+                                    @keyframes spin {
+                                    0% { transform: rotate(0deg); }
+                                    100% { transform: rotate(360deg); }
+                                    }
+										\`\`\`
+									</pre>
+									<button id='closeModal'>Close</button>
+								</div>
+							</code>
+						</pre>
+						<button onClick={handleCloseModal}>Close</button>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}
+
+export default CodeModal;
+
+```
+
+# src/components/blog/articles/LoadingSpinner.tsx
+
+```tsx
+// src/components/blog/articles/LoadingSpinner.tsx
+import { CodeBlock } from "@/components/blog-components/CodeBlock";
+import { useState, useEffect } from "react";
+
+const LoadingSpinner = () => {
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	if (!mounted) return null;
+
+	const sampleCode = `
+   <div className='flex justify-center items-center min-h-[200px]'>
+      <div className="relative w-[120px] h-[120px] before:content-['']
+         before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
+         before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"
+      />
+   </div>
+   `;
+
+	return (
+		<>
+			<div className='flex justify-center items-center min-h-[200px]'>
+				<div
+					className="
+            relative w-[120px] h-[120px] before:content-['']
+            before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
+            before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"
+				/>
+			</div>
+
+			<div className='space-y-6'>
+				<h3>Codeblock Theme</h3>
+				<CodeBlock
+					code={sampleCode}
+					language='HTML'
+					// language='typescript'
+					// theme='monokai'
+					fontSize='1rem' // 16px
+				/>
+
+				{/* <h2>GitHub Dark Theme</h2>
+				<CodeBlock
+					code={sampleCode}
+					language='javascript'
+					theme='github-dark'
+				/>
+
+				<h2>Dracula Theme</h2>
+				<CodeBlock
+					code={sampleCode}
+					language='javascript'
+					theme='dracula'
+				/> */}
+			</div>
+		</>
+	);
+};
+
+export default LoadingSpinner;
+
+```
+
+# src/components/blog/articles/Post.jsx
+
+```jsx
+import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import Modal from "./Modal"; // Reusable Modal Component
+import markdownContent from "./post.md"; // Your Markdown file
+
+const Post = () => {
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const openModal = () => setIsModalOpen(true);
+	const closeModal = () => setIsModalOpen(false);
+
+	return (
+		<div>
+			{/* Render Markdown */}
+			<ReactMarkdown
+				children={markdownContent}
+				components={{
+					button: ({ node, ...props }) => (
+						<button
+							{...props}
+							onClick={openModal}
+						>
+							{props.children}
+						</button>
+					),
+				}}
+			/>
+
+			{/* Modal */}
+			<Modal
+				isOpen={isModalOpen}
+				onClose={closeModal}
+			>
+				<h2>Modal Header</h2>
+				<p>This is the content inside the modal.</p>
+			</Modal>
+		</div>
+	);
+};
+
+export default Post;
+
+```
+
+# src/components/blog/articles/Spinner.css
+
+```css
+.spinner-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+}
+
+.spinner {
+	position: relative;
+	width: 120px;
+	height: 120px;
+}
+
+.spinner::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border: 16px dashed;
+	border-color: gray;
+	border-radius: 50%;
+	animation: spin 4s ease-in-out 7;
+}
+
+/* Keyframes for spin animation */
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+```
+
+# src/components/blog/articles/Spinner.jsx
+
+```jsx
+// src/components/blog-components/Spinner.jsx
+"use client";
+import "./Spinner.css";
+import { CodeBlock } from "@/components/blog-components/CodeBlock";
+// import { useState, useEffect } from "react";
+
+const Spinner = () => {
+	// const [mounted, setMounted] = useState(false);
+
+	// useEffect(() => {
+	// 	setMounted(true);
+	// }, []);
+
+	// if (!mounted) return null;
+
+	const htmlCode = `
+      <div className='spinner-container'>
+         <div className='spinner'></div>
+      </div>
+   `;
+
+	const cssCode = `
+      .spinner-container {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         min-height: 200px;
+      }
+
+      .spinner {
+         position: relative;
+         width: 120px;
+         height: 120px;
+      }
+
+      .spinner::before {
+         content: "";
+         position: absolute;
+         top: 0;
+         right: 0;
+         bottom: 0;
+         left: 0;
+         border: 16px dashed;
+         border-color: gray;
+         border-radius: 50%;
+         animation: spin 4s ease-in-out 7;
+      }
+
+      /* Keyframes for spin animation */
+      @keyframes spin {
+         0% {
+            transform: rotate(0deg);
+         }
+         100% {
+            transform: rotate(360deg);
+         }
+      }
+   `;
+
+	return (
+		<>
+			<div className='spinner-container'>
+				<div className='spinner'></div>
+			</div>
+			<h3>Basic Spinner Codes:</h3>
+			<CodeBlock
+				code={htmlCode}
+				language='HTML'
+				fontSize='1rem' // 16px
+			/>
+			<CodeBlock
+				code={cssCode}
+				language='CSS'
+				fontSize='1rem' // 16px
+			/>
+		</>
+	);
+};
+
+export default Spinner;
+
+```
+
+# src/components/blog/AuthorInfo.tsx
+
+```tsx
+// src/components/blog/AuthorInfo.tsx
+import Image from "next/image";
+
+type AuthorInfoProps = {
+	date: string;
+};
+
+export function AuthorInfo({ date }: AuthorInfoProps) {
+	const formatDate = (date: string) => {
+		return new Date(date).toLocaleDateString("en-US", {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
+	};
+
+	return (
+		<div className='flex items-start gap-4 mb-8'>
+			<Image
+				src='/assets/LittleLloyd-FB.jpg'
+				alt='R.Lloyd Gonzales'
+				width={56}
+				height={56}
+				className='border border-gray-500 rounded-full'
+			/>
+			<div>
+				<h3 className='text-lg font-semibold text-gray-600 dark:text-gray-400 mb-0'>Lloyd</h3>
+				<p className='text-gray-600 dark:text-gray-400 text-sm mb-0 m-0'>Software Engineer</p>
+				<time className='text-gray-500 dark:text-gray-500 text-sm mt-0'>{formatDate(date)}</time>
+			</div>
+		</div>
+	);
+}
+
+```
+
+# src/components/blog/CodeBlock.tsx
+
+```tsx
+// src/components/blog/CodeBlock.tsx
+"use client";
+import { useState } from "react";
+import { Copy, CheckCircle } from "lucide-react";
+
+type CodeBlockProps = {
+	code: string;
+	language?: string;
+	showLineNumbers?: boolean;
+};
+
+export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockProps) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(code);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className='relative group'>
+			{/* Language Label */}
+			{language && <div className='absolute top-2 right-12 px-2 py-1 text-xs text-gray-400 bg-gray-800 rounded'>{language}</div>}
+
+			{/* Copy Button */}
+			<button
+				onClick={handleCopy}
+				className='absolute top-2 right-2 p-1 text-gray-400 hover:text-white transition-colors'
+				aria-label='Copy code'
+			>
+				{copied ? (
+					<CheckCircle
+						size={16}
+						className='text-green-500'
+					/>
+				) : (
+					<Copy size={16} />
+				)}
+			</button>
+
+			{/* Code Content */}
+			<pre className='p-4 bg-gray-900 rounded-lg overflow-x-auto'>
+				<code className='relative flex'>
+					{showLineNumbers && (
+						<div className='pr-4 text-gray-500 select-none text-right'>
+							{code.split("\n").map((_, i) => (
+								<span
+									key={i}
+									className='block'
+								>
+									{i + 1}
+								</span>
+							))}
+						</div>
+					)}
+					<div className='flex-1'>{code}</div>
+				</code>
+			</pre>
+		</div>
+	);
+}
+
+```
+
+# src/components/blog/CoverImage.tsx
+
+```tsx
+// src/components/blog/CoverImage.tsx
+import Image from "next/image";
+
+type CoverImageProps = {
+	src?: string;
+	alt: string;
+};
+
+export function CoverImage({ src, alt }: CoverImageProps) {
+	if (!src) return null;
+
+	return (
+		<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+			<Image
+				src={src}
+				alt={alt}
+				fill
+				className='object-cover'
+				sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+				priority
+			/>
+		</div>
+	);
+}
+
+```
+
+# src/components/blog/EngagementBar.tsx
+
+```tsx
+// src/components/blog/EngagementBar.tsx
+import { Reactions } from "@/components/Reactions";
+
+type EngagementBarProps = {
+	postId: string;
+};
+
+export function EngagementBar({ postId }: EngagementBarProps) {
+	return (
+		<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+			<Reactions postId={postId} />
+		</div>
+	);
+}
+
+```
+
+# src/components/blog/MarkdownRenderer.tsx
+
+```tsx
+// src/components/blog/MarkdownRenderer.tsx
+"use client";
+
+import ReactMarkdown from "react-markdown";
+import Image from "next/image";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
+import { useState } from "react";
+import { Copy, CheckCheck } from "lucide-react";
+import type { ReactNode } from "react";
+
+type CodeBlockProps = {
+	code: string;
+	language?: string;
+};
+
+type MarkdownRendererProps = {
+	content: string;
+};
+
+const CodeBlock = ({ code, language }: CodeBlockProps) => {
+	const [copied, setCopied] = useState(false);
+	const lines = code.split("\n");
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(code);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className='relative mt-4 mb-8'>
+			<div className='absolute top-0 right-0 left-0 flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700 rounded-t-lg z-10'>
+				<span className='text-sm text-gray-400'>{language || "text"}</span>
+				<button
+					onClick={handleCopy}
+					className='flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors'
+				>
+					{copied ? (
+						<>
+							<CheckCheck size={16} />
+							<span>Copied!</span>
+						</>
+					) : (
+						<>
+							<Copy size={16} />
+							<span>Copy</span>
+						</>
+					)}
+				</button>
+			</div>
+
+			<pre className='overflow-x-auto bg-gray-900 rounded-lg pt-12 pb-4'>
+				<code className='block min-w-full'>
+					{lines.map((line, i) => (
+						<div
+							key={i}
+							className='table-row'
+						>
+							<span className='table-cell text-right pr-4 text-gray-500 select-none w-12'>{i + 1}</span>
+							<span className='table-cell pl-4 text-gray-200'>{line || "\n"}</span>
+						</div>
+					))}
+				</code>
+			</pre>
+		</div>
+	);
+};
+
+export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+	return (
+		<ReactMarkdown
+			remarkPlugins={[remarkGfm]}
+			rehypePlugins={[rehypeRaw, rehypeSanitize]}
+			components={{
+				p: ({ children }: { children?: ReactNode }) => {
+					if (!children) return <p />;
+
+					const child = Array.isArray(children) ? children[0] : children;
+					if (typeof child === "object" && child !== null && "type" in child && (child.type === "code" || child.type === "img")) {
+						return <>{children}</>;
+					}
+					return <p>{children}</p>;
+				},
+				code({ className, children, ...props }) {
+					if (!children) return null;
+					const match = /language-(\w+)/.exec(className || "");
+					const language = match ? match[1] : undefined;
+					const content = String(children).trim();
+
+					if (props.inline) {
+						return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{content}</code>;
+					}
+
+					return (
+						<CodeBlock
+							code={content}
+							language={language}
+						/>
+					);
+				},
+				img: ({ src, alt, ...props }) => {
+					if (!src) return null;
+
+					if (src.startsWith("http")) {
+						return (
+							<img
+								src={src}
+								alt={alt || ""}
+								className='rounded-lg max-w-full h-auto my-4'
+							/>
+						);
+					}
+
+					const imageSrc = src.startsWith("/") ? src : `/${src}`;
+					return (
+						<div className='relative w-full aspect-[16/9] my-8'>
+							<Image
+								src={imageSrc}
+								alt={alt || ""}
+								fill
+								className='object-cover rounded-lg'
+								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+								loading='lazy'
+							/>
+						</div>
+					);
+				},
+			}}
+		>
+			{content}
+		</ReactMarkdown>
+	);
+}
+
+// // src/components/blog/MarkdownRenderer.tsx
+// "use client";
+
+// import ReactMarkdown from "react-markdown";
+// import Image from "next/image";
+// import rehypeRaw from "rehype-raw";
+// import rehypeSanitize from "rehype-sanitize";
+// import remarkGfm from "remark-gfm";
+// import { useState } from "react";
+// import { Copy, CheckCheck } from "lucide-react";
+
+// const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
+// 	const [copied, setCopied] = useState(false);
+// 	const lines = code.split("\n");
+
+// 	const handleCopy = async () => {
+// 		await navigator.clipboard.writeText(code);
+// 		setCopied(true);
+// 		setTimeout(() => setCopied(false), 2000);
+// 	};
+
+// 	return (
+// 		<div className='relative mt-4 mb-8'>
+// 			<div className='absolute top-0 right-0 left-0 flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700 rounded-t-lg z-10'>
+// 				<span className='text-sm text-gray-400'>{language || "text"}</span>
+// 				<button
+// 					onClick={handleCopy}
+// 					className='flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors'
+// 				>
+// 					{copied ? (
+// 						<>
+// 							<CheckCheck size={16} />
+// 							<span>Copied!</span>
+// 						</>
+// 					) : (
+// 						<>
+// 							<Copy size={16} />
+// 							<span>Copy</span>
+// 						</>
+// 					)}
+// 				</button>
+// 			</div>
+
+// 			<pre className='overflow-x-auto bg-gray-900 rounded-lg pt-12 pb-4'>
+// 				<code className='block min-w-full'>
+// 					{lines.map((line, i) => (
+// 						<div
+// 							key={i}
+// 							className='table-row'
+// 						>
+// 							<span className='table-cell text-right pr-4 text-gray-500 select-none w-12'>{i + 1}</span>
+// 							<span className='table-cell pl-4 text-gray-200'>{line || "\n"}</span>
+// 						</div>
+// 					))}
+// 				</code>
+// 			</pre>
+// 		</div>
+// 	);
+// };
+
+// export function MarkdownRenderer({ content }: { content: string }) {
+// 	return (
+// 		<ReactMarkdown
+// 			remarkPlugins={[remarkGfm]}
+// 			rehypePlugins={[rehypeRaw, rehypeSanitize]}
+// 			components={{
+// 				// Override paragraph rendering when it contains code or images
+// 				p: ({ children }) => {
+// 					const child = children[0];
+// 					if (typeof child === "object" && child !== null && "type" in child) {
+// 						if (child.type === "code" || child.type === "img") {
+// 							return <>{children}</>;
+// 						}
+// 					}
+// 					return <p>{children}</p>;
+// 				},
+// 				code({ inline, className, children }) {
+// 					const match = /language-(\w+)/.exec(className || "");
+// 					const language = match ? match[1] : undefined;
+// 					const content = String(children).trim();
+
+// 					if (inline) {
+// 						return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{content}</code>;
+// 					}
+
+// 					return (
+// 						<CodeBlock
+// 							code={content}
+// 							language={language}
+// 						/>
+// 					);
+// 				},
+// 				img: ({ src, alt, ...props }) => {
+// 					if (!src) return null;
+
+// 					if (src.startsWith("http")) {
+// 						return (
+// 							<img
+// 								src={src}
+// 								alt={alt || ""}
+// 								className='rounded-lg max-w-full h-auto my-4'
+// 								{...props}
+// 							/>
+// 						);
+// 					}
+
+// 					const imageSrc = src.startsWith("/") ? src : `/${src}`;
+// 					return (
+// 						<div className='relative w-full aspect-[16/9] my-8'>
+// 							<Image
+// 								src={imageSrc}
+// 								alt={alt || ""}
+// 								fill
+// 								className='object-cover rounded-lg'
+// 								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// 								loading='lazy'
+// 								{...props}
+// 							/>
+// 						</div>
+// 					);
+// 				},
+// 			}}
+// 		>
+// 			{content}
+// 		</ReactMarkdown>
+// 	);
+// }
+// // // src/components/blog/MarkdownRenderer.tsx
+// // "use client";
+
+// // import ReactMarkdown from "react-markdown";
+// // import Image from "next/image";
+// // import rehypeRaw from "rehype-raw";
+// // import rehypeSanitize from "rehype-sanitize";
+// // import remarkGfm from "remark-gfm";
+// // import { useState } from "react";
+// // import { Copy, CheckCheck } from "lucide-react";
+
+// // const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
+// // 	const [copied, setCopied] = useState(false);
+// // 	const lines = code.split("\n");
+
+// // 	const handleCopy = async () => {
+// // 		await navigator.clipboard.writeText(code);
+// // 		setCopied(true);
+// // 		setTimeout(() => setCopied(false), 2000);
+// // 	};
+
+// // 	return (
+// // 		<div className='relative mt-4 mb-8'>
+// // 			<div className='absolute top-0 right-0 left-0 flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700 rounded-t-lg'>
+// // 				<span className='text-sm text-gray-400'>{language || "text"}</span>
+// // 				<button
+// // 					onClick={handleCopy}
+// // 					className='flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors'
+// // 				>
+// // 					{copied ? (
+// // 						<>
+// // 							<CheckCheck size={16} />
+// // 							<span>Copied!</span>
+// // 						</>
+// // 					) : (
+// // 						<>
+// // 							<Copy size={16} />
+// // 							<span>Copy</span>
+// // 						</>
+// // 					)}
+// // 				</button>
+// // 			</div>
+
+// // 			<div className='relative'>
+// // 				<pre className='overflow-x-auto bg-gray-900 rounded-lg pt-12 pb-4'>
+// // 					<code className='block min-w-full'>
+// // 						{lines.map((line, i) => (
+// // 							<div
+// // 								key={i}
+// // 								className='table-row'
+// // 							>
+// // 								<span className='table-cell text-right pr-4 text-gray-500 select-none w-12'>{i + 1}</span>
+// // 								<span className='table-cell pl-4 text-gray-200'>{line || "\n"}</span>
+// // 							</div>
+// // 						))}
+// // 					</code>
+// // 				</pre>
+// // 			</div>
+// // 		</div>
+// // 	);
+// // };
+
+// // export function MarkdownRenderer({ content }: { content: string }) {
+// // 	return (
+// // 		<ReactMarkdown
+// // 			remarkPlugins={[remarkGfm]}
+// // 			rehypePlugins={[rehypeRaw, rehypeSanitize]}
+// // 			components={{
+// // 				code({ inline, className, children }) {
+// // 					const match = /language-(\w+)/.exec(className || "");
+// // 					const language = match ? match[1] : undefined;
+// // 					const content = String(children).trim();
+
+// // 					if (inline) {
+// // 						return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{content}</code>;
+// // 					}
+
+// // 					return (
+// // 						<CodeBlock
+// // 							code={content}
+// // 							language={language}
+// // 						/>
+// // 					);
+// // 				},
+// // 				img: ({ src, alt, ...props }) => {
+// // 					if (!src) return null;
+
+// // 					if (src.startsWith("http")) {
+// // 						return (
+// // 							<img
+// // 								src={src}
+// // 								alt={alt || ""}
+// // 								className='rounded-lg max-w-full h-auto my-4'
+// // 								{...props}
+// // 							/>
+// // 						);
+// // 					}
+
+// // 					const imageSrc = src.startsWith("/") ? src : `/${src}`;
+// // 					return (
+// // 						<div className='relative w-full aspect-[16/9] my-8'>
+// // 							<Image
+// // 								src={imageSrc}
+// // 								alt={alt || ""}
+// // 								fill
+// // 								className='object-cover rounded-lg'
+// // 								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// // 								loading='lazy'
+// // 								{...props}
+// // 							/>
+// // 						</div>
+// // 					);
+// // 				},
+// // 			}}
+// // 		>
+// // 			{content}
+// // 		</ReactMarkdown>
+// // 	);
+// // }
+
+// // // // src/components/blog/MarkdownRenderer.tsx
+// // // import ReactMarkdown from "react-markdown";
+// // // import Image from "next/image";
+// // // import rehypeHighlight from "rehype-highlight";
+// // // import rehypeRaw from "rehype-raw";
+// // // import rehypeSanitize from "rehype-sanitize";
+// // // import remarkGfm from "remark-gfm";
+// // // import hljs from "highlight.js/lib/core";
+// // // import javascript from "highlight.js/lib/languages/javascript";
+// // // import typescript from "highlight.js/lib/languages/typescript";
+// // // import xml from "highlight.js/lib/languages/xml";
+// // // import css from "highlight.js/lib/languages/css";
+// // // import markdown from "highlight.js/lib/languages/markdown";
+// // // import json from "highlight.js/lib/languages/json";
+// // // import bash from "highlight.js/lib/languages/bash";
+// // // import sql from "highlight.js/lib/languages/sql";
+
+// // // // Import base style
+// // // import "highlight.js/styles/base16/material-darker.css";
+// // // import { CodeBlock } from "./CodeBlock";
+
+// // // // Register languages
+// // // hljs.registerLanguage("javascript", javascript);
+// // // hljs.registerLanguage("typescript", typescript);
+// // // hljs.registerLanguage("html", xml);
+// // // hljs.registerLanguage("xml", xml);
+// // // hljs.registerLanguage("css", css);
+// // // hljs.registerLanguage("markdown", markdown);
+// // // hljs.registerLanguage("json", json);
+// // // hljs.registerLanguage("bash", bash);
+// // // hljs.registerLanguage("sql", sql);
+
+// // // const ALLOWED_TAGS = ["div", "span", "p", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "strong", "em", "code", "pre", "table", "thead", "tbody", "tr", "th", "td", "blockquote", "hr", "br", "a", "img"];
+
+// // // const ALLOWED_ATTRIBUTES = {
+// // // 	a: ["href", "title", "target", "rel"],
+// // // 	img: ["src", "alt", "title", "width", "height", "loading"],
+// // // 	div: ["class", "style"],
+// // // 	span: ["class", "style"],
+// // // 	code: ["class", "language"],
+// // // };
+
+// // // type MarkdownRendererProps = {
+// // // 	content: string;
+// // // };
+
+// // // export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+// // // 	return (
+// // // 		<ReactMarkdown
+// // // 			remarkPlugins={[remarkGfm]}
+// // // 			rehypePlugins={[rehypeRaw, rehypeSanitize]}
+// // // 			components={{
+// // // 				p: ({ node, children }) => {
+// // // 					if (node?.children[0]?.type === "element" && node.children[0].tagName === "img") {
+// // // 						return <div>{children}</div>;
+// // // 					}
+// // // 					return <p>{children}</p>;
+// // // 				},
+// // // 				img: ({ src, alt, ...props }) => {
+// // // 					if (!src) return null;
+
+// // // 					// Use regular img tag for external URLs
+// // // 					if (src.startsWith("http")) {
+// // // 						return (
+// // // 							<img
+// // // 								src={src}
+// // // 								alt={alt || ""}
+// // // 								className='rounded-lg max-w-full h-auto my-4'
+// // // 								{...props}
+// // // 							/>
+// // // 						);
+// // // 					}
+
+// // // 					// Use Next/Image for local images
+// // // 					const imageSrc = src.startsWith("/") ? src : `/${src}`;
+// // // 					return (
+// // // 						<div className='relative w-full aspect-[16/9] my-8'>
+// // // 							<Image
+// // // 								src={imageSrc}
+// // // 								alt={alt || ""}
+// // // 								fill
+// // // 								className='object-cover rounded-lg'
+// // // 								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// // // 								loading='lazy'
+// // // 								{...props}
+// // // 							/>
+// // // 						</div>
+// // // 					);
+// // // 				},
+// // // 				// img: ({ src, alt, ...props }) => {
+// // // 				// 	if (!src) return null;
+
+// // // 				// const imageSrc = src.startsWith("/") ? src : src.startsWith("http") ? src : `/${src}`;
+
+// // // 				// return (
+// // // 				// 	<div className='relative w-full aspect-[16/9] my-8'>
+// // // 				// 		<Image
+// // // 				// 			src={imageSrc}
+// // // 				// 			alt={alt || ""}
+// // // 				// 			fill
+// // // 				// 			className='object-cover rounded-lg'
+// // // 				// 			sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// // // 				// 			loading='lazy'
+// // // 				// 			{...props}
+// // // 				// 		/>
+// // // 				// 	</div>
+// // // 				// );
+// // // 				// },
+// // // 				a: ({ href, children, ...props }) => {
+// // // 					if (!href) return null;
+// // // 					const isExternal = href.startsWith("http");
+// // // 					return (
+// // // 						<a
+// // // 							href={href}
+// // // 							{...props}
+// // // 							{...(isExternal
+// // // 								? {
+// // // 										target: "_blank",
+// // // 										rel: "noopener noreferrer",
+// // // 								  }
+// // // 								: {})}
+// // // 							className='text-primary-400 hover:text-primary-300 transition-colors'
+// // // 						>
+// // // 							{children}
+// // // 						</a>
+// // // 					);
+// // // 				},
+// // // 				code: ({ node, inline, className, children, ...props }) => {
+// // // 					const match = /language-(\w+)/.exec(className || "");
+// // // 					const language = match ? match[1] : "";
+// // // 					const codeString = Array.isArray(children) ? children.join("") : String(children);
+
+// // // 					if (!inline && language) {
+// // // 						let highlighted;
+// // // 						try {
+// // // 							highlighted = language && hljs.highlight(codeString, { language }).value;
+// // // 						} catch (err) {
+// // // 							highlighted = codeString;
+// // // 						}
+
+// // // 						return (
+// // // 							<pre className={`language-${language} relative overflow-x-auto p-4 bg-gray-900 rounded-lg`}>
+// // // 								<code
+// // // 									className={className}
+// // // 									dangerouslySetInnerHTML={{ __html: highlighted }}
+// // // 									{...props}
+// // // 								/>
+// // // 							</pre>
+// // // 						);
+// // // 					}
+
+// // // 					// return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{codeString}</code>;
+// // // 					return (
+// // // 						<CodeBlock
+// // // 							code={content}
+// // // 							language={language}
+// // // 						/>
+// // // 					);
+// // // 				},
+// // // 			}}
+// // // 		>
+// // // 			{content}
+// // // 		</ReactMarkdown>
+// // // 	);
+// // // }
+
+// // // // // src/components/blog/MarkdownRenderer.tsx
+// // // // import ReactMarkdown from "react-markdown";
+// // // // import Image from "next/image";
+// // // // import rehypeHighlight from "rehype-highlight";
+// // // // import rehypeRaw from "rehype-raw";
+// // // // import rehypeSanitize from "rehype-sanitize";
+// // // // import remarkGfm from "remark-gfm";
+// // // // import hljs from "highlight.js/lib/core";
+// // // // import javascript from "highlight.js/lib/languages/javascript";
+// // // // import typescript from "highlight.js/lib/languages/typescript";
+// // // // import xml from "highlight.js/lib/languages/xml";
+// // // // import css from "highlight.js/lib/languages/css";
+// // // // import markdown from "highlight.js/lib/languages/markdown";
+// // // // import json from "highlight.js/lib/languages/json";
+// // // // import bash from "highlight.js/lib/languages/bash";
+// // // // import sql from "highlight.js/lib/languages/sql";
+
+// // // // // Import base style
+// // // // import "highlight.js/styles/base16/material-darker.css";
+
+// // // // // Register languages
+// // // // hljs.registerLanguage("javascript", javascript);
+// // // // hljs.registerLanguage("typescript", typescript);
+// // // // hljs.registerLanguage("html", xml);
+// // // // hljs.registerLanguage("xml", xml);
+// // // // hljs.registerLanguage("css", css);
+// // // // hljs.registerLanguage("markdown", markdown);
+// // // // hljs.registerLanguage("json", json);
+// // // // hljs.registerLanguage("bash", bash);
+// // // // hljs.registerLanguage("sql", sql);
+
+// // // // const ALLOWED_TAGS = ["div", "span", "p", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "strong", "em", "code", "pre", "table", "thead", "tbody", "tr", "th", "td", "blockquote", "hr", "br", "a", "img"];
+
+// // // // const ALLOWED_ATTRIBUTES = {
+// // // // 	a: ["href", "title", "target", "rel"],
+// // // // 	img: ["src", "alt", "title", "width", "height", "loading"],
+// // // // 	div: ["class", "style"],
+// // // // 	span: ["class", "style"],
+// // // // 	code: ["class", "language"],
+// // // // };
+
+// // // // type MarkdownRendererProps = {
+// // // // 	content: string;
+// // // // };
+
+// // // // export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+// // // // 	return (
+// // // // 		<ReactMarkdown
+// // // // 			remarkPlugins={[remarkGfm]}
+// // // // 			rehypePlugins={[
+// // // // 				[rehypeHighlight, { ignoreMissing: true }],
+// // // // 				rehypeRaw,
+// // // // 				[
+// // // // 					rehypeSanitize,
+// // // // 					{
+// // // // 						allowedTags: ALLOWED_TAGS,
+// // // // 						allowedAttributes: ALLOWED_ATTRIBUTES,
+// // // // 					},
+// // // // 				],
+// // // // 			]}
+// // // // 			components={{
+// // // // 				p: ({ node, children }) => {
+// // // // 					if (node?.children[0]?.type === "element" && node.children[0].tagName === "img") {
+// // // // 						return <div>{children}</div>;
+// // // // 					}
+// // // // 					return <p>{children}</p>;
+// // // // 				},
+// // // // 				img: ({ src, alt, ...props }) => {
+// // // // 					if (!src) return null;
+// // // // 					const imageSrc = src.startsWith("/") ? src : src.startsWith("http") ? src : `/${src}`;
+
+// // // // 					return (
+// // // // 						<div className='relative w-full aspect-[16/9] my-8'>
+// // // // 							<Image
+// // // // 								src={imageSrc}
+// // // // 								alt={alt || ""}
+// // // // 								fill
+// // // // 								className='object-cover rounded-lg'
+// // // // 								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// // // // 								loading='lazy'
+// // // // 								{...props}
+// // // // 							/>
+// // // // 						</div>
+// // // // 					);
+// // // // 				},
+// // // // 				a: ({ href, children, ...props }) => {
+// // // // 					if (!href) return null;
+// // // // 					const isExternal = href.startsWith("http");
+// // // // 					return (
+// // // // 						<a
+// // // // 							href={href}
+// // // // 							{...props}
+// // // // 							{...(isExternal
+// // // // 								? {
+// // // // 										target: "_blank",
+// // // // 										rel: "noopener noreferrer",
+// // // // 								  }
+// // // // 								: {})}
+// // // // 							className='text-primary-400 hover:text-primary-300 transition-colors'
+// // // // 						>
+// // // // 							{children}
+// // // // 						</a>
+// // // // 					);
+// // // // 				},
+// // // // 				code: ({ node, inline, className, children, ...props }) => {
+// // // // 					const match = /language-(\w+)/.exec(className || "");
+// // // // 					const language = match ? match[1] : "";
+// // // // 					const codeString = Array.isArray(children) ? children.join("") : String(children);
+
+// // // // 					if (!inline && language) {
+// // // // 						let highlighted;
+// // // // 						try {
+// // // // 							highlighted = language && hljs.highlight(codeString, { language }).value;
+// // // // 						} catch (err) {
+// // // // 							highlighted = codeString;
+// // // // 						}
+
+// // // // 						return (
+// // // // 							<pre className={`language-${language} relative overflow-x-auto p-4 bg-gray-900 rounded-lg`}>
+// // // // 								<code
+// // // // 									className={className}
+// // // // 									dangerouslySetInnerHTML={{ __html: highlighted }}
+// // // // 									{...props}
+// // // // 								/>
+// // // // 							</pre>
+// // // // 						);
+// // // // 					}
+
+// // // // 					return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{codeString}</code>;
+// // // // 				},
+// // // // 			}}
+// // // // 		>
+// // // // 			{content}
+// // // // 		</ReactMarkdown>
+// // // // 	);
+// // // // }
+
+```
+
 # src/components/BlogDashboard.tsx
 
 ```tsx
-// src/components/BlogDashboard.tsx
+// // src/components/BlogDashboard.tsx : v2
+// "use client";
+// import { useEffect, useState } from "react";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { ArrowLeft } from "lucide-react";
+// import { categories, CategoryId } from "@/data/categories";
+
+// type Post = {
+// 	id: string;
+// 	title: string;
+// 	excerpt: string;
+// 	category: CategoryId;
+// 	date: string;
+// 	slug: string;
+// 	cover_image?: string;
+// };
+
+// const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: "large" | "medium" | "full"; title?: string; description?: string }) => (
+// 	<div
+// 		className={`relative overflow-hidden rounded-xl bg-primary-800
+//       ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
+//          transition-transform duration-300 hover:scale-[1.02]`}
+// 	>
+// 		{post ? (
+// 			<Link
+// 				href={`/blog/${post.slug}`}
+// 				// className='buttonContainer group block h-[250px] aspect-[16/9]'
+// 				className='featuredGroup group block h-96 aspect-[16/9]'
+// 			>
+// 				{post.cover_image ? (
+// 					<div className='absolute inset-0'>
+// 						<Image
+// 							src={post.cover_image}
+// 							alt={post.title}
+// 							fill
+// 							className='object-cover transition-transform duration-500 group-hover:scale-105'
+// 							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+// 							priority={size === "large"}
+// 						/>
+// 						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
+// 						{/* <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' /> */}
+// 					</div>
+// 				) : (
+// 					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// 				)}
+// 				<div className='featuredContainer absolute inset-0 p-6 flex flex-col justify-end'>
+// 					{/*--=== Featured text container ===--*/}
+// 					<div className='featuredTextContainer flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-10 bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'>
+// 						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
+// 						<h3 className='text-2xl font-bold text-white group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+// 						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+// 					</div>
+// 					{/* <div className='featuredTextContainer inline-block border border-primary-200/20 rounded-lg p-4 bg-gradient-to-t from-primary-800/70 via-primary-600/70 to-primary-400/70'>
+// 						<div className={`text-sm font-medium text-primary-300 mb-2`}>{title || category.name}</div>
+// 						<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+// 						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+// 					</div> */}
+// 				</div>
+// 			</Link>
+// 		) : (
+// 			<div className='aspect-[16/9] relative'>
+// 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+// 					<div className='absolute inset-0 p-6 flex items-center justify-center'>
+// 						<p className='text-xl text-white/70'>No {category.name} posts yet</p>
+// 					</div>
+// 				</div>
+// 			</div>
+// 		)}
+// 	</div>
+// );
+
+// export default function BlogDashboard({ posts }: { posts: Post[] }) {
+// 	const [mounted, setMounted] = useState(false);
+// 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+// 	useEffect(() => {
+// 		setMounted(true);
+// 	}, []);
+// 	// Don't render anything until component is mounted to prevent hydration mismatch
+// 	if (!mounted) {
+// 		return null;
+// 	}
+
+// 	// Helper function to get category background color
+// 	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
+// 		switch (categoryId) {
+// 			case "tech":
+// 				return isActive ? "bg-primary-600" : "bg-primary-800 hover:bg-gray-700";
+// 			case "media":
+// 				return isActive ? "bg-secondary-600" : "bg-primary-800 hover:bg-gray-700";
+// 			case "food":
+// 				return isActive ? "bg-accent-600" : "bg-primary-800 hover:bg-gray-700";
+// 			case "personal":
+// 				return isActive ? "bg-success-600" : "bg-primary-800 hover:bg-gray-700";
+// 			default:
+// 				return "bg-primary-800 hover:bg-gray-700";
+// 		}
+// 	};
+
+// 	// Helper function to get text color
+// 	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
+// 		if (isActive) return "text-white";
+
+// 		switch (categoryId) {
+// 			case "tech":
+// 				return "text-primary-300";
+// 			case "media":
+// 				return "text-primary-300";
+// 			case "food":
+// 				return "text-primary-300";
+// 			case "personal":
+// 				return "text-primary-200";
+// 			default:
+// 				return "text-gray-300";
+// 		}
+// 	};
+
+// 	// Get featured posts
+// 	const techPost = posts.find((post) => post.category === "tech");
+// 	const mediaPost = posts.find((post) => post.category === "media");
+// 	const foodPost = posts.find((post) => post.category === "food");
+
+// 	// Filter remaining posts
+// 	const featuredIds = [techPost?.id, mediaPost?.id, foodPost?.id].filter(Boolean);
+// 	const remainingPosts = posts.filter((post) => !featuredIds.includes(post.id));
+
+// 	return (
+// 		// <div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+// 		<div className='max-w-page mx-auto px-4 py-8 space-y-12'>
+// 			{/* Category buttons */}
+// 			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
+// 				{categories.map((category) => {
+// 					const Icon = category.icon;
+// 					const isActive = activeCategory === category.id;
+// 					// console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
+// 					return (
+// 						<button
+// 							key={category.id}
+// 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+// 							className={`
+//                         p-4 rounded-lg flex items-center space-x-3 transition-all
+//                         ${getCategoryColor(category.id, isActive)}
+//                       `}
+// 						>
+// 							<Icon
+// 								size={24}
+// 								className={getTextColor(category.id, isActive)}
+// 							/>
+// 							{/* orig */}
+// 							{/* <span className={`font-medium ${isActive ? "text-white" : ""}`}>{category.name}</span> */}
+// 							{/* manual */}
+// 							{/* <span className={`font-medium ${isActive ? "text-white" : "text-gray-300 dark:text-gray-400"}`}>{category.name}</span> */}
+// 							{/* using helper */}
+// 							<span className={`font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
+// 						</button>
+// 					);
+// 				})}
+// 			</div>
+
+// 			{/*---== Featured Posts Grid ===---*/}
+// 			{!activeCategory && (
+// 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+// 					{techPost && (
+// 						// <div className='md:col-span-4 md:row-span-2'>
+// 						<div className='md:col-span-2 lg:col-span-2 lg:col-start-1'>
+// 							<FeaturedCard
+// 								post={techPost}
+// 								category={categories[0]}
+// 								size='full'
+// 								// size='large'
+// 								title='Featured Tech Article'
+// 							/>
+// 						</div>
+// 					)}
+// 					{mediaPost && (
+// 						<div className='md:col-span-2'>
+// 							<FeaturedCard
+// 								post={mediaPost}
+// 								category={categories[1]}
+// 								size='medium'
+// 								title='Latest Media'
+// 							/>
+// 						</div>
+// 					)}
+// 					{foodPost && (
+// 						<div className='md:col-span-2 lg:col-span-4 lg:col-start-1'>
+// 							<FeaturedCard
+// 								post={foodPost}
+// 								category={categories[2]}
+// 								size='full'
+// 								title='Latest Recipe'
+// 							/>
+// 						</div>
+// 					)}
+// 				</div>
+// 			)}
+
+// 			{/*---== Regular Posts Grid ===---*/}
+// 			<div>
+// 				{/*-== Category title ==-*/}
+// 				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+// 				{/*-== Category description ==-*/}
+// 				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-20'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
+// 				{/*-== Category all posts ==-*/}
+// 				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+// 					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
+// 						<Link
+// 							key={post.id}
+// 							href={`/blog/${post.slug}`}
+// 							/*-= Individual post container template style =-*/
+// 							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
+// 						>
+// 							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
+// 								{post.cover_image && (
+// 									<Image
+// 										src={post.cover_image}
+// 										alt={post.title}
+// 										fill
+// 										className='object-cover'
+// 										sizes='(max-width: 768px) 100vw, 25vw'
+// 									/>
+// 								)}
+// 							</div>
+// 							<div className='p-4'>
+// 								<div className='flex justify-between items-center mb-2'>
+// 									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
+// 									<span className='text-sm text-gray-400'>{post.date}</span>
+// 								</div>
+// 								<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+// 								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+// 							</div>
+// 						</Link>
+// 					))}
+// 				</div>
+// 			</div>
+// 		</div>
+// 	);
+// }
+
+// src/components/BlogDashboard.tsx • Mobile-Friendly Blog Dashboard : v3
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
 import { categories, CategoryId } from "@/data/categories";
+
+export type GridSize = "large" | "medium" | "full";
 
 type Post = {
 	id: string;
@@ -1959,17 +4341,24 @@ type Post = {
 	cover_image?: string;
 };
 
-const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: "large" | "medium" | "full"; title?: string; description?: string }) => (
+type FeaturedSetup = {
+	category: CategoryId;
+	size: GridSize;
+	order: number;
+	title?: string;
+	description?: string;
+}[];
+
+const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: GridSize; title?: string; description?: string }) => (
 	<div
 		className={`relative overflow-hidden rounded-xl bg-primary-800
-      ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
-         transition-transform duration-300 hover:scale-[1.02]`}
+    ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
+    transition-transform duration-300 hover:scale-[1.02]`}
 	>
 		{post ? (
 			<Link
 				href={`/blog/${post.slug}`}
-				// className='buttonContainer group block h-[250px] aspect-[16/9]'
-				className='featuredGroup group block h-96 aspect-[16/9]'
+				className='block h-64 sm:h-96 aspect-[16/9]'
 			>
 				{post.cover_image ? (
 					<div className='absolute inset-0'>
@@ -1982,22 +4371,23 @@ const FeaturedCard = ({ post, category, size = "medium", title, description }: {
 							priority={size === "large"}
 						/>
 						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
-						{/* <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' /> */}
 					</div>
 				) : (
 					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
 				)}
-				<div className='featuredContainer absolute inset-0 p-6 flex flex-col justify-end'>
-					{/*--=== Featured text container ===--*/}
+				<div className='absolute inset-0 p-4 sm:p-6 flex flex-col justify-end'>
 					<div
-						className='featuredTextContainer border border-primary-200/20 rounded-lg p-4 w-auto max-w-[80%]
-                  inset-0 bg-gradient-to-t from-primary-800/70 via-primary-600/70 to-primary-400/70
-                  '
+						className='flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-6 sm:pr-10
+            bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'
 					>
-						{/* <div className={`text-sm font-medium ${category.textColor} mb-2 w-auto border`}>{title || category.name}</div> */}
-						<div className={`text-sm font-medium text-primary-300 mb-2 w-[70%] border`}>{title || category.name}</div>
-						<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors w-[70%] border'>{post.title}</h3>
-						<p className='text-gray-300 line-clamp-2 w-[70%] border'>{description || post.excerpt}</p>
+						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
+						<h3
+							className='text-lg sm:text-2xl font-bold text-white group-hover:text-brand-primary-200
+              transition-colors line-clamp-2'
+						>
+							{post.title}
+						</h3>
+						<p className='text-gray-300 line-clamp-2 text-sm sm:text-base'>{description || post.excerpt}</p>
 					</div>
 				</div>
 			</Link>
@@ -2013,149 +4403,100 @@ const FeaturedCard = ({ post, category, size = "medium", title, description }: {
 	</div>
 );
 
-export default function BlogDashboard({ posts }: { posts: Post[] }) {
+export default function BlogDashboard({ posts, featuredSetup }: { posts: Post[]; featuredSetup: FeaturedSetup }) {
 	const [mounted, setMounted] = useState(false);
 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
 	useEffect(() => {
 		setMounted(true);
 	}, []);
-	// Don't render anything until component is mounted to prevent hydration mismatch
-	if (!mounted) {
-		return null;
-	}
 
-	// Helper function to get category background color
+	if (!mounted) return null;
+
 	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
-		switch (categoryId) {
-			case "tech":
-				return isActive ? "bg-primary-600" : "bg-primary-800 hover:bg-gray-700";
-			case "media":
-				return isActive ? "bg-secondary-600" : "bg-primary-800 hover:bg-gray-700";
-			case "food":
-				return isActive ? "bg-accent-600" : "bg-primary-800 hover:bg-gray-700";
-			case "personal":
-				return isActive ? "bg-success-600" : "bg-primary-800 hover:bg-gray-700";
-			default:
-				return "bg-primary-800 hover:bg-gray-700";
-		}
+		const category = categories.find((c) => c.id === categoryId);
+		return isActive ? `bg-${category?.id}-600` : `bg-primary-800 hover:bg-gray-700`;
 	};
 
-	// Helper function to get text color
 	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
 		if (isActive) return "text-white";
-
-		switch (categoryId) {
-			case "tech":
-				return "text-primary-300";
-			case "media":
-				return "text-secondary-300";
-			case "food":
-				return "text-accent-300";
-			case "personal":
-				return "text-primary-200";
-			default:
-				return "text-gray-300";
-		}
+		const category = categories.find((c) => c.id === categoryId);
+		return `text-${category?.id}-300`;
 	};
 
 	// Get featured posts
-	const techPost = posts.find((post) => post.category === "tech");
-	const mediaPost = posts.find((post) => post.category === "media");
-	const foodPost = posts.find((post) => post.category === "food");
+	const featuredPosts = featuredSetup.map((setup) => ({
+		post: posts.find((p) => p.category === setup.category),
+		...setup,
+	}));
 
 	// Filter remaining posts
-	const featuredIds = [techPost?.id, mediaPost?.id, foodPost?.id].filter(Boolean);
-	const remainingPosts = posts.filter((post) => !featuredIds.includes(post.id));
+	const featuredIds = featuredPosts.map((f) => f.post?.id).filter(Boolean);
+	const remainingPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredIds.includes(post.id));
 
 	return (
-		<div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+		<div className='max-w-page mx-auto px-4 py-8 space-y-8'>
 			{/* Category buttons */}
-			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
+			<div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
 				{categories.map((category) => {
 					const Icon = category.icon;
 					const isActive = activeCategory === category.id;
-					// console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
 					return (
 						<button
 							key={category.id}
-							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
-							className={`
-                        p-4 rounded-lg flex items-center space-x-3 transition-all
-                        ${getCategoryColor(category.id, isActive)}
-                      `}
+							onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+							className={`p-3 sm:p-4 rounded-lg flex items-center justify-center sm:justify-start
+                space-x-2 transition-all ${getCategoryColor(category.id, isActive)}`}
 						>
 							<Icon
-								size={24}
+								size={20}
 								className={getTextColor(category.id, isActive)}
 							/>
-							{/* orig */}
-							{/* <span className={`font-medium ${isActive ? "text-white" : ""}`}>{category.name}</span> */}
-							{/* manual */}
-							{/* <span className={`font-medium ${isActive ? "text-white" : "text-gray-300 dark:text-gray-400"}`}>{category.name}</span> */}
-							{/* using helper */}
-							<span className={`font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
+							<span className={`hidden sm:inline font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
 						</button>
 					);
 				})}
 			</div>
 
-			{/*---== Featured Posts Grid ===---*/}
+			{/* Featured Posts Grid */}
 			{!activeCategory && (
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-					{techPost && (
-						// <div className='md:col-span-4 md:row-span-2'>
-						<div className='md:col-span-2 lg:col-span-2 lg:col-start-1'>
-							<FeaturedCard
-								post={techPost}
-								category={categories[0]}
-								size='full'
-								// size='large'
-								title='Featured Tech Article'
-							/>
-						</div>
-					)}
-					{mediaPost && (
-						<div className='md:col-span-2'>
-							<FeaturedCard
-								post={mediaPost}
-								category={categories[1]}
-								size='medium'
-								title='Latest Media'
-							/>
-						</div>
-					)}
-					{foodPost && (
-						<div className='md:col-span-2 lg:col-span-4 lg:col-start-1'>
-							<FeaturedCard
-								post={foodPost}
-								category={categories[2]}
-								size='full'
-								title='Latest Recipe'
-							/>
-						</div>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+					{featuredPosts.map(
+						({ post, category, size, title, description }) =>
+							post && (
+								<FeaturedCard
+									key={post.id}
+									post={post}
+									category={categories.find((c) => c.id === category)!}
+									size={size}
+									title={title}
+									description={description}
+								/>
+							)
 					)}
 				</div>
 			)}
 
 			{/* Regular Posts Grid */}
 			<div>
-				<h2 className='text-2xl font-bold mb-6'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
-				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
-					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
+				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-6'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
+				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
+					{remainingPosts.map((post) => (
 						<Link
 							key={post.id}
 							href={`/blog/${post.slug}`}
-							className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'
+							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden
+                shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
 						>
-							<div className='aspect-[16/9] relative bg-gray-900'>
+							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
 								{post.cover_image && (
 									<Image
 										src={post.cover_image}
 										alt={post.title}
 										fill
 										className='object-cover'
-										sizes='(max-width: 768px) 100vw, 25vw'
+										sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 									/>
 								)}
 							</div>
@@ -2164,7 +4505,12 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
 									<span className='text-sm text-gray-400'>{post.date}</span>
 								</div>
-								<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+								<h3
+									className='text-lg font-semibold mb-2 group-hover:text-blue-400
+                  transition-colors line-clamp-2'
+								>
+									{post.title}
+								</h3>
 								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
 							</div>
 						</Link>
@@ -2175,115 +4521,518 @@ export default function BlogDashboard({ posts }: { posts: Post[] }) {
 	);
 }
 
+// // // src/components/BlogDashboard.tsx
+// // "use client";
+// // import { useState, useEffect } from "react";
+// // import Link from "next/link";
+// // import Image from "next/image";
+// // import { categories, CategoryId } from "@/data/categories";
+
+// // export type GridSize = "large" | "medium" | "full";
+
+// // type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	excerpt: string;
+// // 	category: CategoryId;
+// // 	date: string;
+// // 	slug: string;
+// // 	cover_image?: string;
+// // };
+
+// // type FeaturedSetup = {
+// // 	category: CategoryId;
+// // 	size: GridSize;
+// // 	order: number;
+// // 	title?: string;
+// // 	description?: string;
+// // }[];
+
+// // const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: GridSize; title?: string; description?: string }) => (
+// // 	<div
+// // 		className={`relative overflow-hidden rounded-xl bg-primary-800
+// //     ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
+// //     transition-transform duration-300 hover:scale-[1.02]`}
+// // 	>
+// // 		{post ? (
+// // 			<Link
+// // 				href={`/blog/${post.slug}`}
+// // 				className='block h-64 sm:h-96 aspect-[16/9]'
+// // 			>
+// // 				{post.cover_image ? (
+// // 					<div className='absolute inset-0'>
+// // 						<Image
+// // 							src={post.cover_image}
+// // 							alt={post.title}
+// // 							fill
+// // 							className='object-cover transition-transform duration-500 group-hover:scale-105'
+// // 							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+// // 							priority={size === "large"}
+// // 						/>
+// // 						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
+// // 					</div>
+// // 				) : (
+// // 					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// // 				)}
+// // 				<div className='absolute inset-0 p-4 sm:p-6 flex flex-col justify-end'>
+// // 					<div
+// // 						className='flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-6 sm:pr-10
+// //             bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'
+// // 					>
+// // 						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
+// // 						<h3
+// // 							className='text-lg sm:text-2xl font-bold text-white group-hover:text-brand-primary-200
+// //               transition-colors line-clamp-2'
+// // 						>
+// // 							{post.title}
+// // 						</h3>
+// // 						<p className='text-gray-300 line-clamp-2 text-sm sm:text-base'>{description || post.excerpt}</p>
+// // 					</div>
+// // 				</div>
+// // 			</Link>
+// // 		) : (
+// // 			<div className='aspect-[16/9] relative'>
+// // 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+// // 					<div className='absolute inset-0 p-6 flex items-center justify-center'>
+// // 						<p className='text-xl text-white/70'>No {category.name} posts yet</p>
+// // 					</div>
+// // 				</div>
+// // 			</div>
+// // 		)}
+// // 	</div>
+// // );
+
+// // export default function BlogDashboard({ posts, featuredSetup }: { posts: Post[]; featuredSetup: FeaturedSetup }) {
+// // 	const [mounted, setMounted] = useState(false);
+// // 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+// // 	useEffect(() => {
+// // 		setMounted(true);
+// // 	}, []);
+
+// // 	if (!mounted) return null;
+
+// // 	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
+// // 		const category = categories.find((c) => c.id === categoryId);
+// // 		return isActive ? `bg-${category?.id}-600` : `bg-primary-800 hover:bg-gray-700`;
+// // 	};
+
+// // 	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
+// // 		if (isActive) return "text-white";
+// // 		const category = categories.find((c) => c.id === categoryId);
+// // 		return `text-${category?.id}-300`;
+// // 	};
+
+// // 	// Get featured posts
+// // 	const featuredPosts = featuredSetup.map((setup) => ({
+// // 		post: posts.find((p) => p.category === setup.category),
+// // 		...setup,
+// // 	}));
+
+// // 	// Filter remaining posts
+// // 	const featuredIds = featuredPosts.map((f) => f.post?.id).filter(Boolean);
+// // 	const remainingPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredIds.includes(post.id));
+
+// // 	return (
+// // 		<div className='max-w-page mx-auto px-4 py-8 space-y-8'>
+// // 			{/* Category buttons */}
+// // 			<div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
+// // 				{categories.map((category) => {
+// // 					const Icon = category.icon;
+// // 					const isActive = activeCategory === category.id;
+// // 					return (
+// // 						<button
+// // 							key={category.id}
+// // 							onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+// // 							className={`p-3 sm:p-4 rounded-lg flex items-center justify-center sm:justify-start
+// //                 space-x-2 transition-all ${getCategoryColor(category.id, isActive)}`}
+// // 						>
+// // 							<Icon
+// // 								size={20}
+// // 								className={getTextColor(category.id, isActive)}
+// // 							/>
+// // 							<span className={`hidden sm:inline font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
+// // 						</button>
+// // 					);
+// // 				})}
+// // 			</div>
+
+// // 			{/* Featured Posts Grid */}
+// // 			{!activeCategory && (
+// // 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+// // 					{featuredPosts.map(
+// // 						({ post, category, size, title, description }) =>
+// // 							post && (
+// // 								<FeaturedCard
+// // 									key={post.id}
+// // 									post={post}
+// // 									category={categories.find((c) => c.id === category)!}
+// // 									size={size}
+// // 									title={title}
+// // 									description={description}
+// // 								/>
+// // 							)
+// // 					)}
+// // 				</div>
+// // 			)}
+
+// // 			{/* Regular Posts Grid */}
+// // 			<div>
+// // 				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+// // 				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-6'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
+// // 				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
+// // 					{remainingPosts.map((post) => (
+// // 						<Link
+// // 							key={post.id}
+// // 							href={`/blog/${post.slug}`}
+// // 							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden
+// //                 shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
+// // 						>
+// // 							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
+// // 								{post.cover_image && (
+// // 									<Image
+// // 										src={post.cover_image}
+// // 										alt={post.title}
+// // 										fill
+// // 										className='object-cover'
+// // 										sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+// // 									/>
+// // 								)}
+// // 							</div>
+// // 							<div className='p-4'>
+// // 								<div className='flex justify-between items-center mb-2'>
+// // 									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
+// // 									<span className='text-sm text-gray-400'>{post.date}</span>
+// // 								</div>
+// // 								<h3
+// // 									className='text-lg font-semibold mb-2 group-hover:text-blue-400
+// //                   transition-colors line-clamp-2'
+// // 								>
+// // 									{post.title}
+// // 								</h3>
+// // 								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+// // 							</div>
+// // 						</Link>
+// // 					))}
+// // 				</div>
+// // 			</div>
+// // 		</div>
+// // 	);
+// // }
+
+// // // // src/components/BlogDashboard.tsx
+// // // "use client";
+// // // import { useEffect, useState } from "react";
+// // // import Link from "next/link";
+// // // import Image from "next/image";
+// // // import { ArrowLeft } from "lucide-react";
+// // // import { categories, CategoryId } from "@/data/categories";
+
+// // // type Post = {
+// // // 	id: string;
+// // // 	title: string;
+// // // 	excerpt: string;
+// // // 	category: CategoryId;
+// // // 	date: string;
+// // // 	slug: string;
+// // // 	cover_image?: string;
+// // // };
+
+// // // const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: "large" | "medium" | "full"; title?: string; description?: string }) => (
+// // // 	<div
+// // // 		className={`relative overflow-hidden rounded-xl bg-primary-800
+// // //       ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
+// // //          transition-transform duration-300 hover:scale-[1.02]`}
+// // // 	>
+// // // 		{post ? (
+// // // 			<Link
+// // // 				href={`/blog/${post.slug}`}
+// // // 				// className='buttonContainer group block h-[250px] aspect-[16/9]'
+// // // 				className='featuredGroup group block h-96 aspect-[16/9]'
+// // // 			>
+// // // 				{post.cover_image ? (
+// // // 					<div className='absolute inset-0'>
+// // // 						<Image
+// // // 							src={post.cover_image}
+// // // 							alt={post.title}
+// // // 							fill
+// // // 							className='object-cover transition-transform duration-500 group-hover:scale-105'
+// // // 							sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+// // // 							priority={size === "large"}
+// // // 						/>
+// // // 						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
+// // // 						{/* <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' /> */}
+// // // 					</div>
+// // // 				) : (
+// // // 					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+// // // 				)}
+// // // 				<div className='featuredContainer absolute inset-0 p-6 flex flex-col justify-end'>
+// // // 					{/*--=== Featured text container ===--*/}
+// // // 					<div className='featuredTextContainer flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-10 bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'>
+// // // 						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
+// // // 						<h3 className='text-2xl font-bold text-white group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+// // // 						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+// // // 					</div>
+// // // 					{/* <div className='featuredTextContainer inline-block border border-primary-200/20 rounded-lg p-4 bg-gradient-to-t from-primary-800/70 via-primary-600/70 to-primary-400/70'>
+// // // 						<div className={`text-sm font-medium text-primary-300 mb-2`}>{title || category.name}</div>
+// // // 						<h3 className='text-2xl font-bold text-white mb-2 group-hover:text-brand-primary-200 transition-colors'>{post.title}</h3>
+// // // 						<p className='text-gray-300 line-clamp-2'>{description || post.excerpt}</p>
+// // // 					</div> */}
+// // // 				</div>
+// // // 			</Link>
+// // // 		) : (
+// // // 			<div className='aspect-[16/9] relative'>
+// // // 				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
+// // // 					<div className='absolute inset-0 p-6 flex items-center justify-center'>
+// // // 						<p className='text-xl text-white/70'>No {category.name} posts yet</p>
+// // // 					</div>
+// // // 				</div>
+// // // 			</div>
+// // // 		)}
+// // // 	</div>
+// // // );
+
+// // // export default function BlogDashboard({ posts }: { posts: Post[] }) {
+// // // 	const [mounted, setMounted] = useState(false);
+// // // 	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
+
+// // // 	useEffect(() => {
+// // // 		setMounted(true);
+// // // 	}, []);
+// // // 	// Don't render anything until component is mounted to prevent hydration mismatch
+// // // 	if (!mounted) {
+// // // 		return null;
+// // // 	}
+
+// // // 	// Helper function to get category background color
+// // // 	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
+// // // 		switch (categoryId) {
+// // // 			case "tech":
+// // // 				return isActive ? "bg-primary-600" : "bg-primary-800 hover:bg-gray-700";
+// // // 			case "media":
+// // // 				return isActive ? "bg-secondary-600" : "bg-primary-800 hover:bg-gray-700";
+// // // 			case "food":
+// // // 				return isActive ? "bg-accent-600" : "bg-primary-800 hover:bg-gray-700";
+// // // 			case "personal":
+// // // 				return isActive ? "bg-success-600" : "bg-primary-800 hover:bg-gray-700";
+// // // 			default:
+// // // 				return "bg-primary-800 hover:bg-gray-700";
+// // // 		}
+// // // 	};
+
+// // // 	// Helper function to get text color
+// // // 	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
+// // // 		if (isActive) return "text-white";
+
+// // // 		switch (categoryId) {
+// // // 			case "tech":
+// // // 				return "text-primary-300";
+// // // 			case "media":
+// // // 				return "text-primary-300";
+// // // 			case "food":
+// // // 				return "text-primary-300";
+// // // 			case "personal":
+// // // 				return "text-primary-200";
+// // // 			default:
+// // // 				return "text-gray-300";
+// // // 		}
+// // // 	};
+
+// // // 	// Get featured posts
+// // // 	const techPost = posts.find((post) => post.category === "tech");
+// // // 	const mediaPost = posts.find((post) => post.category === "media");
+// // // 	const foodPost = posts.find((post) => post.category === "food");
+
+// // // 	// Filter remaining posts
+// // // 	const featuredIds = [techPost?.id, mediaPost?.id, foodPost?.id].filter(Boolean);
+// // // 	const remainingPosts = posts.filter((post) => !featuredIds.includes(post.id));
+
+// // // 	return (
+// // // 		// <div className='max-w-7xl mx-auto px-4 py-8 space-y-12'>
+// // // 		<div className='max-w-page mx-auto px-4 py-8 space-y-12'>
+// // // 			{/* Category buttons */}
+// // // 			<div className='featuredButtonsContainer grid grid-cols-1 md:grid-cols-4 gap-4'>
+// // // 				{categories.map((category) => {
+// // // 					const Icon = category.icon;
+// // // 					const isActive = activeCategory === category.id;
+// // // 					// console.log("Button Classes:", `p-4 rounded-lg flex items-center space-x-3 transition-all ${activeCategory === category.id ? `${category.color} text-white` : "bg-primary-800 hover:bg-primary-700"}`);
+// // // 					return (
+// // // 						<button
+// // // 							key={category.id}
+// // // 							onClick={() => setActiveCategory(activeCategory === category.id ? null : (category.id as CategoryId))}
+// // // 							className={`
+// // //                         p-4 rounded-lg flex items-center space-x-3 transition-all
+// // //                         ${getCategoryColor(category.id, isActive)}
+// // //                       `}
+// // // 						>
+// // // 							<Icon
+// // // 								size={24}
+// // // 								className={getTextColor(category.id, isActive)}
+// // // 							/>
+// // // 							{/* orig */}
+// // // 							{/* <span className={`font-medium ${isActive ? "text-white" : ""}`}>{category.name}</span> */}
+// // // 							{/* manual */}
+// // // 							{/* <span className={`font-medium ${isActive ? "text-white" : "text-gray-300 dark:text-gray-400"}`}>{category.name}</span> */}
+// // // 							{/* using helper */}
+// // // 							<span className={`font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
+// // // 						</button>
+// // // 					);
+// // // 				})}
+// // // 			</div>
+
+// // // 			{/*---== Featured Posts Grid ===---*/}
+// // // 			{!activeCategory && (
+// // // 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+// // // 					{techPost && (
+// // // 						// <div className='md:col-span-4 md:row-span-2'>
+// // // 						<div className='md:col-span-2 lg:col-span-2 lg:col-start-1'>
+// // // 							<FeaturedCard
+// // // 								post={techPost}
+// // // 								category={categories[0]}
+// // // 								size='full'
+// // // 								// size='large'
+// // // 								title='Featured Tech Article'
+// // // 							/>
+// // // 						</div>
+// // // 					)}
+// // // 					{mediaPost && (
+// // // 						<div className='md:col-span-2'>
+// // // 							<FeaturedCard
+// // // 								post={mediaPost}
+// // // 								category={categories[1]}
+// // // 								size='medium'
+// // // 								title='Latest Media'
+// // // 							/>
+// // // 						</div>
+// // // 					)}
+// // // 					{foodPost && (
+// // // 						<div className='md:col-span-2 lg:col-span-4 lg:col-start-1'>
+// // // 							<FeaturedCard
+// // // 								post={foodPost}
+// // // 								category={categories[2]}
+// // // 								size='full'
+// // // 								title='Latest Recipe'
+// // // 							/>
+// // // 						</div>
+// // // 					)}
+// // // 				</div>
+// // // 			)}
+
+// // // 			{/*---== Regular Posts Grid ===---*/}
+// // // 			<div>
+// // // 				{/*-== Category title ==-*/}
+// // // 				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
+// // // 				{/*-== Category description ==-*/}
+// // // 				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-20'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
+// // // 				{/*-== Category all posts ==-*/}
+// // // 				<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+// // // 					{(activeCategory ? posts.filter((post) => post.category === activeCategory) : remainingPosts).map((post) => (
+// // // 						<Link
+// // // 							key={post.id}
+// // // 							href={`/blog/${post.slug}`}
+// // // 							/*-= Individual post container template style =-*/
+// // // 							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
+// // // 						>
+// // // 							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
+// // // 								{post.cover_image && (
+// // // 									<Image
+// // // 										src={post.cover_image}
+// // // 										alt={post.title}
+// // // 										fill
+// // // 										className='object-cover'
+// // // 										sizes='(max-width: 768px) 100vw, 25vw'
+// // // 									/>
+// // // 								)}
+// // // 							</div>
+// // // 							<div className='p-4'>
+// // // 								<div className='flex justify-between items-center mb-2'>
+// // // 									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
+// // // 									<span className='text-sm text-gray-400'>{post.date}</span>
+// // // 								</div>
+// // // 								<h3 className='text-lg font-semibold mb-2 group-hover:text-blue-400 transition-colors'>{post.title}</h3>
+// // // 								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
+// // // 							</div>
+// // // 						</Link>
+// // // 					))}
+// // // 				</div>
+// // // 			</div>
+// // // 		</div>
+// // // 	);
+// // // }
+
 ```
 
-# src/components/BlogPostContent.tsx
+# src/components/BlogPostContent-Old.tsx
 
 ```tsx
-// src/components/BlogPostContent.tsx
-"use client";
-import { useState } from "react";
-import Link from "next/link";
-import { ImageWithFallback } from "@/components/ImageWithFallback";
-import { Reactions } from "@/components/Reactions";
-import { Comments } from "@/components/Comments";
-import { useAuth } from "@/hooks/useAuth";
-import { DeletePost } from "./DeletePost";
-
-type Post = {
-	id: string;
-	title: string;
-	content: string;
-	excerpt?: string;
-	cover_image?: string;
-	created_at: string;
-	slug: string;
-	profiles?: {
-		username?: string;
-	};
-};
+// components/BlogPostContent.tsx
+import dynamic from "next/dynamic";
+import { MarkdownRenderer } from "./blog/MarkdownRenderer";
+import type { Post } from "@/types/blog";
 
 export default function BlogPostContent({ post }: { post: Post }) {
-	const { isAuthenticated } = useAuth();
+	const { title, category, cover_image, excerpt, created_at } = post;
 
 	return (
-		<div className='max-w-screen-2xl mx-auto px-4'>
-			{/* Header Section */}
-			<div className='flex justify-between items-center mb-8'>
-				<Link
-					href='/blog'
-					className='text-primary-400 hover:text-primary-300'
-				>
-					← Back to posts
-				</Link>
-				{isAuthenticated && (
-					<div className='space-x-4'>
-						<Link
-							href={`/blog/edit/${post.slug}`}
-							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
-						>
-							Edit Post
-						</Link>
-						<DeletePost postId={post.id} />
-					</div>
-				)}
-			</div>
+		<div className='max-w-page mx-auto px-4'>
+			{/* Common header section */}
+			<header>
+				<h1>{title}</h1>
+				<div className='meta'>{/* ... meta info ... */}</div>
+			</header>
 
-			{/* Main Content Grid */}
-			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
-				{/* Left Column - Article Content */}
-				<article className='relative'>
-					{post.cover_image && (
-						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
-							<img
-								src={post.cover_image}
-								alt={post.title}
-								className='w-full h-full object-cover'
-							/>
-						</div>
-					)}
-					{/* Content */}
-					<div className='prose prose-lg dark:prose-invert max-w-none'>
-						<h1 className='postTitle text-3xl font-bold mb-4'>{post.title}</h1>
-						<div className='text-gray-400 dark:text-gray-400 mb-8'>
-							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
-						</div>
-
-						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
-
-						<div className='mt-8 content'>
-							<img
-								src={post.content.match(/!\[.*?\]\((.*?)\)/)?.[1]}
-								alt={post.content.match(/!\[(.*?)\]/)?.[1] || ""}
-								className='w-full h-auto rounded-lg my-4'
-							/>
-							{post.content.replace(/!\[.*?\]\(.*?\)/g, "")}
-						</div>
-					</div>
-
-					{/* Engagement Bar */}
-					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
-						<Reactions postId={post.id} />
-					</div>
-				</article>
-
-				{/* Right Column - Comments */}
-				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
-					<Comments postId={post.id} />
-				</div>
-			</div>
+			{/* Conditional content rendering */}
+			{post.type === "markdown" ? (
+				<MarkdownRenderer content={post.content} />
+			) : (
+				<DynamicComponentRenderer
+					componentName={post.component_name}
+					props={post.props}
+				/>
+			)}
 		</div>
 	);
 }
 
+// Component renderer with dynamic imports
+function DynamicComponentRenderer({ componentName, props = {} }: { componentName: string; props?: Record<string, unknown> }) {
+	const Component = dynamic(() => import(`@/components/blog-components/${componentName}`), {
+		loading: () => <div>Loading component...</div>,
+	});
+
+	return <Component {...props} />;
+}
+
+// // src/components/BlogPostContent.tsx
 // "use client";
-// import { useState } from "react";
 // import Link from "next/link";
-// import { ImageWithFallback } from "@/components/ImageWithFallback";
+// import Image from "next/image";
+// import ReactMarkdown from "react-markdown";
+// import rehypeHighlight from "rehype-highlight";
+// import rehypePrism from "rehype-prism-plus";
 // import { Reactions } from "@/components/Reactions";
 // import { Comments } from "@/components/Comments";
 // import { useAuth } from "@/hooks/useAuth";
 // import { DeletePost } from "./DeletePost";
+// // import 'highlight.js/styles/github-dark.css';
+// // import 'highlight.js/styles/monokai-sublime.css'
+// // import 'highlight.js/styles/tokyo-night-dark.css'
+// import "highlight.js/styles/base16/material-darker.css";
+// import rehypeRaw from "rehype-raw";
+// import rehypeSanitize from "rehype-sanitize";
+// import remarkGfm from "remark-gfm";
+// // import 'highlight.js/styles/base16/tomorrow-night.css'
+
+// /*-= Restrict which HTML tags & attributes are allowed =-*/
+// const ALLOWED_TAGS = ["div", "span", "p", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "strong", "em", "code", "pre", "table", "thead", "tbody", "tr", "th", "td", "blockquote", "hr", "br", "a", "img"];
+
+// const ALLOWED_ATTRIBUTES = {
+// 	a: ["href", "title", "target", "rel"],
+// 	img: ["src", "alt", "title", "width", "height", "loading"],
+// 	div: ["class", "style"],
+// 	span: ["class", "style"],
+// 	code: ["class", "language"],
+// };
 
 // type Post = {
 // 	id: string;
@@ -2301,8 +5050,17 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // export default function BlogPostContent({ post }: { post: Post }) {
 // 	const { isAuthenticated } = useAuth();
 
+// 	const formatDate = (date: string) => {
+// 		return new Date(date).toLocaleDateString("en-US", {
+// 			month: "long",
+// 			day: "numeric",
+// 			year: "numeric",
+// 		});
+// 	};
+
 // 	return (
-// 		<div className='max-w-screen-2xl mx-auto px-4'>
+// 		// <div className='max-w-screen-2xl mx-auto px-4'>
+// 		<div className='max-w-page mx-auto px-4'>
 // 			{/* Header Section */}
 // 			<div className='flex justify-between items-center mb-8'>
 // 				<Link
@@ -2311,7 +5069,7 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // 				>
 // 					← Back to posts
 // 				</Link>
-// 				{isAuthenticated && (
+// 				{/* {isAuthenticated && (
 // 					<div className='space-x-4'>
 // 						<Link
 // 							href={`/blog/edit/${post.slug}`}
@@ -2321,7 +5079,7 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // 						</Link>
 // 						<DeletePost postId={post.id} />
 // 					</div>
-// 				)}
+// 				)} */}
 // 			</div>
 
 // 			{/* Main Content Grid */}
@@ -2330,29 +5088,135 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // 				<article className='relative'>
 // 					{post.cover_image && (
 // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
-// 							<ImageWithFallback
+// 							<Image
 // 								src={post.cover_image}
-// 								alt={post.title}
-// 								className='w-full h-full object-cover'
+// 								alt='Cover image'
+// 								fill
+// 								className='object-cover'
+// 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
 // 								priority
 // 							/>
 // 						</div>
 // 					)}
+
 // 					{/* Content */}
 // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
 // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
-// 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
-// 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+
+// 						{/* Author Info */}
+// 						<div className='flex items-start gap-4 mb-8'>
+// 							<Image
+// 								src='/assets/LittleLloyd-FB.jpg'
+// 								alt='R.Lloyd Gonzales'
+// 								width={56}
+// 								height={56}
+// 								className='border border-gray-500 rounded-full'
+// 							/>
+// 							<div>
+// 								<h3 className='text-lg font-semibold text-gray-600 dark:text-gray-400 mb-0'>Lloyd</h3>
+// 								<p className='text-gray-600 dark:text-gray-400 text-sm mb-0 m-0'>Software Engineer</p>
+// 								<time className='text-gray-500 dark:text-gray-500 text-sm mt-0'>{formatDate(post.created_at)}</time>
+// 							</div>
 // 						</div>
 
 // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
 
-// 						<div className='mt-8'>{post.content}</div>
+// 						<ReactMarkdown
+// 							remarkPlugins={[remarkGfm]}
+// 							rehypePlugins={[
+// 								rehypePrism,
+// 								rehypeRaw,
+// 								[
+// 									rehypeSanitize,
+// 									{
+// 										allowedTags: ALLOWED_TAGS,
+// 										allowedAttributes: ALLOWED_ATTRIBUTES,
+// 									},
+// 								],
+// 							]}
+// 							components={{
+// 								// p: ({ children }) => <p className='text-gray-600 mb-4'>{children}</p>,
+// 								p: ({ node, children }) => {
+// 									if (node?.children[0]?.type === "element" && node.children[0].tagName === "img") {
+// 										return <div>{children}</div>;
+// 									}
+// 									return <p>{children}</p>;
+// 								},
+// 								h1: ({ children }) => <h1 className='text-4xl font-bold mb-6'>{children}</h1>,
+// 								h2: ({ children }) => <h2 className='text-3xl font-bold mb-4'>{children}</h2>,
+// 								h3: ({ children }) => <h3 className='text-2xl font-bold mb-3'>{children}</h3>,
+// 								h4: ({ children }) => <h4 className='text-xl font-bold mb-2'>{children}</h4>,
 
-// 						{/* Engagement Bar */}
-// 						<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
-// 							<Reactions postId={post.id} />
-// 						</div>
+// 								ul: ({ children }) => <ul className='list-disc pl-6 mb-4 text-gray-600'>{children}</ul>,
+// 								ol: ({ children }) => <ol className='list-decimal pl-6 mb-4 text-gray-600'>{children}</ol>,
+// 								blockquote: ({ children }) => <blockquote className='border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400'>{children}</blockquote>,
+// 								img: ({ src, alt, ...props }) => {
+// 									if (!src) return null;
+// 									const imageSrc = src.startsWith("/") ? src : src.startsWith("http") ? src : `/${src}`;
+
+// 									return (
+// 										<div className='relative w-full aspect-[16/9] my-8'>
+// 											<Image
+// 												src={imageSrc}
+// 												alt={alt || ""}
+// 												fill
+// 												className='object-cover rounded-lg'
+// 												sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+// 												loading='lazy'
+// 												{...props}
+// 											/>
+// 										</div>
+// 									);
+// 								},
+// 								a: ({ href, children, ...props }) => {
+// 									if (!href) return null;
+// 									const isExternal = href.startsWith("http");
+// 									return (
+// 										<a
+// 											href={href}
+// 											{...props}
+// 											{...(isExternal
+// 												? {
+// 														target: "_blank",
+// 														rel: "noopener noreferrer",
+// 												  }
+// 												: {})}
+// 											className='text-primary-400 hover:text-primary-300 transition-colors'
+// 										>
+// 											{children}
+// 										</a>
+// 									);
+// 								},
+// 								code: ({ node, inline, className, children, ...props }) => {
+// 									const match = /language-(\w+)/.exec(className || "");
+// 									return !inline && match ? (
+// 										<pre className={`language-${match[1]} overflow-x-auto`}>
+// 											<code
+// 												className={className}
+// 												{...props}
+// 											>
+// 												{children}
+// 											</code>
+// 										</pre>
+// 									) : (
+// 										<code
+// 											className={className}
+// 											{...props}
+// 										>
+// 											{children}
+// 										</code>
+// 									);
+// 								},
+// 								/*---+++++++++++++++++++++++++++++++++++++++++++++++++++++---*/
+// 							}}
+// 						>
+// 							{post.content}
+// 						</ReactMarkdown>
+// 					</div>
+
+// 					{/* Engagement Bar */}
+// 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// 						<Reactions postId={post.id} />
 // 					</div>
 // 				</article>
 
@@ -2364,126 +5228,2111 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // 		</div>
 // 	);
 // }
+// // // src/components/BlogPostContent.tsx
+// // "use client";
+// // import { useState, useEffect } from "react";
+// // import Link from "next/link";
+// // import ReactMarkdown from "react-markdown";
+// // import { Reactions } from "@/components/Reactions";
+// // import { Comments } from "@/components/Comments";
+// // import { useAuth } from "@/hooks/useAuth";
+// // import { DeletePost } from "./DeletePost";
+// // import Prism from "prismjs";
+// // import "prismjs/themes/prism-tomorrow.css";
+// // import "prismjs/components/prism-javascript";
+// // import "prismjs/components/prism-typescript";
+// // import "prismjs/components/prism-css";
+// // import "prismjs/components/prism-python";
+
+// // type Post = {
+// //     id: string;
+// //     title: string;
+// //     content: string;
+// //     excerpt?: string;
+// //     cover_image?: string;
+// //     created_at: string;
+// //     slug: string;
+// //     profiles?: {
+// //         username?: string;
+// //     };
+// // };
+
+// // export default function BlogPostContent({ post }: { post: Post }) {
+// //     const { isAuthenticated } = useAuth();
+
+// //     useEffect(() => {
+// //         Prism.highlightAll();
+// //     }, [post.content]);
+
+// //     return (
+// //         <div className='max-w-screen-2xl mx-auto px-4'>
+// //             <div className='flex justify-between items-center mb-8'>
+// //                 <Link href='/blog' className='text-primary-400 hover:text-primary-300'>
+// //                     ← Back to posts
+// //                 </Link>
+// //                 {isAuthenticated && (
+// //                     <div className='space-x-4'>
+// //                         <Link href={`/blog/edit/${post.slug}`} className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'>
+// //                             Edit Post
+// //                         </Link>
+// //                         <DeletePost postId={post.id} />
+// //                     </div>
+// //                 )}
+// //             </div>
+
+// //             <div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// //                 <article className='relative'>
+// //                     {post.cover_image && (
+// //                         <div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// //                             <img src={post.cover_image} alt={post.title} className='w-full h-full object-cover' />
+// //                         </div>
+// //                     )}
+
+// //                     <div className='prose prose-lg dark:prose-invert max-w-none'>
+// //                         <h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// //                         <div className='text-gray-400 mb-8'>
+// //                             {new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// //                         </div>
+
+// //                         {post.excerpt &&
+// //                             <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>
+// //                                 {post.excerpt}
+// //                             </p>
+// //                         }
+
+// //                         <ReactMarkdown
+// //                             components={{
+// //                                 code({node, inline, className, children, ...props}) {
+// //                                     const match = /language-(\w+)/.exec(className || '');
+// //                                     const language = match ? match[1] : '';
+
+// //                                     if (!inline && language) {
+// //                                         return (
+// //                                             <pre className={`language-${language}`}>
+// //                                                 <code className={`language-${language}`} {...props}>
+// //                                                     {String(children).replace(/\n$/, '')}
+// //                                                 </code>
+// //                                             </pre>
+// //                                         );
+// //                                     }
+
+// //                                     return (
+// //                                         <code className={className} {...props}>
+// //                                             {children}
+// //                                         </code>
+// //                                     );
+// //                                 },
+// //                                 p: ({children}) => <p className="text-gray-300 mb-4">{children}</p>,
+// //                                 h2: ({children}) => <h2 className="text-2xl font-bold mt-8 mb-4">{children}</h2>,
+// //                                 h3: ({children}) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+// //                                 ul: ({children}) => <ul className="list-disc pl-6 mb-4 text-gray-300">{children}</ul>,
+// //                                 ol: ({children}) => <ol className="list-decimal pl-6 mb-4 text-gray-300">{children}</ol>,
+// //                                 blockquote: ({children}) => (
+// //                                     <blockquote className="border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400">
+// //                                         {children}
+// //                                     </blockquote>
+// //                                 ),
+// //                             }}
+// //                         >
+// //                             {post.content}
+// //                         </ReactMarkdown>
+// //                     </div>
+
+// //                     <div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// //                         <Reactions postId={post.id} />
+// //                     </div>
+// //                 </article>
+
+// //                 <div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// //                     <Comments postId={post.id} />
+// //                 </div>
+// //             </div>
+// //         </div>
+// //     );
+// // }
+// // // // src/components/BlogPostContent.tsx
+// // // "use client";
+// // // import { useState } from "react";
+// // // import Link from "next/link";
+// // // import ReactMarkdown from "react-markdown";
+// // // import { Reactions } from "@/components/Reactions";
+// // // import { Comments } from "@/components/Comments";
+// // // import { useAuth } from "@/hooks/useAuth";
+// // // import { DeletePost } from "./DeletePost";
+
+// // // type Post = {
+// // //     id: string;
+// // //     title: string;
+// // //     content: string;
+// // //     excerpt?: string;
+// // //     cover_image?: string;
+// // //     created_at: string;
+// // //     slug: string;
+// // //     profiles?: {
+// // //         username?: string;
+// // //     };
+// // // };
+
+// // // export default function BlogPostContent({ post }: { post: Post }) {
+// // //     const { isAuthenticated } = useAuth();
+
+// // //     return (
+// // //         <div className='max-w-screen-2xl mx-auto px-4'>
+// // //             <div className='flex justify-between items-center mb-8'>
+// // //                 <Link href='/blog' className='text-primary-400 hover:text-primary-300'>
+// // //                     ← Back to posts
+// // //                 </Link>
+// // //                 {isAuthenticated && (
+// // //                     <div className='space-x-4'>
+// // //                         <Link href={`/blog/edit/${post.slug}`} className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'>
+// // //                             Edit Post
+// // //                         </Link>
+// // //                         <DeletePost postId={post.id} />
+// // //                     </div>
+// // //                 )}
+// // //             </div>
+
+// // //             <div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // //                 <article className='relative'>
+// // //                     {post.cover_image && (
+// // //                         <div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // //                             <img src={post.cover_image} alt={post.title} className='w-full h-full object-cover' />
+// // //                         </div>
+// // //                     )}
+
+// // //                     <div className='prose prose-lg dark:prose-invert max-w-none'>
+// // //                         <h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // //                         <div className='text-gray-400 mb-8'>
+// // //                             {new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // //                         </div>
+
+// // //                         {post.excerpt &&
+// // //                             <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>
+// // //                                 {post.excerpt}
+// // //                             </p>
+// // //                         }
+
+// // //                         <ReactMarkdown
+// // //                             components={{
+// // //                                 code({node, inline, className, children, ...props}) {
+// // //                                     return (
+// // //                                         <code className="block bg-gray-800 rounded-md p-4 text-gray-100 my-4" {...props}>
+// // //                                             {children}
+// // //                                         </code>
+// // //                                     );
+// // //                                 },
+// // //                                 p: ({children}) => <p className="text-gray-300 mb-4">{children}</p>,
+// // //                                 h2: ({children}) => <h2 className="text-2xl font-bold mt-8 mb-4">{children}</h2>,
+// // //                                 h3: ({children}) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+// // //                                 ul: ({children}) => <ul className="list-disc pl-6 mb-4 text-gray-300">{children}</ul>,
+// // //                                 ol: ({children}) => <ol className="list-decimal pl-6 mb-4 text-gray-300">{children}</ol>,
+// // //                                 blockquote: ({children}) => (
+// // //                                     <blockquote className="border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400">
+// // //                                         {children}
+// // //                                     </blockquote>
+// // //                                 ),
+// // //                             }}
+// // //                         >
+// // //                             {post.content}
+// // //                         </ReactMarkdown>
+// // //                     </div>
+
+// // //                     <div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // //                         <Reactions postId={post.id} />
+// // //                     </div>
+// // //                 </article>
+
+// // //                 <div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // //                     <Comments postId={post.id} />
+// // //                 </div>
+// // //             </div>
+// // //         </div>
+// // //     );
+// // // }
+
+// // // // // src/components/BlogPostContent.tsx
+// // // // "use client";
+// // // // import ReactMarkdown from "react-markdown";
+// // // // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// // // // import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+// // // // type Post = {
+// // // // 	id: string;
+// // // // 	title: string;
+// // // // 	content: string;
+// // // // 	excerpt?: string;
+// // // // 	cover_image?: string;
+// // // // 	created_at: string;
+// // // // 	slug: string;
+// // // // 	profiles?: {
+// // // // 		username?: string;
+// // // // 	};
+// // // // };
+
+// // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // 	return (
+// // // // 		<div className='max-w-4xl mx-auto p-4'>
+// // // // 			<h1 className='text-2xl font-bold mb-4'>{post.title}</h1>
+// // // // 			<ReactMarkdown
+// // // // 				components={{
+// // // // 					code({ node, inline, className, children, ...props }) {
+// // // // 						const match = /language-(\w+)/.exec(className || "");
+// // // // 						return !inline && match ? (
+// // // // 							<SyntaxHighlighter
+// // // // 								style={atomDark}
+// // // // 								language={match[1]}
+// // // // 								PreTag='div'
+// // // // 								{...props}
+// // // // 							>
+// // // // 								{String(children).replace(/\n$/, "")}
+// // // // 							</SyntaxHighlighter>
+// // // // 						) : (
+// // // // 							<code
+// // // // 								className={className}
+// // // // 								{...props}
+// // // // 							>
+// // // // 								{children}
+// // // // 							</code>
+// // // // 						);
+// // // // 					},
+// // // // 				}}
+// // // // 			>
+// // // // 				{post.content}
+// // // // 			</ReactMarkdown>
+// // // // 		</div>
+// // // // 	);
+// // // // }
+// // // // // // src/components/BlogPostContent.tsx
+// // // // // "use client";
+// // // // // import ReactMarkdown from "react-markdown";
+
+// // // // // type Post = {
+// // // // // 	id: string;
+// // // // // 	title: string;
+// // // // // 	content: string;
+// // // // // 	excerpt?: string;
+// // // // // 	cover_image?: string;
+// // // // // 	created_at: string;
+// // // // // 	slug: string;
+// // // // // 	profiles?: {
+// // // // // 		username?: string;
+// // // // // 	};
+// // // // // };
+
+// // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // 	// Debug: Log the content to verify what we're receiving
+// // // // // 	console.log("Content being passed to ReactMarkdown:", post.content);
+
+// // // // // 	return (
+// // // // // 		<div className='max-w-4xl mx-auto p-4'>
+// // // // // 			<h1 className='text-2xl font-bold mb-4'>{post.title}</h1>
+// // // // // 			<ReactMarkdown>{post.content}</ReactMarkdown>
+// // // // // 		</div>
+// // // // // 	);
+// // // // // }
+// // // // // // // src/components/BlogPostContent.tsx
+// // // // // // "use client";
+// // // // // // import { useState } from "react";
+// // // // // // import Link from "next/link";
+// // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // import { Comments } from "@/components/Comments";
+// // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // import { DeletePost } from "./DeletePost";
+// // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // import remarkGfm from "remark-gfm";
+
+// // // // // // type Post = {
+// // // // // // 	id: string;
+// // // // // // 	title: string;
+// // // // // // 	content: string;
+// // // // // // 	excerpt?: string;
+// // // // // // 	cover_image?: string;
+// // // // // // 	created_at: string;
+// // // // // // 	slug: string;
+// // // // // // 	profiles?: {
+// // // // // // 		username?: string;
+// // // // // // 	};
+// // // // // // };
+
+// // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // 	return (
+// // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // 			{/* Header Section */}
+// // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // 				<Link
+// // // // // // 					href='/blog'
+// // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // 				>
+// // // // // // 					← Back to posts
+// // // // // // 				</Link>
+// // // // // // 				{isAuthenticated && (
+// // // // // // 					<div className='space-x-4'>
+// // // // // // 						<Link
+// // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // 						>
+// // // // // // 							Edit Post
+// // // // // // 						</Link>
+// // // // // // 						<DeletePost postId={post.id} />
+// // // // // // 					</div>
+// // // // // // 				)}
+// // // // // // 			</div>
+
+// // // // // // 			{/* Main Content Grid */}
+// // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // 				{/* Left Column - Article Content */}
+// // // // // // 				<article className='relative'>
+// // // // // // 					{post.cover_image && (
+// // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // 							<img
+// // // // // // 								src={post.cover_image}
+// // // // // // 								alt={post.title}
+// // // // // // 								className='w-full h-full object-cover'
+// // // // // // 							/>
+// // // // // // 						</div>
+// // // // // // 					)}
+
+// // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // 						</div>
+
+// // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // 						<div className='mt-8'>
+// // // // // // 							<ReactMarkdown
+// // // // // // 								remarkPlugins={[remarkGfm]}
+// // // // // // 								className='prose dark:prose-invert'
+// // // // // // 							>
+// // // // // // 								{post.content}
+// // // // // // 							</ReactMarkdown>
+// // // // // // 						</div>
+// // // // // // 					</div>
+
+// // // // // // 					{/* Engagement Bar */}
+// // // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // 						<Reactions postId={post.id} />
+// // // // // // 					</div>
+// // // // // // 				</article>
+
+// // // // // // 				{/* Right Column - Comments */}
+// // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // 					<Comments postId={post.id} />
+// // // // // // 				</div>
+// // // // // // 			</div>
+// // // // // // 		</div>
+// // // // // // 	);
+// // // // // // }
+// // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // "use client";
+// // // // // // // import { useState } from "react";
+// // // // // // // import Link from "next/link";
+// // // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // import { DeletePost } from "./DeletePost";
+
+// // // // // // // type Post = {
+// // // // // // // 	id: string;
+// // // // // // // 	title: string;
+// // // // // // // 	content: string;
+// // // // // // // 	excerpt?: string;
+// // // // // // // 	cover_image?: string;
+// // // // // // // 	created_at: string;
+// // // // // // // 	slug: string;
+// // // // // // // 	profiles?: {
+// // // // // // // 		username?: string;
+// // // // // // // 	};
+// // // // // // // };
+
+// // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // // 	return (
+// // // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // 			{/* Header Section */}
+// // // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // // 				<Link
+// // // // // // // 					href='/blog'
+// // // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // // 				>
+// // // // // // // 					← Back to posts
+// // // // // // // 				</Link>
+// // // // // // // 				{isAuthenticated && (
+// // // // // // // 					<div className='space-x-4'>
+// // // // // // // 						<Link
+// // // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // // 						>
+// // // // // // // 							Edit Post
+// // // // // // // 						</Link>
+// // // // // // // 						<DeletePost postId={post.id} />
+// // // // // // // 					</div>
+// // // // // // // 				)}
+// // // // // // // 			</div>
+
+// // // // // // // 			{/* Main Content Grid */}
+// // // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // 				{/* Left Column - Article Content */}
+// // // // // // // 				<article className='relative'>
+// // // // // // // 					{post.cover_image && (
+// // // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // 							<img
+// // // // // // // 								src={post.cover_image}
+// // // // // // // 								alt={post.title}
+// // // // // // // 								className='w-full h-full object-cover'
+// // // // // // // 							/>
+// // // // // // // 						</div>
+// // // // // // // 					)}
+// // // // // // // 					{/* Content */}
+// // // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // 						<h1 className='postTitle text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // 						</div>
+
+// // // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // // 						<div className='mt-8 content'>
+// // // // // // // 							<img
+// // // // // // // 								src={post.content.match(/!\[.*?\]\((.*?)\)/)?.[1]}
+// // // // // // // 								alt={post.content.match(/!\[(.*?)\]/)?.[1] || ""}
+// // // // // // // 								className='w-full h-auto rounded-lg my-4'
+// // // // // // // 							/>
+// // // // // // // 							{post.content.replace(/!\[.*?\]\(.*?\)/g, "")}
+// // // // // // // 						</div>
+// // // // // // // 					</div>
+
+// // // // // // // 					{/* Engagement Bar */}
+// // // // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // 						<Reactions postId={post.id} />
+// // // // // // // 					</div>
+// // // // // // // 				</article>
+
+// // // // // // // 				{/* Right Column - Comments */}
+// // // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // 					<Comments postId={post.id} />
+// // // // // // // 				</div>
+// // // // // // // 			</div>
+// // // // // // // 		</div>
+// // // // // // // 	);
+// // // // // // // }
+
+// // // // // // // // "use client";
+// // // // // // // // import { useState } from "react";
+// // // // // // // // import Link from "next/link";
+// // // // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // // import { DeletePost } from "./DeletePost";
+
+// // // // // // // // type Post = {
+// // // // // // // // 	id: string;
+// // // // // // // // 	title: string;
+// // // // // // // // 	content: string;
+// // // // // // // // 	excerpt?: string;
+// // // // // // // // 	cover_image?: string;
+// // // // // // // // 	created_at: string;
+// // // // // // // // 	slug: string;
+// // // // // // // // 	profiles?: {
+// // // // // // // // 		username?: string;
+// // // // // // // // 	};
+// // // // // // // // };
+
+// // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // // // 	return (
+// // // // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // // 			{/* Header Section */}
+// // // // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // // // 				<Link
+// // // // // // // // 					href='/blog'
+// // // // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // // // 				>
+// // // // // // // // 					← Back to posts
+// // // // // // // // 				</Link>
+// // // // // // // // 				{isAuthenticated && (
+// // // // // // // // 					<div className='space-x-4'>
+// // // // // // // // 						<Link
+// // // // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // // // 						>
+// // // // // // // // 							Edit Post
+// // // // // // // // 						</Link>
+// // // // // // // // 						<DeletePost postId={post.id} />
+// // // // // // // // 					</div>
+// // // // // // // // 				)}
+// // // // // // // // 			</div>
+
+// // // // // // // // 			{/* Main Content Grid */}
+// // // // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // // 				{/* Left Column - Article Content */}
+// // // // // // // // 				<article className='relative'>
+// // // // // // // // 					{post.cover_image && (
+// // // // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // // 							<ImageWithFallback
+// // // // // // // // 								src={post.cover_image}
+// // // // // // // // 								alt={post.title}
+// // // // // // // // 								className='w-full h-full object-cover'
+// // // // // // // // 								priority
+// // // // // // // // 							/>
+// // // // // // // // 						</div>
+// // // // // // // // 					)}
+// // // // // // // // 					{/* Content */}
+// // // // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // // 						</div>
+
+// // // // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // // // 						<div className='mt-8'>{post.content}</div>
+
+// // // // // // // // 						{/* Engagement Bar */}
+// // // // // // // // 						<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // // 							<Reactions postId={post.id} />
+// // // // // // // // 						</div>
+// // // // // // // // 					</div>
+// // // // // // // // 				</article>
+
+// // // // // // // // 				{/* Right Column - Comments */}
+// // // // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // // 					<Comments postId={post.id} />
+// // // // // // // // 				</div>
+// // // // // // // // 			</div>
+// // // // // // // // 		</div>
+// // // // // // // // 	);
+// // // // // // // // }
+// // // src/components/BlogPostContent.tsx
+// // "use client";
+// // import { useState, useEffect } from "react";
+// // import Link from "next/link";
+// // import Image from "next/image";
+// // import { Reactions } from "@/components/Reactions";
+// // import { Comments } from "@/components/Comments";
+// // import ReactMarkdown from "react-markdown";
+// // import remarkGfm from "remark-gfm";
+// // import { MarkdownContent } from "./MarkdownContent";
+
+// // type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	content: string;
+// // 	excerpt?: string;
+// // 	cover_image?: string;
+// // 	created_at: string;
+// // 	slug: string;
+// // 	profiles?: {
+// // 		username?: string;
+// // 	};
+// // };
+
+// // export default function BlogPostContent({ post }: { post: Post }) {
+// // 	const formatDate = (date: string) => {
+// // 		return new Date(date).toLocaleDateString("en-US", {
+// // 			month: "long",
+// // 			day: "numeric",
+// // 			year: "numeric",
+// // 		});
+// // 	};
+
+// // 	return (
+// // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // 			{/* Header Section */}
+// // 			<div className='flex justify-between items-center mb-8'>
+// // 				<Link
+// // 					href='/blog'
+// // 					className='text-primary-400 hover:text-primary-300'
+// // 				>
+// // 					← Back to posts
+// // 				</Link>
+// // 			</div>
+
+// // 			{/* Main Content Grid */}
+// // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // 				{/* Left Column - Article Content */}
+// // 				<article className='relative'>
+// // 					{post.cover_image && (
+// // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // 							<Image
+// // 								src={post.cover_image}
+// // 								alt='Cover image'
+// // 								fill
+// // 								className='object-cover'
+// // 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // 								priority
+// // 							/>
+// // 						</div>
+// // 					)}
+
+// // 					{/* Author Info */}
+// // 					<div className='flex items-start gap-4 mb-8'>
+// // 						<Image
+// // 							src='/assets/MashMediaStudio.png'
+// // 							alt='R.Lloyd Gonzales'
+// // 							width={56}
+// // 							height={56}
+// // 							className='rounded-full'
+// // 							priority
+// // 						/>
+// // 						<div>
+// // 							<h3 className='text-lg font-semibold mb-1'>R.Lloyd Gonzales</h3>
+// // 							<p className='text-gray-600 dark:text-gray-400 text-sm mb-2'>Software Engineer</p>
+// // 							<time className='text-gray-500 dark:text-gray-500 text-sm'>{formatDate(post.created_at)}</time>
+// // 						</div>
+// // 					</div>
+
+// // 					{/* Content */}
+// // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+
+// // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // 						<div className='mt-8'>
+// // 							<MarkdownContent content={post.content} />
+// // 						</div>
+// // 					</div>
+
+// // 					{/* Engagement Bar */}
+// // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // 						<Reactions postId={post.id} />
+// // 					</div>
+// // 				</article>
+
+// // 				{/* Right Column - Comments */}
+// // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // 					<Comments postId={post.id} />
+// // 				</div>
+// // 			</div>
+// // 		</div>
+// // 	);
+// // }
+// // // "use client";
+// // // // import { useState } from "react"
+// // // import Link from "next/link";
+// // // import Image from "next/image";
+// // // import { Reactions } from "@/components/Reactions";
+// // // import { Comments } from "@/components/Comments";
+// // // import ReactMarkdown from "react-markdown";
+// // // import remarkGfm from "remark-gfm";
+// // // import rehypePrism from "rehype-prism-plus";
+// // // import "prismjs/themes/prism-tomorrow.css";
+// // // import "prismjs/components/prism-typescript";
+// // // import "prismjs/components/prism-javascript";
+// // // import "prismjs/components/prism-css";
+// // // import "prismjs/components/prism-bash";
+// // // import "prismjs/components/prism-json";
+// // // import "prismjs/components/prism-markdown";
+
+// // // type Post = {
+// // // 	id: string;
+// // // 	title: string;
+// // // 	content: string;
+// // // 	excerpt?: string;
+// // // 	cover_image?: string;
+// // // 	created_at: string;
+// // // 	slug: string;
+// // // 	profiles?: {
+// // // 		username?: string;
+// // // 	};
+// // // };
+
+// // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // 	const formatDate = (date: string) => {
+// // // 		return new Date(date).toLocaleDateString("en-US", {
+// // // 			month: "long",
+// // // 			day: "numeric",
+// // // 			year: "numeric",
+// // // 		});
+// // // 	};
+
+// // // 	return (
+// // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // 			{/* Header Section */}
+// // // 			<div className='flex justify-between items-center mb-8'>
+// // // 				<Link
+// // // 					href='/blog'
+// // // 					className='text-primary-400 hover:text-primary-300'
+// // // 				>
+// // // 					← Back to posts
+// // // 				</Link>
+// // // 			</div>
+
+// // // 			{/* Main Content Grid */}
+// // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // 				{/* Left Column - Article Content */}
+// // // 				<article className='relative'>
+// // // 					{post.cover_image && (
+// // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // 							<Image
+// // // 								src={post.cover_image}
+// // // 								alt='Cover image'
+// // // 								fill
+// // // 								className='object-cover'
+// // // 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // 								priority
+// // // 							/>
+// // // 						</div>
+// // // 					)}
+
+// // // 					{/* Author Info */}
+// // // 					<div className='flex items-start gap-4 mb-8'>
+// // // 						<Image
+// // // 							src='/assets/MashMediaStudio.png'
+// // // 							alt='R.Lloyd Gonzales'
+// // // 							width={56}
+// // // 							height={56}
+// // // 							className='rounded-full'
+// // // 							priority
+// // // 						/>
+// // // 						<div>
+// // // 							<h3 className='text-lg font-semibold mb-1'>R.Lloyd Gonzales</h3>
+// // // 							<p className='text-gray-600 dark:text-gray-400 text-sm mb-2'>Software Engineer</p>
+// // // 							<time className='text-gray-500 dark:text-gray-500 text-sm'>{formatDate(post.created_at)}</time>
+// // // 						</div>
+// // // 					</div>
+
+// // // 					{/* Content */}
+// // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+
+// // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // 						<div className='mt-8'>
+// // // 							<ReactMarkdown
+// // // 								remarkPlugins={[remarkGfm]}
+// // // 								rehypePlugins={[rehypePrism]}
+// // // 								components={{
+// // // 									p: ({ children }) => {
+// // // 										if (typeof children === "object" && children && "type" in children && children.type === "img") {
+// // // 											return <>{children}</>;
+// // // 										}
+// // // 										return <p>{children}</p>;
+// // // 									},
+// // // 									img: ({ src, alt }) => {
+// // // 										if (!src) return null;
+// // // 										return (
+// // // 											<div className='relative w-full aspect-video mb-4'>
+// // // 												<Image
+// // // 													src={src}
+// // // 													alt={alt || ""}
+// // // 													fill
+// // // 													className='rounded-lg object-cover'
+// // // 													sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // 												/>
+// // // 											</div>
+// // // 										);
+// // // 									},
+// // // 								}}
+// // // 							>
+// // // 								{post.content}
+// // // 							</ReactMarkdown>
+// // // 						</div>
+// // // 					</div>
+
+// // // 					{/* Engagement Bar */}
+// // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // 						<Reactions postId={post.id} />
+// // // 					</div>
+// // // 				</article>
+
+// // // 				{/* Right Column - Comments */}
+// // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // 					<Comments postId={post.id} />
+// // // 				</div>
+// // // 			</div>
+// // // 		</div>
+// // // 	);
+// // // }
+// // // // "use client";
+// // // // // import { useState } from "react";
+// // // // import Link from "next/link";
+// // // // import Image from "next/image";
+// // // // import { Reactions } from "@/components/Reactions";
+// // // // import { Comments } from "@/components/Comments";
+// // // // import ReactMarkdown from "react-markdown";
+// // // // import remarkGfm from "remark-gfm";
+
+// // // // import rehypePrism from "rehype-prism-plus";
+// // // // import rehypeHighlight from "rehype-highlight";
+
+// // // // import "prismjs/themes/prism-tomorrow.css";
+
+// // // // type Post = {
+// // // // 	id: string;
+// // // // 	title: string;
+// // // // 	content: string;
+// // // // 	excerpt?: string;
+// // // // 	cover_image?: string;
+// // // // 	created_at: string;
+// // // // 	slug: string;
+// // // // 	profiles?: {
+// // // // 		username?: string;
+// // // // 	};
+// // // // };
+
+// // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // 	const formatDate = (date: string) => {
+// // // // 		return new Date(date).toLocaleDateString("en-US", {
+// // // // 			month: "long",
+// // // // 			day: "numeric",
+// // // // 			year: "numeric",
+// // // // 		});
+// // // // 	};
+
+// // // // 	return (
+// // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // 			{/* Header Section */}
+// // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // 				<Link
+// // // // 					href='/blog'
+// // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // 				>
+// // // // 					← Back to posts
+// // // // 				</Link>
+// // // // 			</div>
+
+// // // // 			{/* Main Content Grid */}
+// // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // 				{/* Left Column - Article Content */}
+// // // // 				<article className='relative'>
+// // // // 					{post.cover_image && (
+// // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // 							<Image
+// // // // 								src={post.cover_image}
+// // // // 								alt='Cover image'
+// // // // 								fill
+// // // // 								className='object-cover'
+// // // // 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // // 								priority
+// // // // 							/>
+// // // // 						</div>
+// // // // 					)}
+
+// // // // 					{/* Author Info */}
+// // // // 					<div className='flex items-start gap-4 mb-8'>
+// // // // 						<Image
+// // // // 							src='/assets/MashMediaStudio.png'
+// // // // 							alt='R.Lloyd Gonzales'
+// // // // 							width={56}
+// // // // 							height={56}
+// // // // 							className='rounded-full'
+// // // // 							priority
+// // // // 						/>
+// // // // 						<div>
+// // // // 							<h3 className='text-lg font-semibold mb-1'>R.Lloyd Gonzales</h3>
+// // // // 							<p className='text-gray-600 dark:text-gray-400 text-sm mb-2'>Software Engineer</p>
+// // // // 							<time className='text-gray-500 dark:text-gray-500 text-sm'>{formatDate(post.created_at)}</time>
+// // // // 						</div>
+// // // // 					</div>
+
+// // // // 					{/* Content */}
+// // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+
+// // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // 						<div className='mt-8'>
+// // // // 							<ReactMarkdown
+// // // // 								remarkPlugins={[remarkGfm]}
+// // // // 								rehypePlugins={[rehypeHighlight]}
+// // // // 								components={{
+// // // // 									p: ({ children }) => <p className='text-gray-300 mb-4'>{children}</p>,
+// // // // 									h2: ({ children }) => <h2 className='text-2xl font-bold mt-8 mb-4'>{children}</h2>,
+// // // // 									h3: ({ children }) => <h3 className='text-xl font-bold mt-6 mb-3'>{children}</h3>,
+// // // // 									ul: ({ children }) => <ul className='list-disc pl-6 mb-4 text-gray-300'>{children}</ul>,
+// // // // 									ol: ({ children }) => <ol className='list-decimal pl-6 mb-4 text-gray-300'>{children}</ol>,
+// // // // 									blockquote: ({ children }) => <blockquote className='border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400'>{children}</blockquote>,
+// // // // 									img: ({ src, alt, ...props }) => {
+// // // // 										if (!src) return null;
+// // // // 										return (
+// // // // 											<div className='relative w-full aspect-video mb-4'>
+// // // // 												<Image
+// // // // 													src={src}
+// // // // 													alt={alt || ""}
+// // // // 													fill
+// // // // 													className='rounded-lg object-cover'
+// // // // 													sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // // 												/>
+// // // // 											</div>
+// // // // 										);
+// // // // 									},
+// // // // 									code: ({ inline, className, children, ...props }) => {
+// // // // 										const match = /language-(\w+)/.exec(className || "");
+// // // // 										const language = match ? match[1] : "";
+
+// // // // 										if (!inline && language) {
+// // // // 											return (
+// // // // 												<pre className={`language-${language}`}>
+// // // // 													<code
+// // // // 														className={`language-${language}`}
+// // // // 														{...props}
+// // // // 													>
+// // // // 														{String(children).replace(/\n$/, "")}
+// // // // 													</code>
+// // // // 												</pre>
+// // // // 											);
+// // // // 										}
+
+// // // // 										return (
+// // // // 											<code
+// // // // 												className={className}
+// // // // 												{...props}
+// // // // 											>
+// // // // 												{children}
+// // // // 											</code>
+// // // // 										);
+// // // // 									},
+// // // // 								}}
+// // // // 							>
+// // // // 								{post.content}
+// // // // 							</ReactMarkdown>
+// // // // 						</div>
+// // // // 					</div>
+
+// // // // 					{/* Engagement Bar */}
+// // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // 						<Reactions postId={post.id} />
+// // // // 					</div>
+// // // // 				</article>
+
+// // // // 				{/* Right Column - Comments */}
+// // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // 					<Comments postId={post.id} />
+// // // // 				</div>
+// // // // 			</div>
+// // // // 		</div>
+// // // // 	);
+// // // // }
+
+// // // // // // src/components/BlogPostContent.tsx
+// // // // // "use client";
+// // // // // import Link from "next/link";
+// // // // // import Image from "next/image";
+// // // // // import { Reactions } from "@/components/Reactions";
+// // // // // import { Comments } from "@/components/Comments";
+// // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // import ReactMarkdown from "react-markdown";
+// // // // // import remarkGfm from "remark-gfm";
+// // // // // import rehypePrism from "rehype-prism-plus";
+// // // // // // import Link from "next/link";
+// // // // // // import Image from "next/image";
+// // // // // // import ReactMarkdown from "react-markdown";
+// // // // // import rehypeHighlight from "rehype-highlight";
+// // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // import { Comments } from "@/components/Comments";
+// // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // import { DeletePost } from "./DeletePost";
+// // // // // // import 'highlight.js/styles/github-dark.css';
+// // // // // // import 'highlight.js/styles/monokai-sublime.css'
+// // // // // // import 'highlight.js/styles/tokyo-night-dark.css'
+// // // // // import "highlight.js/styles/base16/material-darker.css";
+// // // // // // import 'highlight.js/styles/base16/tomorrow-night.css'
+
+// // // // // type Post = {
+// // // // // 	id: string;
+// // // // // 	title: string;
+// // // // // 	content: string;
+// // // // // 	excerpt?: string;
+// // // // // 	cover_image?: string;
+// // // // // 	created_at: string;
+// // // // // 	slug: string;
+// // // // // 	profiles?: {
+// // // // // 		username?: string;
+// // // // // 	};
+// // // // // };
+
+// // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // 	const formatDate = (date: string) => {
+// // // // // 		return new Date(date).toLocaleDateString("en-US", {
+// // // // // 			month: "long",
+// // // // // 			day: "numeric",
+// // // // // 			year: "numeric",
+// // // // // 		});
+// // // // // 	};
+
+// // // // // 	return (
+// // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // 			{/* Header Section */}
+// // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // 				<Link
+// // // // // 					href='/blog'
+// // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // 				>
+// // // // // 					← Back to posts
+// // // // // 				</Link>
+// // // // // 			</div>
+
+// // // // // 			{/* Main Content Grid */}
+// // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // 				{/* Left Column - Article Content */}
+// // // // // 				<article className='relative'>
+// // // // // 					{post.cover_image && (
+// // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // 							<Image
+// // // // // 								src={post.cover_image}
+// // // // // 								alt='Cover image'
+// // // // // 								fill
+// // // // // 								className='object-cover'
+// // // // // 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // // // 								priority
+// // // // // 							/>
+// // // // // 						</div>
+// // // // // 					)}
+
+// // // // // 					{/* Author Info */}
+// // // // // 					<div className='flex items-start gap-4 mb-8'>
+// // // // // 						<Image
+// // // // // 							src='/assets/MashMediaStudio.png'
+// // // // // 							alt='R.Lloyd Gonzales'
+// // // // // 							width={56}
+// // // // // 							height={56}
+// // // // // 							className='rounded-full'
+// // // // // 							priority
+// // // // // 						/>
+// // // // // 						<div>
+// // // // // 							<h3 className='text-lg font-semibold mb-1'>R.Lloyd Gonzales</h3>
+// // // // // 							<p className='text-gray-600 dark:text-gray-400 text-sm mb-2'>Software Engineer</p>
+// // // // // 							<time className='text-gray-500 dark:text-gray-500 text-sm'>{formatDate(post.created_at)}</time>
+// // // // // 						</div>
+// // // // // 					</div>
+
+// // // // // 					{/* Content */}
+// // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+
+// // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // 						<div className='mt-8'>
+// // // // // 							<ReactMarkdown
+// // // // // 								remarkPlugins={[remarkGfm]}
+// // // // // 								rehypePlugins={[rehypePrism]}
+// // // // // 								components={{
+// // // // // 									img: ({ node, src, alt, ...props }) => {
+// // // // // 										if (!src) return null;
+// // // // // 										return (
+// // // // // 											<div className='relative w-full aspect-video mb-4'>
+// // // // // 												<Image
+// // // // // 													src={src}
+// // // // // 													alt={alt || ""}
+// // // // // 													fill
+// // // // // 													className='rounded-lg object-cover'
+// // // // // 													sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+// // // // // 												/>
+// // // // // 											</div>
+// // // // // 										);
+// // // // // 									},
+// // // // // 									code: ({ node, inline, className, children, ...props }) => {
+// // // // // 										const match = /language-(\w+)/.exec(className || "");
+// // // // // 										const language = match ? match[1] : "";
+
+// // // // // 										if (!inline && language) {
+// // // // // 											return (
+// // // // // 												<pre className={`language-${language}`}>
+// // // // // 													<code
+// // // // // 														className={`language-${language}`}
+// // // // // 														{...props}
+// // // // // 													>
+// // // // // 														{String(children).replace(/\n$/, "")}
+// // // // // 													</code>
+// // // // // 												</pre>
+// // // // // 											);
+// // // // // 										}
+
+// // // // // 										return (
+// // // // // 											<code
+// // // // // 												className={className}
+// // // // // 												{...props}
+// // // // // 											>
+// // // // // 												{children}
+// // // // // 											</code>
+// // // // // 										);
+// // // // // 									},
+// // // // // 								}}
+// // // // // 							>
+// // // // // 								{post.content}
+// // // // // 							</ReactMarkdown>
+// // // // // 						</div>
+// // // // // 					</div>
+
+// // // // // 					{/* Engagement Bar */}
+// // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // 						<Reactions postId={post.id} />
+// // // // // 					</div>
+// // // // // 				</article>
+
+// // // // // 				{/* Right Column - Comments */}
+// // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // 					<Comments postId={post.id} />
+// // // // // 				</div>
+// // // // // 			</div>
+// // // // // 		</div>
+// // // // // 	);
+// // // // // }
+
+// // // // // // // src/components/BlogPostContent.tsx
+// // // // // // "use client";
+// // // // // // import Link from "next/link";
+// // // // // // import Image from "next/image";
+// // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // import rehypeHighlight from "rehype-highlight";
+// // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // import { Comments } from "@/components/Comments";
+// // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // import { DeletePost } from "./DeletePost";
+// // // // // // // import 'highlight.js/styles/github-dark.css';
+// // // // // // // import 'highlight.js/styles/monokai-sublime.css'
+// // // // // // // import 'highlight.js/styles/tokyo-night-dark.css'
+// // // // // // import "highlight.js/styles/base16/material-darker.css";
+// // // // // // // import 'highlight.js/styles/base16/tomorrow-night.css'
+
+// // // // // // type Post = {
+// // // // // // 	id: string;
+// // // // // // 	title: string;
+// // // // // // 	content: string;
+// // // // // // 	excerpt?: string;
+// // // // // // 	cover_image?: string;
+// // // // // // 	created_at: string;
+// // // // // // 	slug: string;
+// // // // // // 	profiles?: {
+// // // // // // 		username?: string;
+// // // // // // 	};
+// // // // // // };
+
+// // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // 	return (
+// // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // 				<Link
+// // // // // // 					href='/blog'
+// // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // 				>
+// // // // // // 					← Back to posts
+// // // // // // 				</Link>
+// // // // // // 				{isAuthenticated && (
+// // // // // // 					<div className='space-x-4'>
+// // // // // // 						<Link
+// // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // 						>
+// // // // // // 							Edit Post
+// // // // // // 						</Link>
+// // // // // // 						<DeletePost postId={post.id} />
+// // // // // // 					</div>
+// // // // // // 				)}
+// // // // // // 			</div>
+
+// // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // 				<article className='relative'>
+// // // // // // 					{post.cover_image && (
+// // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // 							<Image
+// // // // // // 								src={post.cover_image}
+// // // // // // 								alt={post.title}
+// // // // // // 								fill
+// // // // // // 								className='object-cover'
+// // // // // // 								sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+// // // // // // 								priority
+// // // // // // 							/>
+// // // // // // 							{/* <img
+// // // // // // 								src={post.cover_image}
+// // // // // // 								alt={post.title}
+// // // // // // 								className='w-full h-full object-cover'
+// // // // // // 							/> */}
+// // // // // // 						</div>
+// // // // // // 					)}
+
+// // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // 						<div className='text-gray-400 mb-8 text-sm'>
+// // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // 						</div>
+
+// // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // 						<ReactMarkdown
+// // // // // // 							rehypePlugins={[rehypeHighlight]}
+// // // // // // 							components={{
+// // // // // // 								p: ({ children }) => <p className='text-[1rem] text-gray-600 dark:text-gray-400 mb-4'>{children}</p>,
+// // // // // // 								h2: ({ children }) => <h2 className='text-2xl font-bold mt-8 mb-4'>{children}</h2>,
+// // // // // // 								h3: ({ children }) => <h3 className='text-xl font-bold mt-6 mb-3'>{children}</h3>,
+// // // // // // 								ul: ({ children }) => <ul className='list-disc pl-6 mb-4 text-gray-600 dark:text-gray-400'>{children}</ul>,
+// // // // // // 								ol: ({ children }) => <ol className='list-decimal pl-6 mb-4 text-gray-300'>{children}</ol>,
+// // // // // // 								blockquote: ({ children }) => <blockquote className='border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400'>{children}</blockquote>,
+// // // // // // 								img: ({ src, alt }) => (
+// // // // // // 									<div className='relative aspect-[16/9] my-8'>
+// // // // // // 										<Image
+// // // // // // 											src={src || ""}
+// // // // // // 											alt={alt || ""}
+// // // // // // 											fill
+// // // // // // 											className='object-cover rounded-lg'
+// // // // // // 											sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+// // // // // // 										/>
+// // // // // // 									</div>
+// // // // // // 								),
+// // // // // // 							}}
+// // // // // // 						>
+// // // // // // 							{post.content}
+// // // // // // 						</ReactMarkdown>
+// // // // // // 					</div>
+
+// // // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // 						<Reactions postId={post.id} />
+// // // // // // 					</div>
+// // // // // // 				</article>
+
+// // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // 					<Comments postId={post.id} />
+// // // // // // 				</div>
+// // // // // // 			</div>
+// // // // // // 		</div>
+// // // // // // 	);
+// // // // // // }
+// // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // "use client";
+// // // // // // // import { useState, useEffect } from "react";
+// // // // // // // import Link from "next/link";
+// // // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // import { DeletePost } from "./DeletePost";
+// // // // // // // import Prism from "prismjs";
+// // // // // // // import "prismjs/themes/prism-tomorrow.css";
+// // // // // // // import "prismjs/components/prism-javascript";
+// // // // // // // import "prismjs/components/prism-typescript";
+// // // // // // // import "prismjs/components/prism-css";
+// // // // // // // import "prismjs/components/prism-python";
+
+// // // // // // // type Post = {
+// // // // // // //     id: string;
+// // // // // // //     title: string;
+// // // // // // //     content: string;
+// // // // // // //     excerpt?: string;
+// // // // // // //     cover_image?: string;
+// // // // // // //     created_at: string;
+// // // // // // //     slug: string;
+// // // // // // //     profiles?: {
+// // // // // // //         username?: string;
+// // // // // // //     };
+// // // // // // // };
+
+// // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // //     const { isAuthenticated } = useAuth();
+
+// // // // // // //     useEffect(() => {
+// // // // // // //         Prism.highlightAll();
+// // // // // // //     }, [post.content]);
+
+// // // // // // //     return (
+// // // // // // //         <div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // //             <div className='flex justify-between items-center mb-8'>
+// // // // // // //                 <Link href='/blog' className='text-primary-400 hover:text-primary-300'>
+// // // // // // //                     ← Back to posts
+// // // // // // //                 </Link>
+// // // // // // //                 {isAuthenticated && (
+// // // // // // //                     <div className='space-x-4'>
+// // // // // // //                         <Link href={`/blog/edit/${post.slug}`} className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'>
+// // // // // // //                             Edit Post
+// // // // // // //                         </Link>
+// // // // // // //                         <DeletePost postId={post.id} />
+// // // // // // //                     </div>
+// // // // // // //                 )}
+// // // // // // //             </div>
+
+// // // // // // //             <div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // //                 <article className='relative'>
+// // // // // // //                     {post.cover_image && (
+// // // // // // //                         <div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // //                             <img src={post.cover_image} alt={post.title} className='w-full h-full object-cover' />
+// // // // // // //                         </div>
+// // // // // // //                     )}
+
+// // // // // // //                     <div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // //                         <h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // //                         <div className='text-gray-400 mb-8'>
+// // // // // // //                             {new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // //                         </div>
+
+// // // // // // //                         {post.excerpt &&
+// // // // // // //                             <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>
+// // // // // // //                                 {post.excerpt}
+// // // // // // //                             </p>
+// // // // // // //                         }
+
+// // // // // // //                         <ReactMarkdown
+// // // // // // //                             components={{
+// // // // // // //                                 code({node, inline, className, children, ...props}) {
+// // // // // // //                                     const match = /language-(\w+)/.exec(className || '');
+// // // // // // //                                     const language = match ? match[1] : '';
+
+// // // // // // //                                     if (!inline && language) {
+// // // // // // //                                         return (
+// // // // // // //                                             <pre className={`language-${language}`}>
+// // // // // // //                                                 <code className={`language-${language}`} {...props}>
+// // // // // // //                                                     {String(children).replace(/\n$/, '')}
+// // // // // // //                                                 </code>
+// // // // // // //                                             </pre>
+// // // // // // //                                         );
+// // // // // // //                                     }
+
+// // // // // // //                                     return (
+// // // // // // //                                         <code className={className} {...props}>
+// // // // // // //                                             {children}
+// // // // // // //                                         </code>
+// // // // // // //                                     );
+// // // // // // //                                 },
+// // // // // // //                                 p: ({children}) => <p className="text-gray-300 mb-4">{children}</p>,
+// // // // // // //                                 h2: ({children}) => <h2 className="text-2xl font-bold mt-8 mb-4">{children}</h2>,
+// // // // // // //                                 h3: ({children}) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+// // // // // // //                                 ul: ({children}) => <ul className="list-disc pl-6 mb-4 text-gray-300">{children}</ul>,
+// // // // // // //                                 ol: ({children}) => <ol className="list-decimal pl-6 mb-4 text-gray-300">{children}</ol>,
+// // // // // // //                                 blockquote: ({children}) => (
+// // // // // // //                                     <blockquote className="border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400">
+// // // // // // //                                         {children}
+// // // // // // //                                     </blockquote>
+// // // // // // //                                 ),
+// // // // // // //                             }}
+// // // // // // //                         >
+// // // // // // //                             {post.content}
+// // // // // // //                         </ReactMarkdown>
+// // // // // // //                     </div>
+
+// // // // // // //                     <div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // //                         <Reactions postId={post.id} />
+// // // // // // //                     </div>
+// // // // // // //                 </article>
+
+// // // // // // //                 <div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // //                     <Comments postId={post.id} />
+// // // // // // //                 </div>
+// // // // // // //             </div>
+// // // // // // //         </div>
+// // // // // // //     );
+// // // // // // // }
+// // // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // // "use client";
+// // // // // // // // import { useState } from "react";
+// // // // // // // // import Link from "next/link";
+// // // // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // // import { DeletePost } from "./DeletePost";
+
+// // // // // // // // type Post = {
+// // // // // // // //     id: string;
+// // // // // // // //     title: string;
+// // // // // // // //     content: string;
+// // // // // // // //     excerpt?: string;
+// // // // // // // //     cover_image?: string;
+// // // // // // // //     created_at: string;
+// // // // // // // //     slug: string;
+// // // // // // // //     profiles?: {
+// // // // // // // //         username?: string;
+// // // // // // // //     };
+// // // // // // // // };
+
+// // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // //     const { isAuthenticated } = useAuth();
+
+// // // // // // // //     return (
+// // // // // // // //         <div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // //             <div className='flex justify-between items-center mb-8'>
+// // // // // // // //                 <Link href='/blog' className='text-primary-400 hover:text-primary-300'>
+// // // // // // // //                     ← Back to posts
+// // // // // // // //                 </Link>
+// // // // // // // //                 {isAuthenticated && (
+// // // // // // // //                     <div className='space-x-4'>
+// // // // // // // //                         <Link href={`/blog/edit/${post.slug}`} className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'>
+// // // // // // // //                             Edit Post
+// // // // // // // //                         </Link>
+// // // // // // // //                         <DeletePost postId={post.id} />
+// // // // // // // //                     </div>
+// // // // // // // //                 )}
+// // // // // // // //             </div>
+
+// // // // // // // //             <div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // //                 <article className='relative'>
+// // // // // // // //                     {post.cover_image && (
+// // // // // // // //                         <div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // //                             <img src={post.cover_image} alt={post.title} className='w-full h-full object-cover' />
+// // // // // // // //                         </div>
+// // // // // // // //                     )}
+
+// // // // // // // //                     <div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // //                         <h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // //                         <div className='text-gray-400 mb-8'>
+// // // // // // // //                             {new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // //                         </div>
+
+// // // // // // // //                         {post.excerpt &&
+// // // // // // // //                             <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>
+// // // // // // // //                                 {post.excerpt}
+// // // // // // // //                             </p>
+// // // // // // // //                         }
+
+// // // // // // // //                         <ReactMarkdown
+// // // // // // // //                             components={{
+// // // // // // // //                                 code({node, inline, className, children, ...props}) {
+// // // // // // // //                                     return (
+// // // // // // // //                                         <code className="block bg-gray-800 rounded-md p-4 text-gray-100 my-4" {...props}>
+// // // // // // // //                                             {children}
+// // // // // // // //                                         </code>
+// // // // // // // //                                     );
+// // // // // // // //                                 },
+// // // // // // // //                                 p: ({children}) => <p className="text-gray-300 mb-4">{children}</p>,
+// // // // // // // //                                 h2: ({children}) => <h2 className="text-2xl font-bold mt-8 mb-4">{children}</h2>,
+// // // // // // // //                                 h3: ({children}) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+// // // // // // // //                                 ul: ({children}) => <ul className="list-disc pl-6 mb-4 text-gray-300">{children}</ul>,
+// // // // // // // //                                 ol: ({children}) => <ol className="list-decimal pl-6 mb-4 text-gray-300">{children}</ol>,
+// // // // // // // //                                 blockquote: ({children}) => (
+// // // // // // // //                                     <blockquote className="border-l-4 border-gray-600 pl-4 my-4 italic text-gray-400">
+// // // // // // // //                                         {children}
+// // // // // // // //                                     </blockquote>
+// // // // // // // //                                 ),
+// // // // // // // //                             }}
+// // // // // // // //                         >
+// // // // // // // //                             {post.content}
+// // // // // // // //                         </ReactMarkdown>
+// // // // // // // //                     </div>
+
+// // // // // // // //                     <div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // //                         <Reactions postId={post.id} />
+// // // // // // // //                     </div>
+// // // // // // // //                 </article>
+
+// // // // // // // //                 <div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // //                     <Comments postId={post.id} />
+// // // // // // // //                 </div>
+// // // // // // // //             </div>
+// // // // // // // //         </div>
+// // // // // // // //     );
+// // // // // // // // }
+
+// // // // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // // // "use client";
+// // // // // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // // // // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// // // // // // // // // import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+// // // // // // // // // type Post = {
+// // // // // // // // // 	id: string;
+// // // // // // // // // 	title: string;
+// // // // // // // // // 	content: string;
+// // // // // // // // // 	excerpt?: string;
+// // // // // // // // // 	cover_image?: string;
+// // // // // // // // // 	created_at: string;
+// // // // // // // // // 	slug: string;
+// // // // // // // // // 	profiles?: {
+// // // // // // // // // 		username?: string;
+// // // // // // // // // 	};
+// // // // // // // // // };
+
+// // // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // // 	return (
+// // // // // // // // // 		<div className='max-w-4xl mx-auto p-4'>
+// // // // // // // // // 			<h1 className='text-2xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // // 			<ReactMarkdown
+// // // // // // // // // 				components={{
+// // // // // // // // // 					code({ node, inline, className, children, ...props }) {
+// // // // // // // // // 						const match = /language-(\w+)/.exec(className || "");
+// // // // // // // // // 						return !inline && match ? (
+// // // // // // // // // 							<SyntaxHighlighter
+// // // // // // // // // 								style={atomDark}
+// // // // // // // // // 								language={match[1]}
+// // // // // // // // // 								PreTag='div'
+// // // // // // // // // 								{...props}
+// // // // // // // // // 							>
+// // // // // // // // // 								{String(children).replace(/\n$/, "")}
+// // // // // // // // // 							</SyntaxHighlighter>
+// // // // // // // // // 						) : (
+// // // // // // // // // 							<code
+// // // // // // // // // 								className={className}
+// // // // // // // // // 								{...props}
+// // // // // // // // // 							>
+// // // // // // // // // 								{children}
+// // // // // // // // // 							</code>
+// // // // // // // // // 						);
+// // // // // // // // // 					},
+// // // // // // // // // 				}}
+// // // // // // // // // 			>
+// // // // // // // // // 				{post.content}
+// // // // // // // // // 			</ReactMarkdown>
+// // // // // // // // // 		</div>
+// // // // // // // // // 	);
+// // // // // // // // // }
+// // // // // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // // // // "use client";
+// // // // // // // // // // import ReactMarkdown from "react-markdown";
+
+// // // // // // // // // // type Post = {
+// // // // // // // // // // 	id: string;
+// // // // // // // // // // 	title: string;
+// // // // // // // // // // 	content: string;
+// // // // // // // // // // 	excerpt?: string;
+// // // // // // // // // // 	cover_image?: string;
+// // // // // // // // // // 	created_at: string;
+// // // // // // // // // // 	slug: string;
+// // // // // // // // // // 	profiles?: {
+// // // // // // // // // // 		username?: string;
+// // // // // // // // // // 	};
+// // // // // // // // // // };
+
+// // // // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // // // 	// Debug: Log the content to verify what we're receiving
+// // // // // // // // // // 	console.log("Content being passed to ReactMarkdown:", post.content);
+
+// // // // // // // // // // 	return (
+// // // // // // // // // // 		<div className='max-w-4xl mx-auto p-4'>
+// // // // // // // // // // 			<h1 className='text-2xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // // // 			<ReactMarkdown>{post.content}</ReactMarkdown>
+// // // // // // // // // // 		</div>
+// // // // // // // // // // 	);
+// // // // // // // // // // }
+// // // // // // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // // // // // "use client";
+// // // // // // // // // // // import { useState } from "react";
+// // // // // // // // // // // import Link from "next/link";
+// // // // // // // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // // // // // import { DeletePost } from "./DeletePost";
+// // // // // // // // // // // import ReactMarkdown from "react-markdown";
+// // // // // // // // // // // import remarkGfm from "remark-gfm";
+
+// // // // // // // // // // // type Post = {
+// // // // // // // // // // // 	id: string;
+// // // // // // // // // // // 	title: string;
+// // // // // // // // // // // 	content: string;
+// // // // // // // // // // // 	excerpt?: string;
+// // // // // // // // // // // 	cover_image?: string;
+// // // // // // // // // // // 	created_at: string;
+// // // // // // // // // // // 	slug: string;
+// // // // // // // // // // // 	profiles?: {
+// // // // // // // // // // // 		username?: string;
+// // // // // // // // // // // 	};
+// // // // // // // // // // // };
+
+// // // // // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // // // // // // 	return (
+// // // // // // // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // // // // // 			{/* Header Section */}
+// // // // // // // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // // // // // // 				<Link
+// // // // // // // // // // // 					href='/blog'
+// // // // // // // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // // // // // // 				>
+// // // // // // // // // // // 					← Back to posts
+// // // // // // // // // // // 				</Link>
+// // // // // // // // // // // 				{isAuthenticated && (
+// // // // // // // // // // // 					<div className='space-x-4'>
+// // // // // // // // // // // 						<Link
+// // // // // // // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // // // // // // 						>
+// // // // // // // // // // // 							Edit Post
+// // // // // // // // // // // 						</Link>
+// // // // // // // // // // // 						<DeletePost postId={post.id} />
+// // // // // // // // // // // 					</div>
+// // // // // // // // // // // 				)}
+// // // // // // // // // // // 			</div>
+
+// // // // // // // // // // // 			{/* Main Content Grid */}
+// // // // // // // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // // // // // 				{/* Left Column - Article Content */}
+// // // // // // // // // // // 				<article className='relative'>
+// // // // // // // // // // // 					{post.cover_image && (
+// // // // // // // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // // // // // 							<img
+// // // // // // // // // // // 								src={post.cover_image}
+// // // // // // // // // // // 								alt={post.title}
+// // // // // // // // // // // 								className='w-full h-full object-cover'
+// // // // // // // // // // // 							/>
+// // // // // // // // // // // 						</div>
+// // // // // // // // // // // 					)}
+
+// // // // // // // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // // // // // 						</div>
+
+// // // // // // // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // // // // // // 						<div className='mt-8'>
+// // // // // // // // // // // 							<ReactMarkdown
+// // // // // // // // // // // 								remarkPlugins={[remarkGfm]}
+// // // // // // // // // // // 								className='prose dark:prose-invert'
+// // // // // // // // // // // 							>
+// // // // // // // // // // // 								{post.content}
+// // // // // // // // // // // 							</ReactMarkdown>
+// // // // // // // // // // // 						</div>
+// // // // // // // // // // // 					</div>
+
+// // // // // // // // // // // 					{/* Engagement Bar */}
+// // // // // // // // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // // // // // 						<Reactions postId={post.id} />
+// // // // // // // // // // // 					</div>
+// // // // // // // // // // // 				</article>
+
+// // // // // // // // // // // 				{/* Right Column - Comments */}
+// // // // // // // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // // // // // 					<Comments postId={post.id} />
+// // // // // // // // // // // 				</div>
+// // // // // // // // // // // 			</div>
+// // // // // // // // // // // 		</div>
+// // // // // // // // // // // 	);
+// // // // // // // // // // // }
+// // // // // // // // // // // // // src/components/BlogPostContent.tsx
+// // // // // // // // // // // // "use client";
+// // // // // // // // // // // // import { useState } from "react";
+// // // // // // // // // // // // import Link from "next/link";
+// // // // // // // // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // // // // // // import { DeletePost } from "./DeletePost";
+
+// // // // // // // // // // // // type Post = {
+// // // // // // // // // // // // 	id: string;
+// // // // // // // // // // // // 	title: string;
+// // // // // // // // // // // // 	content: string;
+// // // // // // // // // // // // 	excerpt?: string;
+// // // // // // // // // // // // 	cover_image?: string;
+// // // // // // // // // // // // 	created_at: string;
+// // // // // // // // // // // // 	slug: string;
+// // // // // // // // // // // // 	profiles?: {
+// // // // // // // // // // // // 		username?: string;
+// // // // // // // // // // // // 	};
+// // // // // // // // // // // // };
+
+// // // // // // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // // // // // // // 	return (
+// // // // // // // // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // // // // // // 			{/* Header Section */}
+// // // // // // // // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // // // // // // // 				<Link
+// // // // // // // // // // // // 					href='/blog'
+// // // // // // // // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // // // // // // // 				>
+// // // // // // // // // // // // 					← Back to posts
+// // // // // // // // // // // // 				</Link>
+// // // // // // // // // // // // 				{isAuthenticated && (
+// // // // // // // // // // // // 					<div className='space-x-4'>
+// // // // // // // // // // // // 						<Link
+// // // // // // // // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // // // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // // // // // // // 						>
+// // // // // // // // // // // // 							Edit Post
+// // // // // // // // // // // // 						</Link>
+// // // // // // // // // // // // 						<DeletePost postId={post.id} />
+// // // // // // // // // // // // 					</div>
+// // // // // // // // // // // // 				)}
+// // // // // // // // // // // // 			</div>
+
+// // // // // // // // // // // // 			{/* Main Content Grid */}
+// // // // // // // // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // // // // // // 				{/* Left Column - Article Content */}
+// // // // // // // // // // // // 				<article className='relative'>
+// // // // // // // // // // // // 					{post.cover_image && (
+// // // // // // // // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // // // // // // 							<img
+// // // // // // // // // // // // 								src={post.cover_image}
+// // // // // // // // // // // // 								alt={post.title}
+// // // // // // // // // // // // 								className='w-full h-full object-cover'
+// // // // // // // // // // // // 							/>
+// // // // // // // // // // // // 						</div>
+// // // // // // // // // // // // 					)}
+// // // // // // // // // // // // 					{/* Content */}
+// // // // // // // // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // // // // // // 						<h1 className='postTitle text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // // // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // // // // // // 						</div>
+
+// // // // // // // // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // // // // // // // 						<div className='mt-8 content'>
+// // // // // // // // // // // // 							<img
+// // // // // // // // // // // // 								src={post.content.match(/!\[.*?\]\((.*?)\)/)?.[1]}
+// // // // // // // // // // // // 								alt={post.content.match(/!\[(.*?)\]/)?.[1] || ""}
+// // // // // // // // // // // // 								className='w-full h-auto rounded-lg my-4'
+// // // // // // // // // // // // 							/>
+// // // // // // // // // // // // 							{post.content.replace(/!\[.*?\]\(.*?\)/g, "")}
+// // // // // // // // // // // // 						</div>
+// // // // // // // // // // // // 					</div>
+
+// // // // // // // // // // // // 					{/* Engagement Bar */}
+// // // // // // // // // // // // 					<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // // // // // // 						<Reactions postId={post.id} />
+// // // // // // // // // // // // 					</div>
+// // // // // // // // // // // // 				</article>
+
+// // // // // // // // // // // // 				{/* Right Column - Comments */}
+// // // // // // // // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // // // // // // 					<Comments postId={post.id} />
+// // // // // // // // // // // // 				</div>
+// // // // // // // // // // // // 			</div>
+// // // // // // // // // // // // 		</div>
+// // // // // // // // // // // // 	);
+// // // // // // // // // // // // }
+
+// // // // // // // // // // // // // "use client";
+// // // // // // // // // // // // // import { useState } from "react";
+// // // // // // // // // // // // // import Link from "next/link";
+// // // // // // // // // // // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // // // // // // // // // // import { Reactions } from "@/components/Reactions";
+// // // // // // // // // // // // // import { Comments } from "@/components/Comments";
+// // // // // // // // // // // // // import { useAuth } from "@/hooks/useAuth";
+// // // // // // // // // // // // // import { DeletePost } from "./DeletePost";
+
+// // // // // // // // // // // // // type Post = {
+// // // // // // // // // // // // // 	id: string;
+// // // // // // // // // // // // // 	title: string;
+// // // // // // // // // // // // // 	content: string;
+// // // // // // // // // // // // // 	excerpt?: string;
+// // // // // // // // // // // // // 	cover_image?: string;
+// // // // // // // // // // // // // 	created_at: string;
+// // // // // // // // // // // // // 	slug: string;
+// // // // // // // // // // // // // 	profiles?: {
+// // // // // // // // // // // // // 		username?: string;
+// // // // // // // // // // // // // 	};
+// // // // // // // // // // // // // };
+
+// // // // // // // // // // // // // export default function BlogPostContent({ post }: { post: Post }) {
+// // // // // // // // // // // // // 	const { isAuthenticated } = useAuth();
+
+// // // // // // // // // // // // // 	return (
+// // // // // // // // // // // // // 		<div className='max-w-screen-2xl mx-auto px-4'>
+// // // // // // // // // // // // // 			{/* Header Section */}
+// // // // // // // // // // // // // 			<div className='flex justify-between items-center mb-8'>
+// // // // // // // // // // // // // 				<Link
+// // // // // // // // // // // // // 					href='/blog'
+// // // // // // // // // // // // // 					className='text-primary-400 hover:text-primary-300'
+// // // // // // // // // // // // // 				>
+// // // // // // // // // // // // // 					← Back to posts
+// // // // // // // // // // // // // 				</Link>
+// // // // // // // // // // // // // 				{isAuthenticated && (
+// // // // // // // // // // // // // 					<div className='space-x-4'>
+// // // // // // // // // // // // // 						<Link
+// // // // // // // // // // // // // 							href={`/blog/edit/${post.slug}`}
+// // // // // // // // // // // // // 							className='bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600'
+// // // // // // // // // // // // // 						>
+// // // // // // // // // // // // // 							Edit Post
+// // // // // // // // // // // // // 						</Link>
+// // // // // // // // // // // // // 						<DeletePost postId={post.id} />
+// // // // // // // // // // // // // 					</div>
+// // // // // // // // // // // // // 				)}
+// // // // // // // // // // // // // 			</div>
+
+// // // // // // // // // // // // // 			{/* Main Content Grid */}
+// // // // // // // // // // // // // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // // // // // // // // // // // // 				{/* Left Column - Article Content */}
+// // // // // // // // // // // // // 				<article className='relative'>
+// // // // // // // // // // // // // 					{post.cover_image && (
+// // // // // // // // // // // // // 						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
+// // // // // // // // // // // // // 							<ImageWithFallback
+// // // // // // // // // // // // // 								src={post.cover_image}
+// // // // // // // // // // // // // 								alt={post.title}
+// // // // // // // // // // // // // 								className='w-full h-full object-cover'
+// // // // // // // // // // // // // 								priority
+// // // // // // // // // // // // // 							/>
+// // // // // // // // // // // // // 						</div>
+// // // // // // // // // // // // // 					)}
+// // // // // // // // // // // // // 					{/* Content */}
+// // // // // // // // // // // // // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // // // // // // // // // // // // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // // // // // // // // // // // // 						<div className='text-gray-400 dark:text-gray-400 mb-8'>
+// // // // // // // // // // // // // 							{new Date(post.created_at).toLocaleDateString()} • {post.profiles?.username || "Anonymous"}
+// // // // // // // // // // // // // 						</div>
+
+// // // // // // // // // // // // // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+// // // // // // // // // // // // // 						<div className='mt-8'>{post.content}</div>
+
+// // // // // // // // // // // // // 						{/* Engagement Bar */}
+// // // // // // // // // // // // // 						<div className='sticky bottom-0 bg-gray-200/80 dark:bg-gray-800/80 backdrop-blur mt-8 p-4 rounded-lg'>
+// // // // // // // // // // // // // 							<Reactions postId={post.id} />
+// // // // // // // // // // // // // 						</div>
+// // // // // // // // // // // // // 					</div>
+// // // // // // // // // // // // // 				</article>
+
+// // // // // // // // // // // // // 				{/* Right Column - Comments */}
+// // // // // // // // // // // // // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // // // // // // // // // // // // 					<Comments postId={post.id} />
+// // // // // // // // // // // // // 				</div>
+// // // // // // // // // // // // // 			</div>
+// // // // // // // // // // // // // 		</div>
+// // // // // // // // // // // // // 	);
+// // // // // // // // // // // // // }
 
 ```
 
-# src/components/BlogPostLayout.tsx
+# src/components/BlogPostContent.tsx
 
 ```tsx
-// src/components/BlogPostLayout.tsx
-import { useState } from "react";
-import { Heart, Share2, MessageSquare } from "lucide-react";
-import { Article, Title, Metadata, Content } from "./BlogPost.styles";
-import { MarkdownContent } from "@/components/MarkdownContent";
-import { ImageWithFallback } from "@/components/ImageWithFallback";
-import { Reactions } from "@/components/Reactions";
-import { Comments } from "@/components/Comments";
+// src/components/BlogPostContent.tsx
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
-import { DeletePost } from "./DeletePost";
+import { Comments } from "@/components/Comments";
+import { AuthorInfo } from "./blog/AuthorInfo";
+import { CoverImage } from "./blog/CoverImage";
+import { MarkdownRenderer } from "./blog/MarkdownRenderer";
+import { EngagementBar } from "./blog/EngagementBar";
+import dynamic from "next/dynamic";
 
-type BlogPostLayoutProps = {
-	post: {
-		id: string;
-		title: string;
-		content: string;
-		excerpt?: string;
-		cover_image?: string;
-		created_at: string;
-		slug: string;
-		profiles?: {
-			username?: string;
-		};
+type Post = {
+	id: string;
+	title: string;
+	content: string;
+	type: "markdown" | "component";
+	component_name?: string;
+	component_props?: Record<string, any>;
+	excerpt?: string;
+	cover_image?: string;
+	created_at: string;
+	slug: string;
+	profiles?: {
+		username?: string;
 	};
-	children?: React.ReactNode;
 };
 
-export default function BlogPostLayout({ post, children }: BlogPostLayoutProps) {
-	const [isOpen, setIsOpen] = useState(true);
-	const { isAuthenticated } = useAuth();
+// Dynamic component loader
+const DynamicComponent = ({ componentName, props = {} }) => {
+	const Component = dynamic(() => import(`@/components/blog-components/${componentName}`), {
+		loading: () => (
+			<div className='flex items-center justify-center p-8 bg-gray-100 dark:bg-gray-800 rounded-lg'>
+				<div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500'></div>
+			</div>
+		),
+	});
 
+	return <Component {...props} />;
+};
+
+export default function BlogPostContent({ post }: { post: Post }) {
 	return (
-		<div className='max-w-screen-2xl mx-auto px-4'>
-			{/* Header Section */}
-			<div className='flex justify-between items-center mb-8'>
+		<div className='max-w-page mx-auto px-4'>
+			{/* <div className='flex justify-between items-center mb-8'>
 				<Link
 					href='/blog'
-					className='text-brand-primary-400 hover:text-brand-primary-300'
+					className='text-primary-400 hover:text-primary-300'
 				>
 					← Back to posts
 				</Link>
-				{isAuthenticated && (
-					<div className='space-x-4'>
-						<Link
-							href={`/blog/edit/${post.slug}`}
-							className='bg-brand-primary-500 text-white px-4 py-2 rounded hover:bg-brand-primary-600'
-						>
-							Edit Post
-						</Link>
-						<DeletePost postId={post.id} />
-					</div>
-				)}
-			</div>
+			</div> */}
 
-			{/* Main Content Grid */}
 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
-				{/* Left Column - Article Content */}
 				<article className='relative'>
-					{post.cover_image && (
-						<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
-							<ImageWithFallback
-								src={post.cover_image}
-								alt={post.title}
-								className='w-full h-full'
-								priority
-							/>
+					{/* Cover Image */}
+					<CoverImage
+						src={post.cover_image}
+						alt={post.title}
+					/>
+
+					{/* Main Content Area */}
+					<div className='prose prose-lg dark:prose-invert max-w-none'>
+						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+
+						{/* Author Info */}
+						<AuthorInfo date={post.created_at} />
+
+						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+
+						{/* Conditional Content Rendering */}
+						<div className='mt-8'>
+							{post.type === "markdown" ? (
+								<MarkdownRenderer content={post.content} />
+							) : (
+								<div className='bg-white dark:bg-gray-800 rounded-lg overflow-hidden'>
+									<DynamicComponent
+										componentName={post.component_name}
+										props={post.component_props}
+									/>
+								</div>
+							)}
 						</div>
-					)}
-
-					<div className='prose prose-lg max-w-none'>
-						{/* <Title>{post.title}</Title> • styled-components */}
-						{/* <h1 className='text-3xl font-bold mb-4 text-primary-500 dark:text-primary-400'>{post.title}</h1> */}
-						<h1 className='text-3xl font-bold mb-4'>{post.title}XSX</h1>
-						<Metadata>
-							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-						</Metadata>
-						<div className='dateContainer text-primary-400 mb-8 font-serif italic'>
-							{new Date(post.created_at).toLocaleDateString()} •{post.profiles?.username || "Anonymous"}
-						</div>
-
-						{post.excerpt && <p className='text-xl text-gray-300 mb-8 font-serif italic'>{post.excerpt}</p>}
-
-						<MarkdownContent content={post.content} />
 					</div>
 
 					{/* Engagement Bar */}
-					<div className='sticky bottom-0 bg-gray-900/80 backdrop-blur mt-8 p-4 rounded-lg'>
-						<div className='flex items-center justify-between'>
-							<Reactions postId={post.id} />
-							<div className='flex gap-4'>
-								<button className='flex items-center gap-2 text-gray-300 hover:text-white'>
-									<MessageSquare size={20} />
-									<span>{isOpen ? "Hide" : "Show"} Comments</span>
-								</button>
-								<button className='flex items-center gap-2 text-gray-300 hover:text-white'>
-									<Share2 size={20} />
-									Share
-								</button>
-							</div>
-						</div>
-					</div>
+					<EngagementBar postId={post.id} />
 				</article>
 
-				{/* Right Column - Comments */}
-				<div className={`lg:block ${isOpen ? "block" : "hidden"}`}>
-					<div className='sticky top-4'>
-						<Comments postId={post.id} />
-					</div>
+				{/* Comments Section */}
+				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+					<Comments postId={post.id} />
 				</div>
 			</div>
 		</div>
 	);
 }
+
+// // src/components/BlogPostContent.tsx
+// "use client";
+// import Link from "next/link";
+// import { Comments } from "@/components/Comments";
+// import { AuthorInfo } from "./blog/AuthorInfo";
+// import { CoverImage } from "./blog/CoverImage";
+// // import { MarkdownRenderer } from "./blog/MarkdownRenderer";
+// import { EngagementBar } from "./blog/EngagementBar";
+
+// import dynamic from "next/dynamic";
+// import { MarkdownRenderer } from "./blog/MarkdownRenderer";
+// import { Post } from "../../types/blog";
+
+// // type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	content: string;
+// // 	excerpt?: string;
+// // 	cover_image?: string;
+// // 	created_at: string;
+// // 	slug: string;
+// // 	profiles?: {
+// // 		username?: string;
+// // 	};
+// // };
+
+// export default function BlogPostContent({ post }: { post: Post }) {
+// 	const { title, category, cover_image, excerpt, created_at } = post;
+
+// 	return (
+// 		<div className='max-w-page mx-auto px-4'>
+// 			<div className='flex justify-between items-center mb-8'>
+// 				<Link
+// 					href='/blog'
+// 					className='text-primary-400 hover:text-primary-300'
+// 				>
+// 					← Back to posts
+// 				</Link>
+// 			</div>
+
+// 			{/* Common header section */}
+// 			<header>
+// 				<h1>{title}</h1>
+// 				<div className='meta'>{/* ... meta info ... */}</div>
+// 			</header>
+
+// 			{/* Conditional content rendering */}
+// 			{post.type === "markdown" ? (
+// 				<MarkdownRenderer content={post.content} />
+// 			) : (
+// 				<DynamicComponentRenderer
+// 					componentName={post.component_name}
+// 					props={post.props}
+// 				/>
+// 			)}
+
+// 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// 				<article className='relative'>
+// 					<CoverImage
+// 						src={post.cover_image}
+// 						alt={post.title}
+// 					/>
+
+// 					<AuthorInfo date={post.created_at} />
+
+// 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+// 						<MarkdownRenderer content={post.content} />
+// 					</div>
+
+// 					<EngagementBar postId={post.id} />
+// 				</article>
+
+// 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// 					<Comments postId={post.id} />
+// 				</div>
+// 			</div>
+// 		</div>
+// 	);
+// }
+
+// // Component renderer with dynamic imports
+// function DynamicComponentRenderer({ componentName, props = {} }: { componentName: string; props?: Record<string, unknown> }) {
+// 	const Component = dynamic(() => import(`@/components/blog-components/${componentName}`), {
+// 		loading: () => <div>Loading component...</div>,
+// 	});
+
+// 	return <Component {...props} />;
+// }
+
+// // // src/components/BlogPostContent.tsx (Refactored)
+// // import Link from "next/link";
+// // import { Comments } from "@/components/Comments";
+// // import { AuthorInfo } from "./blog/AuthorInfo";
+// // import { CoverImage } from "./blog/CoverImage";
+// // import { MarkdownRenderer } from "./blog/MarkdownRenderer";
+// // import { EngagementBar } from "./blog/EngagementBar";
+
+// // type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	content: string;
+// // 	excerpt?: string;
+// // 	cover_image?: string;
+// // 	created_at: string;
+// // 	slug: string;
+// // 	profiles?: {
+// // 		username?: string;
+// // 	};
+// // };
+
+// // export default function BlogPostContent({ post }: { post: Post }) {
+// // 	return (
+// // 		<div className='max-w-page mx-auto px-4'>
+// // 			<div className='flex justify-between items-center mb-8'>
+// // 				<Link
+// // 					href='/blog'
+// // 					className='text-primary-400 hover:text-primary-300'
+// // 				>
+// // 					← Back to posts
+// // 				</Link>
+// // 			</div>
+
+// // 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+// // 				<article className='relative'>
+// // 					<CoverImage
+// // 						src={post.cover_image}
+// // 						alt={post.title}
+// // 					/>
+
+// // 					<AuthorInfo date={post.created_at} />
+
+// // 					<div className='prose prose-lg dark:prose-invert max-w-none'>
+// // 						<h1 className='text-3xl font-bold mb-4'>{post.title}</h1>
+// // 						{post.excerpt && <p className='text-xl text-gray-500 dark:text-gray-400 mb-8 font-serif italic'>{post.excerpt}</p>}
+// // 						<MarkdownRenderer content={post.content} />
+// // 					</div>
+
+// // 					<EngagementBar postId={post.id} />
+// // 				</article>
+
+// // 				<div className='lg:sticky lg:top-4 space-y-6 bg-primary-50/80 dark:bg-gray-800/80 p-4 rounded-lg'>
+// // 					<Comments postId={post.id} />
+// // 				</div>
+// // 			</div>
+// // 		</div>
+// // 	);
+// // }
 
 ```
 
@@ -2518,6 +7367,7 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 "use client";
 import { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";
+import Image from "next/image";
 
 type Comment = {
 	id: string;
@@ -2578,14 +7428,14 @@ export function Comments({ postId }: { postId: string }) {
 
 	return (
 		<div className='mt-12'>
-			<h2 className='text-2xl font-bold mb-6 text-gray-100'>Comments</h2>
+			<h2 className='text-2xl font-bold mb-6 text-gray-500'>Comments</h2>
 			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
 			<form
 				onSubmit={handleSubmit}
 				className='mb-8 space-y-4'
 			>
 				<div>
-					<label className='block text-sm font-medium mb-2 text-gray-300'>Name</label>
+					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Name</label>
 					<input
 						type='text'
 						value={authorName}
@@ -2596,7 +7446,7 @@ export function Comments({ postId }: { postId: string }) {
 					/>
 				</div>
 				<div>
-					<label className='block text-sm font-medium mb-2 text-gray-300'>Comment</label>
+					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Comment</label>
 					<textarea
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
@@ -2615,7 +7465,7 @@ export function Comments({ postId }: { postId: string }) {
 				</button>
 			</form>
 
-			<div className='space-y-4'>
+			{/* <div className='space-y-4'>
 				{comments.map((comment) => (
 					<div
 						key={comment.id}
@@ -2628,6 +7478,33 @@ export function Comments({ postId }: { postId: string }) {
 					</div>
 				))}
 				{comments.length === 0 && <p className='text-gray-400'>No comments yet</p>}
+			</div> */}
+
+			<div className='space-y-4'>
+				{comments.length === 0 ? (
+					<div className='text-center'>
+						<Image
+							src='/assets/Be-the-first.png'
+							alt='Be the first to comment'
+							width={200}
+							height={150}
+							className='mx-auto mb-4'
+						/>
+						<p className='text-gray-400'>No comments yet</p>
+					</div>
+				) : (
+					comments.map((comment) => (
+						<div
+							key={comment.id}
+							className='border border-gray-700 rounded p-4 bg-gray-800'
+						>
+							<div className='text-sm text-gray-400 mb-2'>
+								{comment.author_name || "Anonymous"} • {new Date(comment.created_at).toLocaleDateString()}
+							</div>
+							<p className='text-gray-200'>{comment.content}</p>
+						</div>
+					))
+				)}
 			</div>
 		</div>
 	);
@@ -2718,7 +7595,7 @@ export function DeletePost({ postId }: { postId: string }) {
 ```tsx
 // src/components/EditForm.tsx
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseClient } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
@@ -2738,9 +7615,55 @@ type Post = {
 	category?: CategoryId;
 };
 
+type ReactComponentData = {
+	name: string;
+	props: Record<string, any>;
+	code: string;
+};
+
+function parseReactComponent(content: string): ReactComponentData {
+	try {
+		const nameMatch = content.match(/(?:function|const)\s+(\w+)/);
+		const name = nameMatch ? nameMatch[1] : "MyComponent";
+
+		const propsMatch = content.match(/(?:function|const)\s+\w+\s*\((\{[^}]*\})\)/);
+		const propsString = propsMatch ? propsMatch[1] : "{}";
+		const props = Function(`return ${propsString}`)();
+
+		return { name, props, code: content };
+	} catch (e) {
+		return { name: "MyComponent", props: {}, code: content };
+	}
+}
+
+function generateReactComponent(name: string, props: Record<string, any>, code: string): string {
+	if (!code.includes("export default")) {
+		const propsString = Object.keys(props).length ? `{ ${Object.keys(props).join(", ")} }` : "props";
+		return `export default function ${name}(${propsString}) {
+   return (
+     ${code}
+   );
+ }`;
+	}
+	return code;
+}
+
 export function EditForm({ post }: { post: Post }) {
 	const router = useRouter();
 	const { user } = useAuth();
+
+	// Initialize content format state
+	const [contentFormat, setContentFormat] = useState(() => {
+      return post.content.includes('export default') ? 'react' : 'markdown';
+    });
+
+    const [componentData, setComponentData] = useState<ReactComponentData>(() => {
+      return contentFormat === 'react'
+        ? parseReactComponent(post.content)
+        : { name: "MyComponent", props: {}, code: "" };
+    });
+
+	// Initialize form data with post content
 	const [formData, setFormData] = useState({
 		title: post.title,
 		content: post.content,
@@ -2748,28 +7671,33 @@ export function EditForm({ post }: { post: Post }) {
 		cover_image: post.cover_image || "",
 		category: post.category || ("tech" as CategoryId),
 	});
+
+   const handleComponentChange = (field: keyof ReactComponentData, value: any) => {
+      setComponentData(prev => {
+        const updated = { ...prev, [field]: value };
+        const newContent = generateReactComponent(updated.name, updated.props, updated.code);
+        setFormData(prev => ({ ...prev, content: newContent }));
+        return updated;
+      });
+    };
+
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isImageDeleting, setIsImageDeleting] = useState(false);
 	const [error, setError] = useState("");
 
-	const handleImageDelete = async () => {
-		if (!formData.cover_image) return;
+	// Keep content in sync with editor changes
+	useEffect(() => {
+		setFormData((prev) => ({
+			...prev,
+			content: post.content,
+		}));
+	}, [post.content]);
 
-		setIsImageDeleting(true);
-		try {
-			const path = formData.cover_image.split("/").pop();
-			if (!path) throw new Error("Invalid image path");
-
-			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
-
-			if (deleteError) throw deleteError;
-			setFormData((prev) => ({ ...prev, cover_image: "" }));
-		} catch (err) {
-			setError("Failed to delete image");
-			console.error("Error deleting image:", err);
-		} finally {
-			setIsImageDeleting(false);
-		}
+	const handleContentChange = (newContent: string) => {
+		setFormData((prev) => ({
+			...prev,
+			content: newContent,
+		}));
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -2789,12 +7717,7 @@ export function EditForm({ post }: { post: Post }) {
 				.eq("id", post.id);
 
 			if (updateError) throw updateError;
-
-			if (post.published) {
-				router.push(`/blog/${post.slug}`);
-			} else {
-				router.push("/blog/drafts");
-			}
+			router.push(`/blog/${post.slug}`);
 			router.refresh();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to update post");
@@ -2803,16 +7726,26 @@ export function EditForm({ post }: { post: Post }) {
 		}
 	};
 
-	const handleCancel = () => {
-		if (window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
-			router.push(`/blog/${post.slug}`);
+	const handleImageDelete = async () => {
+		if (!formData.cover_image) return;
+		setIsImageDeleting(true);
+		try {
+			const path = formData.cover_image.split("/").pop();
+			if (!path) throw new Error("Invalid image path");
+			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
+			if (deleteError) throw deleteError;
+			setFormData((prev) => ({ ...prev, cover_image: "" }));
+		} catch (err) {
+			setError("Failed to delete image");
+		} finally {
+			setIsImageDeleting(false);
 		}
 	};
 
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className='space-y-6'
+			className='space-y-6 max-w-4xl mx-auto px-4'
 		>
 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
 
@@ -2822,7 +7755,7 @@ export function EditForm({ post }: { post: Post }) {
 					type='text'
 					value={formData.title}
 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 					required
 				/>
 			</div>
@@ -2832,7 +7765,7 @@ export function EditForm({ post }: { post: Post }) {
 				<select
 					value={formData.category}
 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
-					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 					required
 				>
 					{categories.map((category) => (
@@ -2843,6 +7776,18 @@ export function EditForm({ post }: { post: Post }) {
 							{category.name}
 						</option>
 					))}
+				</select>
+			</div>
+
+			<div>
+				<label className='block text-sm font-medium mb-2'>Format</label>
+				<select
+					value={contentFormat}
+					onChange={(e) => setContentFormat(e.target.value as "markdown" | "react")}
+					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+				>
+					<option value='markdown'>Markdown</option>
+					<option value='react'>React Component</option>
 				</select>
 			</div>
 
@@ -2882,17 +7827,61 @@ export function EditForm({ post }: { post: Post }) {
 				<textarea
 					value={formData.excerpt}
 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
-					className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
+					className='w-full p-2 border rounded h-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 				/>
 			</div>
 
 			<div>
-				<label className='block text-sm font-medium mb-2'>Content</label>
-				<div className='border border-gray-700 rounded-lg overflow-hidden'>
-					<RichMarkdownEditor
-						initialContent={formData.content}
-						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
-					/>
+         <div>
+        <label className="block text-sm font-medium mb-2">Content</label>
+        {contentFormat === 'react' ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Component Name</label>
+              <input
+                type="text"
+                value={componentData.name}
+                onChange={(e) => handleComponentChange('name', e.target.value)}
+                className="w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Component Props (JSON)</label>
+              <textarea
+                value={JSON.stringify(componentData.props, null, 2)}
+                onChange={(e) => {
+                  try {
+                    const props = JSON.parse(e.target.value);
+                    handleComponentChange('props', props);
+                  } catch {} // Ignore invalid JSON while typing
+                }}
+                className="w-full h-32 p-2 font-mono text-sm bg-white dark:bg-gray-800 border rounded border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+                spellCheck={false}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Component Code</label>
+              <textarea
+                value={componentData.code}
+                onChange={(e) => handleComponentChange('code', e.target.value)}
+                className="w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 border rounded border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+                spellCheck={false}
+              />
+            </div>
+          </div>
+        ) : (
+          <RichMarkdownEditor
+            initialContent={formData.content}
+            onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+          />
+					) : (
+						<textarea
+							value={formData.content}
+							onChange={(e) => handleContentChange(e.target.value)}
+							className='w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+							spellCheck={false}
+						/>
+					)}
 				</div>
 			</div>
 
@@ -2912,8 +7901,8 @@ export function EditForm({ post }: { post: Post }) {
 				</button>
 				<button
 					type='button'
-					onClick={handleCancel}
-					className='bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600'
+					onClick={() => router.back()}
+					className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600'
 				>
 					Cancel
 				</button>
@@ -2924,7 +7913,7 @@ export function EditForm({ post }: { post: Post }) {
 
 // // src/components/EditForm.tsx
 // "use client";
-// import { useState } from "react";
+// import { useState, useEffect } from "react";
 // import { useRouter } from "next/navigation";
 // import { supabaseClient } from "@/lib/auth";
 // import { useAuth } from "@/hooks/useAuth";
@@ -2947,6 +7936,14 @@ export function EditForm({ post }: { post: Post }) {
 // export function EditForm({ post }: { post: Post }) {
 // 	const router = useRouter();
 // 	const { user } = useAuth();
+
+// 	// Initialize content format state
+// 	const [contentFormat, setContentFormat] = useState(() => {
+// 		const hasJSXSyntax = post.content.includes("export default") || post.content.includes("function") || post.content.includes("return") || post.content.includes("<");
+// 		return hasJSXSyntax ? "react" : "markdown";
+// 	});
+
+// 	// Initialize form data with post content
 // 	const [formData, setFormData] = useState({
 // 		title: post.title,
 // 		content: post.content,
@@ -2954,8 +7951,25 @@ export function EditForm({ post }: { post: Post }) {
 // 		cover_image: post.cover_image || "",
 // 		category: post.category || ("tech" as CategoryId),
 // 	});
+
 // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// 	const [isImageDeleting, setIsImageDeleting] = useState(false);
 // 	const [error, setError] = useState("");
+
+// 	// Keep content in sync with editor changes
+// 	useEffect(() => {
+// 		setFormData((prev) => ({
+// 			...prev,
+// 			content: post.content,
+// 		}));
+// 	}, [post.content]);
+
+// 	const handleContentChange = (newContent: string) => {
+// 		setFormData((prev) => ({
+// 			...prev,
+// 			content: newContent,
+// 		}));
+// 	};
 
 // 	const handleSubmit = async (e: React.FormEvent) => {
 // 		e.preventDefault();
@@ -2974,12 +7988,7 @@ export function EditForm({ post }: { post: Post }) {
 // 				.eq("id", post.id);
 
 // 			if (updateError) throw updateError;
-
-// 			if (post.published) {
-// 				router.push(`/blog/${post.slug}`);
-// 			} else {
-// 				router.push("/blog/drafts");
-// 			}
+// 			router.push(`/blog/${post.slug}`);
 // 			router.refresh();
 // 		} catch (err) {
 // 			setError(err instanceof Error ? err.message : "Failed to update post");
@@ -2990,35 +7999,24 @@ export function EditForm({ post }: { post: Post }) {
 
 // 	const handleImageDelete = async () => {
 // 		if (!formData.cover_image) return;
-
 // 		setIsImageDeleting(true);
 // 		try {
 // 			const path = formData.cover_image.split("/").pop();
 // 			if (!path) throw new Error("Invalid image path");
-
 // 			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
-
 // 			if (deleteError) throw deleteError;
-
 // 			setFormData((prev) => ({ ...prev, cover_image: "" }));
 // 		} catch (err) {
 // 			setError("Failed to delete image");
-// 			console.error("Error deleting image:", err);
 // 		} finally {
 // 			setIsImageDeleting(false);
-// 		}
-// 	};
-
-// 	const handleCancel = () => {
-// 		if (window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
-// 			router.push(`/blog/${post.slug}`);
 // 		}
 // 	};
 
 // 	return (
 // 		<form
 // 			onSubmit={handleSubmit}
-// 			className='space-y-6'
+// 			className='space-y-6 max-w-4xl mx-auto px-4'
 // 		>
 // 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
 
@@ -3028,7 +8026,7 @@ export function EditForm({ post }: { post: Post }) {
 // 					type='text'
 // 					value={formData.title}
 // 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-// 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 // 					required
 // 				/>
 // 			</div>
@@ -3038,7 +8036,7 @@ export function EditForm({ post }: { post: Post }) {
 // 				<select
 // 					value={formData.category}
 // 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
-// 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 // 					required
 // 				>
 // 					{categories.map((category) => (
@@ -3049,6 +8047,18 @@ export function EditForm({ post }: { post: Post }) {
 // 							{category.name}
 // 						</option>
 // 					))}
+// 				</select>
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Format</label>
+// 				<select
+// 					value={contentFormat}
+// 					onChange={(e) => setContentFormat(e.target.value as "markdown" | "react")}
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// 				>
+// 					<option value='markdown'>Markdown</option>
+// 					<option value='react'>React Component</option>
 // 				</select>
 // 			</div>
 
@@ -3088,17 +8098,26 @@ export function EditForm({ post }: { post: Post }) {
 // 				<textarea
 // 					value={formData.excerpt}
 // 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
-// 					className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
+// 					className='w-full p-2 border rounded h-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
 // 				/>
 // 			</div>
 
 // 			<div>
 // 				<label className='block text-sm font-medium mb-2'>Content</label>
-// 				<div className='border border-gray-700 rounded-lg overflow-hidden'>
-// 					<RichMarkdownEditor
-// 						initialContent={formData.content}
-// 						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
-// 					/>
+// 				<div className='border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden'>
+// 					{contentFormat === "markdown" ? (
+// 						<RichMarkdownEditor
+// 							initialContent={formData.content}
+// 							onChange={handleContentChange}
+// 						/>
+// 					) : (
+// 						<textarea
+// 							value={formData.content}
+// 							onChange={(e) => handleContentChange(e.target.value)}
+// 							className='w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+// 							spellCheck={false}
+// 						/>
+// 					)}
 // 				</div>
 // 			</div>
 
@@ -3118,8 +8137,8 @@ export function EditForm({ post }: { post: Post }) {
 // 				</button>
 // 				<button
 // 					type='button'
-// 					onClick={handleCancel}
-// 					className='bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600'
+// 					onClick={() => router.back()}
+// 					className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600'
 // 				>
 // 					Cancel
 // 				</button>
@@ -3127,6 +8146,860 @@ export function EditForm({ post }: { post: Post }) {
 // 		</form>
 // 	);
 // }
+
+// // src/components/EditForm.tsx
+// "use client";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { supabaseClient } from "@/lib/auth";
+// import { useAuth } from "@/hooks/useAuth";
+// import { ImageUpload } from "@/components/ImageUpload";
+// import { ImageWithFallback } from "@/components/ImageWithFallback";
+// import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// import { Loader2 } from "lucide-react";
+// import { categories, CategoryId } from "@/data/categories";
+
+// type Post = {
+// 	id: string;
+// 	title: string;
+// 	content: string;
+// 	excerpt?: string;
+// 	cover_image?: string;
+// 	slug: string;
+// 	category?: CategoryId;
+// };
+
+// export function EditForm({ post }: { post: Post }) {
+// 	const router = useRouter();
+// 	const { user } = useAuth();
+// 	const [isMarkdown, setIsMarkdown] = useState(() => {
+// 		// Detect if content is markdown
+// 		const hasJSXSyntax = post.content.includes("export default") || post.content.includes("function") || post.content.includes("return") || post.content.includes("<");
+// 		return !hasJSXSyntax;
+// 	});
+
+// 	const [formData, setFormData] = useState({
+// 		title: post.title || "",
+// 		content: post.content || "",
+// 		excerpt: post.excerpt || "",
+// 		cover_image: post.cover_image || "",
+// 		category: post.category || ("tech" as CategoryId),
+// 	});
+// 	const [isSubmitting, setIsSubmitting] = useState(false);
+// 	const [isImageDeleting, setIsImageDeleting] = useState(false);
+// 	const [error, setError] = useState("");
+
+// 	const handleSubmit = async (e: React.FormEvent) => {
+// 		e.preventDefault();
+// 		if (!user) return;
+
+// 		setIsSubmitting(true);
+// 		setError("");
+
+// 		try {
+// 			const { error: updateError } = await supabaseClient
+// 				.from("posts")
+// 				.update({
+// 					...formData,
+// 					updated_at: new Date().toISOString(),
+// 				})
+// 				.eq("id", post.id);
+
+// 			if (updateError) throw updateError;
+// 			router.push(`/blog/${post.slug}`);
+// 			router.refresh();
+// 		} catch (err) {
+// 			setError(err instanceof Error ? err.message : "Failed to update post");
+// 		} finally {
+// 			setIsSubmitting(false);
+// 		}
+// 	};
+
+// 	const handleImageDelete = async () => {
+// 		if (!formData.cover_image) return;
+// 		setIsImageDeleting(true);
+// 		try {
+// 			const path = formData.cover_image.split("/").pop();
+// 			if (!path) throw new Error("Invalid image path");
+// 			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
+// 			if (deleteError) throw deleteError;
+// 			setFormData((prev) => ({ ...prev, cover_image: "" }));
+// 		} catch (err) {
+// 			setError("Failed to delete image");
+// 		} finally {
+// 			setIsImageDeleting(false);
+// 		}
+// 	};
+
+// 	return (
+// 		<form
+// 			onSubmit={handleSubmit}
+// 			className='space-y-6 max-w-4xl mx-auto px-4'
+// 		>
+// 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Title</label>
+// 				<input
+// 					type='text'
+// 					value={formData.title}
+// 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// 					required
+// 				/>
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Category</label>
+// 				<select
+// 					value={formData.category}
+// 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// 					required
+// 				>
+// 					{categories.map((category) => (
+// 						<option
+// 							key={category.id}
+// 							value={category.id}
+// 						>
+// 							{category.name}
+// 						</option>
+// 					))}
+// 				</select>
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Format</label>
+// 				<select
+// 					value={isMarkdown ? "markdown" : "react"}
+// 					onChange={(e) => setIsMarkdown(e.target.value === "markdown")}
+// 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// 				>
+// 					<option value='markdown'>Markdown</option>
+// 					<option value='react'>React Component</option>
+// 				</select>
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Cover Image</label>
+// 				{formData.cover_image ? (
+// 					<div className='space-y-4'>
+// 						<div className='relative aspect-video w-full max-w-2xl rounded-lg overflow-hidden'>
+// 							<ImageWithFallback
+// 								src={formData.cover_image}
+// 								alt='Cover image'
+// 								className='w-full h-full'
+// 							/>
+// 						</div>
+// 						<button
+// 							type='button'
+// 							onClick={handleImageDelete}
+// 							disabled={isImageDeleting}
+// 							className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+// 						>
+// 							{isImageDeleting && (
+// 								<Loader2
+// 									className='animate-spin'
+// 									size={16}
+// 								/>
+// 							)}
+// 							{isImageDeleting ? "Removing..." : "Remove Image"}
+// 						</button>
+// 					</div>
+// 				) : (
+// 					<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// 				)}
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Excerpt</label>
+// 				<textarea
+// 					value={formData.excerpt}
+// 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
+// 					className='w-full p-2 border rounded h-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// 				/>
+// 			</div>
+
+// 			<div>
+// 				<label className='block text-sm font-medium mb-2'>Content</label>
+// 				<div className='border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden'>
+// 					{isMarkdown ? (
+// 						<RichMarkdownEditor
+// 							initialContent={formData.content}
+// 							onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// 						/>
+// 					) : (
+// 						<textarea
+// 							value={formData.content}
+// 							onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
+// 							className='w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+// 							spellCheck={false}
+// 						/>
+// 					)}
+// 				</div>
+// 			</div>
+
+// 			<div className='flex gap-4'>
+// 				<button
+// 					type='submit'
+// 					disabled={isSubmitting}
+// 					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// 				>
+// 					{isSubmitting && (
+// 						<Loader2
+// 							className='animate-spin'
+// 							size={16}
+// 						/>
+// 					)}
+// 					{isSubmitting ? "Saving..." : "Save Changes"}
+// 				</button>
+// 				<button
+// 					type='button'
+// 					onClick={() => router.back()}
+// 					className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600'
+// 				>
+// 					Cancel
+// 				</button>
+// 			</div>
+// 		</form>
+// 	);
+// }
+// // // src/components/EditForm.tsx
+// // "use client";
+// // import { useState, useEffect } from "react";
+// // import { useRouter } from "next/navigation";
+// // import { supabaseClient } from "@/lib/auth";
+// // import { useAuth } from "@/hooks/useAuth";
+// // import { ImageUpload } from "@/components/ImageUpload";
+// // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// // import { Loader2 } from "lucide-react";
+// // import { categories, CategoryId } from "@/data/categories";
+
+// // type Post = {
+// // 	id: string;
+// // 	title: string;
+// // 	content: string;
+// // 	excerpt?: string;
+// // 	cover_image?: string;
+// // 	slug: string;
+// // 	category?: CategoryId;
+// // 	format?: "markdown" | "react";
+// // };
+
+// // export function EditForm({ post }: { post: Post }) {
+// // 	const router = useRouter();
+// // 	const { user } = useAuth();
+// // 	const [formData, setFormData] = useState({
+// // 		title: post.title,
+// // 		content: post.content,
+// // 		excerpt: post.excerpt || "",
+// // 		cover_image: post.cover_image || "",
+// // 		category: post.category || ("tech" as CategoryId),
+// // 		format: post.format || detectFormat(post.content),
+// // 	});
+// // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// // 	const [isImageDeleting, setIsImageDeleting] = useState(false);
+// // 	const [error, setError] = useState("");
+
+// // 	function detectFormat(content: string): "markdown" | "react" {
+// // 		// Check for React component indicators
+// // 		const hasJSXSyntax = content.includes("export default") || content.includes("function") || content.includes("return") || content.includes("useState") || content.includes("props");
+// // 		return hasJSXSyntax ? "react" : "markdown";
+// // 	}
+
+// // 	const handleImageDelete = async () => {
+// // 		if (!formData.cover_image) return;
+// // 		setIsImageDeleting(true);
+// // 		try {
+// // 			const path = formData.cover_image.split("/").pop();
+// // 			if (!path) throw new Error("Invalid image path");
+// // 			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
+// // 			if (deleteError) throw deleteError;
+// // 			setFormData((prev) => ({ ...prev, cover_image: "" }));
+// // 		} catch (err) {
+// // 			setError("Failed to delete image");
+// // 			console.error("Error deleting image:", err);
+// // 		} finally {
+// // 			setIsImageDeleting(false);
+// // 		}
+// // 	};
+
+// // 	const handleSubmit = async (e: React.FormEvent) => {
+// // 		e.preventDefault();
+// // 		if (!user) return;
+
+// // 		setIsSubmitting(true);
+// // 		setError("");
+
+// // 		try {
+// // 			const { error: updateError } = await supabaseClient
+// // 				.from("posts")
+// // 				.update({
+// // 					...formData,
+// // 					updated_at: new Date().toISOString(),
+// // 				})
+// // 				.eq("id", post.id);
+
+// // 			if (updateError) throw updateError;
+
+// // 			if (post.published) {
+// // 				router.push(`/blog/${post.slug}`);
+// // 			} else {
+// // 				router.push("/blog/drafts");
+// // 			}
+// // 			router.refresh();
+// // 		} catch (err) {
+// // 			setError(err instanceof Error ? err.message : "Failed to update post");
+// // 		} finally {
+// // 			setIsSubmitting(false);
+// // 		}
+// // 	};
+
+// // 	return (
+// // 		<form
+// // 			onSubmit={handleSubmit}
+// // 			className='space-y-6 max-w-4xl mx-auto px-4'
+// // 		>
+// // 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Title</label>
+// // 				<input
+// // 					type='text'
+// // 					value={formData.title}
+// // 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+// // 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// // 					required
+// // 				/>
+// // 			</div>
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Category</label>
+// // 				<select
+// // 					value={formData.category}
+// // 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
+// // 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// // 					required
+// // 				>
+// // 					{categories.map((category) => (
+// // 						<option
+// // 							key={category.id}
+// // 							value={category.id}
+// // 						>
+// // 							{category.name}
+// // 						</option>
+// // 					))}
+// // 				</select>
+// // 			</div>
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Format</label>
+// // 				<select
+// // 					value={formData.format}
+// // 					onChange={(e) => setFormData((prev) => ({ ...prev, format: e.target.value as "markdown" | "react" }))}
+// // 					className='w-full p-2 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// // 				>
+// // 					<option value='markdown'>Markdown</option>
+// // 					<option value='react'>React Component</option>
+// // 				</select>
+// // 			</div>
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Cover Image</label>
+// // 				{formData.cover_image ? (
+// // 					<div className='space-y-4'>
+// // 						<div className='relative aspect-video w-full max-w-2xl rounded-lg overflow-hidden'>
+// // 							<ImageWithFallback
+// // 								src={formData.cover_image}
+// // 								alt='Cover image'
+// // 								className='w-full h-full'
+// // 							/>
+// // 						</div>
+// // 						<button
+// // 							type='button'
+// // 							onClick={handleImageDelete}
+// // 							disabled={isImageDeleting}
+// // 							className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+// // 						>
+// // 							{isImageDeleting && (
+// // 								<Loader2
+// // 									className='animate-spin'
+// // 									size={16}
+// // 								/>
+// // 							)}
+// // 							{isImageDeleting ? "Removing..." : "Remove Image"}
+// // 						</button>
+// // 					</div>
+// // 				) : (
+// // 					<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// // 				)}
+// // 			</div>
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Excerpt</label>
+// // 				<textarea
+// // 					value={formData.excerpt}
+// // 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
+// // 					className='w-full p-2 border rounded h-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+// // 				/>
+// // 			</div>
+
+// // 			<div>
+// // 				<label className='block text-sm font-medium mb-2'>Content</label>
+// // 				<div className='border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden'>
+// // 					{formData.format === "react" ? (
+// // 						<textarea
+// // 							value={formData.content}
+// // 							onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
+// // 							className='w-full h-96 p-4 font-mono text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+// // 							spellCheck={false}
+// // 						/>
+// // 					) : (
+// // 						<RichMarkdownEditor
+// // 							initialContent={formData.content}
+// // 							onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// // 						/>
+// // 					)}
+// // 				</div>
+// // 			</div>
+
+// // 			<div className='flex gap-4'>
+// // 				<button
+// // 					type='submit'
+// // 					disabled={isSubmitting}
+// // 					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// // 				>
+// // 					{isSubmitting && (
+// // 						<Loader2
+// // 							className='animate-spin'
+// // 							size={16}
+// // 						/>
+// // 					)}
+// // 					{isSubmitting ? "Saving..." : "Save Changes"}
+// // 				</button>
+// // 				<button
+// // 					type='button'
+// // 					onClick={() => router.back()}
+// // 					className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600'
+// // 				>
+// // 					Cancel
+// // 				</button>
+// // 			</div>
+// // 		</form>
+// // 	);
+// // }
+// // // // src/components/EditForm.tsx
+// // // "use client";
+// // // import { useState } from "react";
+// // // import { useRouter } from "next/navigation";
+// // // import { supabaseClient } from "@/lib/auth";
+// // // import { useAuth } from "@/hooks/useAuth";
+// // // import { ImageUpload } from "@/components/ImageUpload";
+// // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// // // import { Loader2 } from "lucide-react";
+// // // import { categories, CategoryId } from "@/data/categories";
+
+// // // type Post = {
+// // // 	id: string;
+// // // 	title: string;
+// // // 	content: string;
+// // // 	excerpt?: string;
+// // // 	cover_image?: string;
+// // // 	slug: string;
+// // // 	category?: CategoryId;
+// // // };
+
+// // // export function EditForm({ post }: { post: Post }) {
+// // // 	const router = useRouter();
+// // // 	const { user } = useAuth();
+// // // 	const [formData, setFormData] = useState({
+// // // 		title: post.title,
+// // // 		content: post.content,
+// // // 		excerpt: post.excerpt || "",
+// // // 		cover_image: post.cover_image || "",
+// // // 		category: post.category || ("tech" as CategoryId),
+// // // 	});
+// // // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// // // 	const [isImageDeleting, setIsImageDeleting] = useState(false);
+// // // 	const [error, setError] = useState("");
+
+// // // 	const handleImageDelete = async () => {
+// // // 		if (!formData.cover_image) return;
+
+// // // 		setIsImageDeleting(true);
+// // // 		try {
+// // // 			const path = formData.cover_image.split("/").pop();
+// // // 			if (!path) throw new Error("Invalid image path");
+
+// // // 			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
+
+// // // 			if (deleteError) throw deleteError;
+// // // 			setFormData((prev) => ({ ...prev, cover_image: "" }));
+// // // 		} catch (err) {
+// // // 			setError("Failed to delete image");
+// // // 			console.error("Error deleting image:", err);
+// // // 		} finally {
+// // // 			setIsImageDeleting(false);
+// // // 		}
+// // // 	};
+
+// // // 	const handleSubmit = async (e: React.FormEvent) => {
+// // // 		e.preventDefault();
+// // // 		if (!user) return;
+
+// // // 		setIsSubmitting(true);
+// // // 		setError("");
+
+// // // 		try {
+// // // 			const { error: updateError } = await supabaseClient
+// // // 				.from("posts")
+// // // 				.update({
+// // // 					...formData,
+// // // 					updated_at: new Date().toISOString(),
+// // // 				})
+// // // 				.eq("id", post.id);
+
+// // // 			if (updateError) throw updateError;
+
+// // // 			if (post.published) {
+// // // 				router.push(`/blog/${post.slug}`);
+// // // 			} else {
+// // // 				router.push("/blog/drafts");
+// // // 			}
+// // // 			router.refresh();
+// // // 		} catch (err) {
+// // // 			setError(err instanceof Error ? err.message : "Failed to update post");
+// // // 		} finally {
+// // // 			setIsSubmitting(false);
+// // // 		}
+// // // 	};
+
+// // // 	const handleCancel = () => {
+// // // 		if (window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
+// // // 			router.push(`/blog/${post.slug}`);
+// // // 		}
+// // // 	};
+
+// // // 	return (
+// // // 		<form
+// // // 			onSubmit={handleSubmit}
+// // // 			className='space-y-6'
+// // // 		>
+// // // 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+
+// // // 			<div>
+// // // 				<label className='block text-sm font-medium mb-2'>Title</label>
+// // // 				<input
+// // // 					type='text'
+// // // 					value={formData.title}
+// // // 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+// // // 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// // // 					required
+// // // 				/>
+// // // 			</div>
+
+// // // 			<div>
+// // // 				<label className='block text-sm font-medium mb-2'>Category</label>
+// // // 				<select
+// // // 					value={formData.category}
+// // // 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
+// // // 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// // // 					required
+// // // 				>
+// // // 					{categories.map((category) => (
+// // // 						<option
+// // // 							key={category.id}
+// // // 							value={category.id}
+// // // 						>
+// // // 							{category.name}
+// // // 						</option>
+// // // 					))}
+// // // 				</select>
+// // // 			</div>
+
+// // // 			<div>
+// // // 				<label className='block text-sm font-medium mb-2'>Cover Image</label>
+// // // 				{formData.cover_image ? (
+// // // 					<div className='space-y-4'>
+// // // 						<div className='relative aspect-video w-full max-w-2xl rounded-lg overflow-hidden'>
+// // // 							<ImageWithFallback
+// // // 								src={formData.cover_image}
+// // // 								alt='Cover image'
+// // // 								className='w-full h-full'
+// // // 							/>
+// // // 						</div>
+// // // 						<button
+// // // 							type='button'
+// // // 							onClick={handleImageDelete}
+// // // 							disabled={isImageDeleting}
+// // // 							className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+// // // 						>
+// // // 							{isImageDeleting && (
+// // // 								<Loader2
+// // // 									className='animate-spin'
+// // // 									size={16}
+// // // 								/>
+// // // 							)}
+// // // 							{isImageDeleting ? "Removing..." : "Remove Image"}
+// // // 						</button>
+// // // 					</div>
+// // // 				) : (
+// // // 					<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// // // 				)}
+// // // 			</div>
+
+// // // 			<div>
+// // // 				<label className='block text-sm font-medium mb-2'>Excerpt</label>
+// // // 				<textarea
+// // // 					value={formData.excerpt}
+// // // 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
+// // // 					className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
+// // // 				/>
+// // // 			</div>
+
+// // // 			<div>
+// // // 				<label className='block text-sm font-medium mb-2'>Content</label>
+// // // 				<div className='border border-gray-700 rounded-lg overflow-hidden'>
+// // // 					<RichMarkdownEditor
+// // // 						initialContent={formData.content}
+// // // 						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// // // 					/>
+// // // 				</div>
+// // // 			</div>
+
+// // // 			<div className='flex gap-4'>
+// // // 				<button
+// // // 					type='submit'
+// // // 					disabled={isSubmitting}
+// // // 					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// // // 				>
+// // // 					{isSubmitting && (
+// // // 						<Loader2
+// // // 							className='animate-spin'
+// // // 							size={16}
+// // // 						/>
+// // // 					)}
+// // // 					{isSubmitting ? "Saving..." : "Save Changes"}
+// // // 				</button>
+// // // 				<button
+// // // 					type='button'
+// // // 					onClick={handleCancel}
+// // // 					className='bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600'
+// // // 				>
+// // // 					Cancel
+// // // 				</button>
+// // // 			</div>
+// // // 		</form>
+// // // 	);
+// // // }
+
+// // // // // src/components/EditForm.tsx
+// // // // "use client";
+// // // // import { useState } from "react";
+// // // // import { useRouter } from "next/navigation";
+// // // // import { supabaseClient } from "@/lib/auth";
+// // // // import { useAuth } from "@/hooks/useAuth";
+// // // // import { ImageUpload } from "@/components/ImageUpload";
+// // // // import { ImageWithFallback } from "@/components/ImageWithFallback";
+// // // // import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// // // // import { Loader2 } from "lucide-react";
+// // // // import { categories, CategoryId } from "@/data/categories";
+
+// // // // type Post = {
+// // // // 	id: string;
+// // // // 	title: string;
+// // // // 	content: string;
+// // // // 	excerpt?: string;
+// // // // 	cover_image?: string;
+// // // // 	slug: string;
+// // // // 	category?: CategoryId;
+// // // // };
+
+// // // // export function EditForm({ post }: { post: Post }) {
+// // // // 	const router = useRouter();
+// // // // 	const { user } = useAuth();
+// // // // 	const [formData, setFormData] = useState({
+// // // // 		title: post.title,
+// // // // 		content: post.content,
+// // // // 		excerpt: post.excerpt || "",
+// // // // 		cover_image: post.cover_image || "",
+// // // // 		category: post.category || ("tech" as CategoryId),
+// // // // 	});
+// // // // 	const [isSubmitting, setIsSubmitting] = useState(false);
+// // // // 	const [error, setError] = useState("");
+
+// // // // 	const handleSubmit = async (e: React.FormEvent) => {
+// // // // 		e.preventDefault();
+// // // // 		if (!user) return;
+
+// // // // 		setIsSubmitting(true);
+// // // // 		setError("");
+
+// // // // 		try {
+// // // // 			const { error: updateError } = await supabaseClient
+// // // // 				.from("posts")
+// // // // 				.update({
+// // // // 					...formData,
+// // // // 					updated_at: new Date().toISOString(),
+// // // // 				})
+// // // // 				.eq("id", post.id);
+
+// // // // 			if (updateError) throw updateError;
+
+// // // // 			if (post.published) {
+// // // // 				router.push(`/blog/${post.slug}`);
+// // // // 			} else {
+// // // // 				router.push("/blog/drafts");
+// // // // 			}
+// // // // 			router.refresh();
+// // // // 		} catch (err) {
+// // // // 			setError(err instanceof Error ? err.message : "Failed to update post");
+// // // // 		} finally {
+// // // // 			setIsSubmitting(false);
+// // // // 		}
+// // // // 	};
+
+// // // // 	const handleImageDelete = async () => {
+// // // // 		if (!formData.cover_image) return;
+
+// // // // 		setIsImageDeleting(true);
+// // // // 		try {
+// // // // 			const path = formData.cover_image.split("/").pop();
+// // // // 			if (!path) throw new Error("Invalid image path");
+
+// // // // 			const { error: deleteError } = await supabaseClient.storage.from("images").remove([`blog-images/${path}`]);
+
+// // // // 			if (deleteError) throw deleteError;
+
+// // // // 			setFormData((prev) => ({ ...prev, cover_image: "" }));
+// // // // 		} catch (err) {
+// // // // 			setError("Failed to delete image");
+// // // // 			console.error("Error deleting image:", err);
+// // // // 		} finally {
+// // // // 			setIsImageDeleting(false);
+// // // // 		}
+// // // // 	};
+
+// // // // 	const handleCancel = () => {
+// // // // 		if (window.confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
+// // // // 			router.push(`/blog/${post.slug}`);
+// // // // 		}
+// // // // 	};
+
+// // // // 	return (
+// // // // 		<form
+// // // // 			onSubmit={handleSubmit}
+// // // // 			className='space-y-6'
+// // // // 		>
+// // // // 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+
+// // // // 			<div>
+// // // // 				<label className='block text-sm font-medium mb-2'>Title</label>
+// // // // 				<input
+// // // // 					type='text'
+// // // // 					value={formData.title}
+// // // // 					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+// // // // 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// // // // 					required
+// // // // 				/>
+// // // // 			</div>
+
+// // // // 			<div>
+// // // // 				<label className='block text-sm font-medium mb-2'>Category</label>
+// // // // 				<select
+// // // // 					value={formData.category}
+// // // // 					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
+// // // // 					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// // // // 					required
+// // // // 				>
+// // // // 					{categories.map((category) => (
+// // // // 						<option
+// // // // 							key={category.id}
+// // // // 							value={category.id}
+// // // // 						>
+// // // // 							{category.name}
+// // // // 						</option>
+// // // // 					))}
+// // // // 				</select>
+// // // // 			</div>
+
+// // // // 			<div>
+// // // // 				<label className='block text-sm font-medium mb-2'>Cover Image</label>
+// // // // 				{formData.cover_image ? (
+// // // // 					<div className='space-y-4'>
+// // // // 						<div className='relative aspect-video w-full max-w-2xl rounded-lg overflow-hidden'>
+// // // // 							<ImageWithFallback
+// // // // 								src={formData.cover_image}
+// // // // 								alt='Cover image'
+// // // // 								className='w-full h-full'
+// // // // 							/>
+// // // // 						</div>
+// // // // 						<button
+// // // // 							type='button'
+// // // // 							onClick={handleImageDelete}
+// // // // 							disabled={isImageDeleting}
+// // // // 							className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+// // // // 						>
+// // // // 							{isImageDeleting && (
+// // // // 								<Loader2
+// // // // 									className='animate-spin'
+// // // // 									size={16}
+// // // // 								/>
+// // // // 							)}
+// // // // 							{isImageDeleting ? "Removing..." : "Remove Image"}
+// // // // 						</button>
+// // // // 					</div>
+// // // // 				) : (
+// // // // 					<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// // // // 				)}
+// // // // 			</div>
+
+// // // // 			<div>
+// // // // 				<label className='block text-sm font-medium mb-2'>Excerpt</label>
+// // // // 				<textarea
+// // // // 					value={formData.excerpt}
+// // // // 					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
+// // // // 					className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
+// // // // 				/>
+// // // // 			</div>
+
+// // // // 			<div>
+// // // // 				<label className='block text-sm font-medium mb-2'>Content</label>
+// // // // 				<div className='border border-gray-700 rounded-lg overflow-hidden'>
+// // // // 					<RichMarkdownEditor
+// // // // 						initialContent={formData.content}
+// // // // 						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// // // // 					/>
+// // // // 				</div>
+// // // // 			</div>
+
+// // // // 			<div className='flex gap-4'>
+// // // // 				<button
+// // // // 					type='submit'
+// // // // 					disabled={isSubmitting}
+// // // // 					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// // // // 				>
+// // // // 					{isSubmitting && (
+// // // // 						<Loader2
+// // // // 							className='animate-spin'
+// // // // 							size={16}
+// // // // 						/>
+// // // // 					)}
+// // // // 					{isSubmitting ? "Saving..." : "Save Changes"}
+// // // // 				</button>
+// // // // 				<button
+// // // // 					type='button'
+// // // // 					onClick={handleCancel}
+// // // // 					className='bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600'
+// // // // 				>
+// // // // 					Cancel
+// // // // 				</button>
+// // // // 			</div>
+// // // // 		</form>
+// // // // 	);
+// // // // }
 
 ```
 
@@ -3302,232 +9175,736 @@ export function ImageWithFallback({
 }
 ```
 
-# src/components/MarkdownContent.tsx
+# src/components/MobileNavbar.tsx
 
 ```tsx
-// src/components/MarkdownContent.tsx
+// src/components/MobileNavbar.tsx
 "use client";
-import { useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypePrism from "rehype-prism-plus";
-import Prism from "prismjs";
-import Image from "next/image";
-import "prismjs/themes/prism-tomorrow.css";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-css";
-import "prismjs/components/prism-python";
-import "prismjs/components/prism-bash";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-markdown";
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabaseClient } from '@/lib/auth';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { navLinks } from '@/data/navbarConfig';
+import { usePathname, useRouter } from 'next/navigation';
 
-export function MarkdownContent({ content }: { content: string }) {
-	console.log("contnet: ", content);
-	return (
-		<div className='prose prose-invert prose-lg max-w-none'>
-			<ReactMarkdown
-				remarkPlugins={[remarkGfm]}
-				components={{
-					p: ({ node, children }) => {
-						if (node?.children[0]?.type === "element" && node.children[0].tagName === "img") {
-							return <div>{children}</div>;
-						}
-						return <p>{children}</p>;
-					},
-					img: ({ src, alt }) => (
-						<img
-							src={src}
-							alt={alt || ""}
-							className='w-full h-auto rounded-lg shadow-lg my-4'
-							loading='lazy'
-						/>
-					),
-				}}
-			>
-				{content}
-			</ReactMarkdown>
-		</div>
-	);
+export function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const getBlogPostInfo = () => {
+    const pathParts = pathname.split("/");
+    if (pathParts[1] === "blog" && pathParts.length === 3) {
+      const isNewPost = pathParts[2] === "new";
+      const isDrafts = pathParts[2] === "drafts";
+      const isEditPath = pathname.includes("/edit/");
+      if (!isNewPost && !isDrafts && !isEditPath) {
+        return { isPost: true, slug: pathParts[2] };
+      }
+    }
+    return { isPost: false, slug: null };
+  };
+
+  const { isPost, slug } = getBlogPostInfo();
+
+  const handleDelete = async () => {
+    if (!slug || !isAuthenticated) return;
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    setIsDeleting(true);
+    try {
+      const { error: deleteError } = await supabaseClient.from("posts").delete().eq("slug", slug);
+      if (deleteError) throw deleteError;
+
+      await router.push("/blog");
+      router.refresh();
+      await fetch("/api/revalidate", { method: "POST" });
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+      alert("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <>
+      <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all z-50">
+        <div className="max-w-page mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <Link href={navLinks.brand.href} className="flex items-center">
+              <Image
+                src={navLinks.brand.logo}
+                alt={navLinks.brand.label}
+                width={90}
+                height={90}
+                priority
+                className="w-auto h-12"
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              {navLinks.mainLinks.map((link) => {
+                if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+
+              {isAuthenticated && isPost && (
+                <>
+                  <Link
+                    href={`/blog/edit/${slug}`}
+                    className="px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors"
+                  >
+                    Edit Post
+                  </Link>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  >
+                    {isDeleting && <Loader2 className="animate-spin" size={16} />}
+                    {isDeleting ? "Deleting..." : "Delete Post"}
+                  </button>
+                </>
+              )}
+
+              <ThemeToggle />
+
+              {isAuthenticated ? (
+                <button
+                  onClick={() => supabaseClient.auth.signOut()}
+                  className="px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {navLinks.authLinks.signOut.label}
+                </button>
+              ) : (
+                <button
+                  onClick={() => supabaseClient.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: { redirectTo: `${window.location.origin}/auth/callback` }
+                  })}
+                  className="px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {navLinks.authLinks.signIn.label}
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center gap-4">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden border-t dark:border-gray-800">
+              <div className="flex flex-col space-y-4 p-4">
+                {navLinks.mainLinks.map((link) => {
+                  if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+
+                {isAuthenticated && isPost && (
+                  <>
+                    <Link
+                      href={`/blog/edit/${slug}`}
+                      className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Edit Post
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleDelete();
+                        setIsOpen(false);
+                      }}
+                      disabled={isDeleting}
+                      className="w-full text-left text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 px-4 py-2 rounded transition-colors flex items-center gap-2"
+                    >
+                      {isDeleting && <Loader2 className="animate-spin" size={16} />}
+                      {isDeleting ? "Deleting..." : "Delete Post"}
+                    </button>
+                  </>
+                )}
+
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      supabaseClient.auth.signOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {navLinks.authLinks.signOut.label}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      supabaseClient.auth.signInWithOAuth({
+                        provider: 'github',
+                        options: { redirectTo: `${window.location.origin}/auth/callback` }
+                      });
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {navLinks.authLinks.signIn.label}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+      <div className="h-16" />
+    </>
+  );
 }
+// // src/components/MobileNavbar.tsx
+// "use client";
+// import { useState } from "react";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { Menu, X } from "lucide-react";
+// import { useAuth } from "@/hooks/useAuth";
+// import { supabaseClient } from "@/lib/auth";
+// import { ThemeToggle } from "@/components/ThemeToggle";
+// import { navLinks } from "@/data/navbarConfig";
 
-// export function MarkdownContent({ content }: { content: string }) {
-// 	useEffect(() => {
-// 		if (typeof window !== "undefined") {
-// 			require("prismjs");
-// 		}
-// 	}, [content]);
+// export function Navbar() {
+// 	const [isOpen, setIsOpen] = useState(false);
+// 	const { isAuthenticated } = useAuth();
 
 // 	return (
-// 		<div
-// 			className='prose prose-invert prose-lg max-w-none
-//       prose-h1:text-4xl prose-h1:font-serif prose-h1:text-gray-100 prose-h1:mb-6
-//       prose-h2:text-3xl prose-h2:font-serif prose-h2:text-gray-200 prose-h2:mb-4
-//       prose-h3:text-2xl prose-h3:font-serif prose-h3:text-gray-200 prose-h3:mb-3
-//       prose-p:text-gray-300 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-4
-//       prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-//       prose-strong:text-gray-200
-//       prose-ul:text-gray-300
-//       prose-ol:text-gray-300
-//       prose-pre:bg-[#2d2d2d] prose-pre:text-gray-200
-//       prose-code:bg-[#2d2d2d] prose-code:text-gray-200
-//       prose-blockquote:border-gray-500 prose-blockquote:text-gray-300'
-// 		>
-// 			<ReactMarkdown
-// 				remarkPlugins={[remarkGfm]}
-// 				rehypePlugins={[rehypePrism]}
-// 				components={{
-// 					img: ({ node, src, alt, ...props }) => {
-// 						if (!src) return null;
+// 		<>
+// 			<nav className='fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all z-50'>
+// 				<div className='max-w-page mx-auto px-4'>
+// 					<div className='flex justify-between items-center h-16'>
+// 						<Link
+// 							href={navLinks.brand.href}
+// 							className='flex items-center'
+// 						>
+// 							<Image
+// 								src={navLinks.brand.logo}
+// 								alt={navLinks.brand.label}
+// 								width={90}
+// 								height={90}
+// 								priority
+// 								className='w-auto h-12'
+// 							/>
+// 						</Link>
 
-// 						return (
-// 							<div className='relative w-full my-8'>
-// 								<img
-// 									src={src}
-// 									alt={alt || ""}
-// 									className='rounded-lg w-full h-auto'
-// 									{...props}
-// 								/>
-// 							</div>
-// 						);
-// 					},
-// 					code: ({ node, inline, className, children, ...props }) => {
-// 						const match = /language-(\w+)/.exec(className || "");
-// 						const language = match ? match[1] : "";
-
-// 						if (!inline && language) {
-// 							return (
-// 								<pre className={`language-${language}`}>
-// 									<code
-// 										className={`language-${language}`}
-// 										{...props}
+// 						<div className='hidden md:flex items-center gap-6'>
+// 							{navLinks.mainLinks.map((link) => {
+// 								if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+// 								return (
+// 									<Link
+// 										key={link.href}
+// 										href={link.href}
+// 										className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'
 // 									>
-// 										{String(children).replace(/\n$/, "")}
-// 									</code>
-// 								</pre>
-// 							);
-// 						}
+// 										{link.label}
+// 									</Link>
+// 								);
+// 							})}
+// 							<ThemeToggle />
+// 							{isAuthenticated ? (
+// 								<button
+// 									onClick={() => supabaseClient.auth.signOut()}
+// 									className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// 								>
+// 									{navLinks.authLinks.signOut.label}
+// 								</button>
+// 							) : (
+// 								<button
+// 									onClick={() =>
+// 										supabaseClient.auth.signInWithOAuth({
+// 											provider: "github",
+// 											options: { redirectTo: `${window.location.origin}/auth/callback` },
+// 										})
+// 									}
+// 									className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// 								>
+// 									{navLinks.authLinks.signIn.label}
+// 								</button>
+// 							)}
+// 						</div>
 
-// 						return (
-// 							<code
-// 								className={className}
-// 								{...props}
+// 						<div className='md:hidden flex items-center gap-4'>
+// 							<ThemeToggle />
+// 							<button
+// 								onClick={() => setIsOpen(!isOpen)}
+// 								className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800'
 // 							>
-// 								{children}
-// 							</code>
-// 						);
-// 					},
-// 				}}
-// 			>
-// 				{content}
-// 			</ReactMarkdown>
-// 		</div>
+// 								{isOpen ? <X size={24} /> : <Menu size={24} />}
+// 							</button>
+// 						</div>
+// 					</div>
+
+// 					{isOpen && (
+// 						<div className='md:hidden border-t dark:border-gray-800'>
+// 							<div className='flex flex-col space-y-4 p-4'>
+// 								{navLinks.mainLinks.map((link) => {
+// 									if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+// 									return (
+// 										<Link
+// 											key={link.href}
+// 											href={link.href}
+// 											className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2'
+// 											onClick={() => setIsOpen(false)}
+// 										>
+// 											{link.label}
+// 										</Link>
+// 									);
+// 								})}
+// 								{isAuthenticated ? (
+// 									<button
+// 										onClick={() => {
+// 											supabaseClient.auth.signOut();
+// 											setIsOpen(false);
+// 										}}
+// 										className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// 									>
+// 										{navLinks.authLinks.signOut.label}
+// 									</button>
+// 								) : (
+// 									<button
+// 										onClick={() => {
+// 											supabaseClient.auth.signInWithOAuth({
+// 												provider: "github",
+// 												options: { redirectTo: `${window.location.origin}/auth/callback` },
+// 											});
+// 											setIsOpen(false);
+// 										}}
+// 										className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// 									>
+// 										{navLinks.authLinks.signIn.label}
+// 									</button>
+// 								)}
+// 							</div>
+// 						</div>
+// 					)}
+// 				</div>
+// 			</nav>
+// 			<div className='h-16' /> {/* Spacer to prevent content from going under fixed navbar */}
+// 		</>
 // 	);
 // }
+// // // src/components/MobileNavbar.tsx
+// // "use client";
+// // import { useState } from "react";
+// // import Link from "next/link";
+// // import Image from "next/image";
+// // import { Menu, X } from "lucide-react";
+// // import { useAuth } from "@/hooks/useAuth";
+// // import { supabaseClient } from "@/lib/auth";
+// // import { ThemeToggle } from "@/components/ThemeToggle";
+// // import { navLinks } from "@/data/navbarConfig";
+
+// // export default function MobileNavbar() {
+// // 	const [isOpen, setIsOpen] = useState(false);
+// // 	const { isAuthenticated } = useAuth();
+
+// // 	const toggleMenu = () => setIsOpen(!isOpen);
+
+// // 	return (
+// // 		<nav className='bg-white dark:bg-gray-900 shadow-lg transition-all fixed w-full top-0 z-50'>
+// // 			<div className='max-w-page mx-auto px-4'>
+
+// // 				{/* Main Navigation Bar */}
+// // 				<div className='flex justify-between items-center h-16'>
+// // 					{/* Logo */}
+// // 					<Link
+// // 						href={navLinks.brand.href}
+// // 						className='flex items-center'
+// // 					>
+// // 						<Image
+// // 							src={navLinks.brand.logo}
+// // 							alt={navLinks.brand.label}
+// // 							width={90}
+// // 							height={90}
+// // 							priority
+// // 							className='w-auto h-12'
+// // 						/>
+// // 					</Link>
+
+// // 					{/* Desktop Navigation - Hidden on Mobile */}
+// // 					<div className='hidden md:flex items-center space-x-6'>
+// // 						{navLinks.mainLinks.map((link) => {
+// // 							if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+// // 								return null;
+// // 							}
+// // 							return (
+// // 								<Link
+// // 									key={link.href}
+// // 									href={link.href}
+// // 									className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'
+// // 								>
+// // 									{link.label}
+// // 								</Link>
+// // 							);
+// // 						})}
+// // 						<ThemeToggle />
+// // 						{isAuthenticated ? (
+// // 							<button
+// // 								onClick={() => supabaseClient.auth.signOut()}
+// // 								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// // 							>
+// // 								{navLinks.authLinks.signOut.label}
+// // 							</button>
+// // 						) : (
+// // 							<button
+// // 								onClick={() =>
+// // 									supabaseClient.auth.signInWithOAuth({
+// // 										provider: "github",
+// // 										options: { redirectTo: `${window.location.origin}/auth/callback` },
+// // 									})
+// // 								}
+// // 								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// // 							>
+// // 								{navLinks.authLinks.signIn.label}
+// // 							</button>
+// // 						)}
+// // 					</div>
+
+// // 					{/* Mobile Menu Button */}
+// // 					<div className='md:hidden flex items-center space-x-4'>
+// // 						<ThemeToggle />
+// // 						<button
+// // 							onClick={toggleMenu}
+// // 							className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800'
+// // 						>
+// // 							{isOpen ? <X size={24} /> : <Menu size={24} />}
+// // 						</button>
+// // 					</div>
+// // 				</div>
+
+// // 				{/* Mobile Menu Overlay */}
+// // 				{isOpen && (
+// // 					<div className='md:hidden absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-800 shadow-lg'>
+// // 						<div className='flex flex-col space-y-4 p-4'>
+// // 							{navLinks.mainLinks.map((link) => {
+// // 								if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+// // 									return null;
+// // 								}
+// // 								return (
+// // 									<Link
+// // 										key={link.href}
+// // 										href={link.href}
+// // 										className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2'
+// // 										onClick={() => setIsOpen(false)}
+// // 									>
+// // 										{link.label}
+// // 									</Link>
+// // 								);
+// // 							})}
+// // 							{isAuthenticated ? (
+// // 								<button
+// // 									onClick={() => {
+// // 										supabaseClient.auth.signOut();
+// // 										setIsOpen(false);
+// // 									}}
+// // 									className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// // 								>
+// // 									{navLinks.authLinks.signOut.label}
+// // 								</button>
+// // 							) : (
+// // 								<button
+// // 									onClick={() => {
+// // 										supabaseClient.auth.signInWithOAuth({
+// // 											provider: "github",
+// // 											options: { redirectTo: `${window.location.origin}/auth/callback` },
+// // 										});
+// // 										setIsOpen(false);
+// // 									}}
+// // 									className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// // 								>
+// // 									{navLinks.authLinks.signIn.label}
+// // 								</button>
+// // 							)}
+// // 						</div>
+// // 					</div>
+// // 				)}
+// // 			</div>
+// // 		</nav>
+// // 	);
+// // }
 
 ```
 
-# src/components/Navbar.tsx
+# src/components/Navbar-Old.tsx
 
 ```tsx
 // src/components/Navbar.tsx
-'use client'
-import Link from 'next/link'
-import Image from 'next/image'
-import { useAuth } from '@/hooks/useAuth'
-import { supabaseClient } from '@/lib/auth'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { navLinks, navStyles } from '@/data/navbarConfig'
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
+import { supabaseClient } from "@/lib/auth";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { navLinks, navStyles } from "@/data/navbarConfig";
+import { usePathname, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function Navbar() {
-  const { isAuthenticated } = useAuth()
+	const { isAuthenticated } = useAuth();
+	const pathname = usePathname();
+	const router = useRouter();
+	const [isDeleting, setIsDeleting] = useState(false);
 
-  return (
-    <nav className={navStyles.base}>
-      <div className={navStyles.container}>
-        <div className={navStyles.inner}>
-          <Link href={navLinks.brand.href} className={navStyles.brand}>
-            <Image
-              src={navLinks.brand.logo}
-              alt={navLinks.brand.label}
-              width={150}
-              height={40}
-              priority
-            />
-            <span className="sr-only">{navLinks.brand.label}</span>
-          </Link>
-          <div className="flex items-center space-x-8">
-            {navLinks.mainLinks.map(link => {
-              if ('authRequired' in link && link.authRequired && !isAuthenticated) {
-                return null;
-              }
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={navStyles.link}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            <ThemeToggle />
-            {isAuthenticated ? (
-              <button
-                onClick={() => supabaseClient.auth.signOut()}
-                className={navStyles.button}
-              >
-                {navLinks.authLinks.signOut.label}
-              </button>
-            ) : (
-              <button
-                onClick={() => supabaseClient.auth.signInWithOAuth({
-                  provider: 'github',
-                  options: { redirectTo: `${window.location.origin}/auth/callback` }
-                })}
-                className={navStyles.button}
-              >
-                {navLinks.authLinks.signIn.label}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </nav>
-  )
+	// Helper function to determine if we're on a valid blog post page
+	const getBlogPostInfo = () => {
+		const pathParts = pathname.split("/");
+
+		// Check if we're on a blog post page
+		if (pathParts[1] === "blog" && pathParts.length === 3) {
+			const isNewPost = pathParts[2] === "new";
+			const isDrafts = pathParts[2] === "drafts";
+			const isEditPath = pathname.includes("/edit/");
+
+			// Only return slug if we're on a regular blog post page
+			if (!isNewPost && !isDrafts && !isEditPath) {
+				return { isPost: true, slug: pathParts[2] };
+			}
+		}
+
+		return { isPost: false, slug: null };
+	};
+
+	const { isPost, slug } = getBlogPostInfo();
+
+	const handleDelete = async () => {
+		if (!slug || !isAuthenticated) return;
+
+		if (!confirm("Are you sure you want to delete this post?")) return;
+
+		setIsDeleting(true);
+
+		try {
+			const { error: deleteError } = await supabaseClient.from("posts").delete().eq("slug", slug);
+
+			if (deleteError) throw deleteError;
+
+			await router.push("/blog");
+			router.refresh();
+			await fetch("/api/revalidate", { method: "POST" });
+		} catch (err) {
+			console.error("Failed to delete post:", err);
+			alert("Failed to delete post");
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
+	return (
+		<nav className='bg-white dark:bg-gray-900 shadow-lg transition-all'>
+			{/* <div className={navStyles.container}> */}
+			<div className='max-w-page mx-auto px-4'>
+				<div className='flex justify-between items-center h-16'>
+					{/* Left section with brand and main links */}
+					<div className='flex items-center gap-8'>
+						<Link
+							href={navLinks.brand.href}
+							className='flex items-center'
+						>
+							<Image
+								src={navLinks.brand.logo}
+								alt={navLinks.brand.label}
+								width={90}
+								height={90}
+								priority
+							/>
+							<span className='sr-only'>{navLinks.brand.label}</span>
+						</Link>
+
+						{/* Main navigation links */}
+						<div className='hidden md:flex items-center gap-6'>
+							{navLinks.mainLinks.map((link) => {
+								if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+									return null;
+								}
+								return (
+									<Link
+										key={link.href}
+										href={link.href}
+										className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'
+									>
+										{link.label}
+									</Link>
+								);
+							})}
+						</div>
+					</div>
+
+					{/* Right section with post actions and auth */}
+					<div className='flex items-center gap-4'>
+						{/* Post management buttons - only show on blog post pages */}
+						{isAuthenticated && isPost && (
+							<div className='hidden md:flex items-center gap-3'>
+								<Link
+									href={`/blog/edit/${slug}`}
+									className='px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors'
+								>
+									Edit Post
+								</Link>
+								<button
+									onClick={handleDelete}
+									disabled={isDeleting}
+									className='px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2'
+								>
+									{isDeleting && (
+										<Loader2
+											className='animate-spin'
+											size={16}
+										/>
+									)}
+									{isDeleting ? "Deleting..." : "Delete Post"}
+								</button>
+							</div>
+						)}
+
+						<ThemeToggle />
+
+						{/* Auth button */}
+						{isAuthenticated ? (
+							<button
+								onClick={() => supabaseClient.auth.signOut()}
+								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+							>
+								{navLinks.authLinks.signOut.label}
+							</button>
+						) : (
+							<button
+								onClick={() =>
+									supabaseClient.auth.signInWithOAuth({
+										provider: "github",
+										options: { redirectTo: `${window.location.origin}/auth/callback` },
+									})
+								}
+								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+							>
+								{navLinks.authLinks.signIn.label}
+							</button>
+						)}
+					</div>
+				</div>
+			</div>
+		</nav>
+	);
 }
-// // src/components/Navbar.tsx
+
+// src/components/Navbar.tsx
 // "use client";
 // import Link from "next/link";
+// import Image from "next/image";
 // import { useAuth } from "@/hooks/useAuth";
 // import { supabaseClient } from "@/lib/auth";
 // import { ThemeToggle } from "@/components/ThemeToggle";
 // import { navLinks, navStyles } from "@/data/navbarConfig";
+// import { usePathname } from "next/navigation";
 
 // export function Navbar() {
 // 	const { isAuthenticated } = useAuth();
+// 	const pathname = usePathname();
+
+// 	// Check if we're on a blog post page (but not edit page)
+// 	const isBlogPost = pathname.startsWith("/blog/") && pathname.split("/").length === 3 && !pathname.includes("/edit");
+
+// 	// Extract slug from pathname if we're on a blog post
+// 	const postSlug = isBlogPost ? pathname.split("/")[2] : null;
 
 // 	return (
-// 		<nav className={navStyles.base}>
+// 		<nav className='bg-white dark:bg-gray-900 shadow-lg transition-all'>
 // 			<div className={navStyles.container}>
-// 				<div className={navStyles.inner}>
-// 					<Link href={navLinks.brand.href} className={navStyles.brand}>
-// 						{navLinks.brand.label}
-// 					</Link>
-// 					<div className="flex items-center space-x-8">
-// 						{navLinks.mainLinks.map((link) => {
-// 							if ("authRequired" in link && link.authRequired && !isAuthenticated) {
-// 								return null;
-// 							}
-// 							return (
-// 								<Link key={link.href} href={link.href} className={navStyles.link}>
-// 									{link.label}
+// 				<div className='flex justify-between items-center h-16'>
+// 					{/* Left section with brand and main links */}
+// 					<div className='flex items-center gap-8'>
+// 						<Link
+// 							href={navLinks.brand.href}
+// 							className='flex items-center'
+// 						>
+// 							<Image
+// 								src={navLinks.brand.logo}
+// 								alt={navLinks.brand.label}
+// 								width={150}
+// 								height={40}
+// 								priority
+// 							/>
+// 							<span className='sr-only'>{navLinks.brand.label}</span>
+// 						</Link>
+
+// 						{/* Main navigation links */}
+// 						<div className='hidden md:flex items-center gap-6'>
+// 							{navLinks.mainLinks.map((link) => {
+// 								if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+// 									return null;
+// 								}
+// 								return (
+// 									<Link
+// 										key={link.href}
+// 										href={link.href}
+// 										className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'
+// 									>
+// 										{link.label}
+// 									</Link>
+// 								);
+// 							})}
+// 						</div>
+// 					</div>
+
+// 					{/* Right section with post actions and auth */}
+// 					<div className='flex items-center gap-4'>
+// 						{/* Post management buttons - only show on blog post pages */}
+// 						{isAuthenticated && isBlogPost && (
+// 							<div className='hidden md:flex items-center gap-3'>
+// 								<Link
+// 									href={`/blog/edit/${postSlug}`}
+// 									className='px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors'
+// 								>
+// 									Edit Post
 // 								</Link>
-// 							);
-// 						})}
+// 							</div>
+// 						)}
+
 // 						<ThemeToggle />
+
+// 						{/* Auth button */}
 // 						{isAuthenticated ? (
-// 							<button onClick={() => supabaseClient.auth.signOut()} className={navStyles.button}>
+// 							<button
+// 								onClick={() => supabaseClient.auth.signOut()}
+// 								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
+// 							>
 // 								{navLinks.authLinks.signOut.label}
 // 							</button>
 // 						) : (
@@ -3538,7 +9915,7 @@ export function Navbar() {
 // 										options: { redirectTo: `${window.location.origin}/auth/callback` },
 // 									})
 // 								}
-// 								className={navStyles.button}
+// 								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
 // 							>
 // 								{navLinks.authLinks.signIn.label}
 // 							</button>
@@ -3553,24 +9930,35 @@ export function Navbar() {
 // // // src/components/Navbar.tsx
 // // 'use client'
 // // import Link from 'next/link'
+// // import Image from 'next/image'
 // // import { useAuth } from '@/hooks/useAuth'
 // // import { supabaseClient } from '@/lib/auth'
 // // import { ThemeToggle } from '@/components/ThemeToggle'
 // // import { navLinks, navStyles } from '@/data/navbarConfig'
 
 // // export function Navbar() {
-// //   const { user, isAuthenticated } = useAuth()
+// //   const { isAuthenticated } = useAuth()
 
 // //   return (
 // //     <nav className={navStyles.base}>
 // //       <div className={navStyles.container}>
 // //         <div className={navStyles.inner}>
 // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
-// //             {navLinks.brand.label}
+// //             <Image
+// //               src={navLinks.brand.logo}
+// //               alt={navLinks.brand.label}
+// //               width={150}
+// //               height={40}
+// //               priority
+// //             />
+// //             <span className="sr-only">{navLinks.brand.label}</span>
 // //           </Link>
 // //           <div className="flex items-center space-x-8">
-// //             {navLinks.mainLinks.map(link => (
-// //               !link.authRequired || isAuthenticated ? (
+// //             {navLinks.mainLinks.map(link => {
+// //               if ('authRequired' in link && link.authRequired && !isAuthenticated) {
+// //                 return null;
+// //               }
+// //               return (
 // //                 <Link
 // //                   key={link.href}
 // //                   href={link.href}
@@ -3578,8 +9966,8 @@ export function Navbar() {
 // //                 >
 // //                   {link.label}
 // //                 </Link>
-// //               ) : null
-// //             ))}
+// //               );
+// //             })}
 // //             <ThemeToggle />
 // //             {isAuthenticated ? (
 // //               <button
@@ -3605,106 +9993,70 @@ export function Navbar() {
 // //     </nav>
 // //   )
 // // }
-
 // // // // src/components/Navbar.tsx
-// // // 'use client'
-// // // import Link from 'next/link'
-// // // import { useAuth } from '@/hooks/useAuth'
-// // // import { supabaseClient } from '@/lib/auth'
-// // // import { ClientOnly } from '@/components/ClientOnly'
-// // // import { navLinks, navStyles } from '@/data/navbarConfig'
-// // // import { Sun, Moon } from 'lucide-react'
-// // // import { useTheme } from '@/hooks/useTheme'
+// // // "use client";
+// // // import Link from "next/link";
+// // // import { useAuth } from "@/hooks/useAuth";
+// // // import { supabaseClient } from "@/lib/auth";
+// // // import { ThemeToggle } from "@/components/ThemeToggle";
+// // // import { navLinks, navStyles } from "@/data/navbarConfig";
 
 // // // export function Navbar() {
-// // //   const { isAuthenticated } = useAuth()
-// // //   const { theme, toggleTheme } = useTheme()
+// // // 	const { isAuthenticated } = useAuth();
 
-// // //   const handleSignIn = () => {
-// // //     supabaseClient.auth.signInWithOAuth({
-// // //       provider: 'github',
-// // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
-// // //     })
-// // //   }
-
-// // //   const handleSignOut = () => supabaseClient.auth.signOut()
-
-// // //   return (
-// // //     <nav className={navStyles.base}>
-// // //       <div className={navStyles.container}>
-// // //         <div className={navStyles.inner}>
-// // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
-// // //             {navLinks.brand.label}
-// // //           </Link>
-
-// // //           <div className="flex items-center space-x-8">
-// // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
-
-// // //             {isAuthenticated && (
-// // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
-// // //             )}
-
-// // //             <button
-// // //               onClick={toggleTheme}
-// // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-// // //               aria-label="Toggle theme"
-// // //             >
-// // //               {theme === 'dark' ?
-// // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
-// // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-// // //               }
-// // //             </button>
-
-// // //             <ClientOnly>
-// // //               {isAuthenticated ? (
-// // //                 <button onClick={handleSignOut} className={navStyles.button}>
-// // //                   {navLinks.authLinks.signOut.label}
-// // //                 </button>
-// // //               ) : (
-// // //                 <button onClick={handleSignIn} className={navStyles.button}>
-// // //                   {navLinks.authLinks.signIn.label}
-// // //                 </button>
-// // //               )}
-// // //             </ClientOnly>
-// // //           </div>
-// // //         </div>
-// // //       </div>
-// // //     </nav>
-// // //   )
+// // // 	return (
+// // // 		<nav className={navStyles.base}>
+// // // 			<div className={navStyles.container}>
+// // // 				<div className={navStyles.inner}>
+// // // 					<Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // 						{navLinks.brand.label}
+// // // 					</Link>
+// // // 					<div className="flex items-center space-x-8">
+// // // 						{navLinks.mainLinks.map((link) => {
+// // // 							if ("authRequired" in link && link.authRequired && !isAuthenticated) {
+// // // 								return null;
+// // // 							}
+// // // 							return (
+// // // 								<Link key={link.href} href={link.href} className={navStyles.link}>
+// // // 									{link.label}
+// // // 								</Link>
+// // // 							);
+// // // 						})}
+// // // 						<ThemeToggle />
+// // // 						{isAuthenticated ? (
+// // // 							<button onClick={() => supabaseClient.auth.signOut()} className={navStyles.button}>
+// // // 								{navLinks.authLinks.signOut.label}
+// // // 							</button>
+// // // 						) : (
+// // // 							<button
+// // // 								onClick={() =>
+// // // 									supabaseClient.auth.signInWithOAuth({
+// // // 										provider: "github",
+// // // 										options: { redirectTo: `${window.location.origin}/auth/callback` },
+// // // 									})
+// // // 								}
+// // // 								className={navStyles.button}
+// // // 							>
+// // // 								{navLinks.authLinks.signIn.label}
+// // // 							</button>
+// // // 						)}
+// // // 					</div>
+// // // 				</div>
+// // // 			</div>
+// // // 		</nav>
+// // // 	);
 // // // }
+
 // // // // // src/components/Navbar.tsx
 // // // // 'use client'
 // // // // import Link from 'next/link'
 // // // // import { useAuth } from '@/hooks/useAuth'
 // // // // import { supabaseClient } from '@/lib/auth'
-// // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // import { ThemeToggle } from '@/components/ThemeToggle'
 // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
-// // // // import { Sun, Moon } from 'lucide-react'
-// // // // import { useState, useEffect } from 'react'
 
 // // // // export function Navbar() {
-// // // //   const { isAuthenticated } = useAuth()
-// // // //   const [isDarkMode, setIsDarkMode] = useState(false)
-
-// // // //   useEffect(() => {
-// // // //     const isDark = document.documentElement.classList.contains('dark')
-// // // //     setIsDarkMode(isDark)
-// // // //   }, [])
-
-// // // //   const toggleTheme = () => {
-// // // //     document.documentElement.classList.toggle('dark')
-// // // //     setIsDarkMode(!isDarkMode)
-// // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
-// // // //   }
-
-// // // //   const handleSignIn = () => {
-// // // //     supabaseClient.auth.signInWithOAuth({
-// // // //       provider: 'github',
-// // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
-// // // //     })
-// // // //   }
-
-// // // //   const handleSignOut = () => supabaseClient.auth.signOut()
+// // // //   const { user, isAuthenticated } = useAuth()
 
 // // // //   return (
 // // // //     <nav className={navStyles.base}>
@@ -3713,48 +10065,44 @@ export function Navbar() {
 // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
 // // // //             {navLinks.brand.label}
 // // // //           </Link>
-
 // // // //           <div className="flex items-center space-x-8">
-// // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
-
-// // // //             {isAuthenticated && (
-// // // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
+// // // //             {navLinks.mainLinks.map(link => (
+// // // //               !link.authRequired || isAuthenticated ? (
+// // // //                 <Link
+// // // //                   key={link.href}
+// // // //                   href={link.href}
+// // // //                   className={navStyles.link}
+// // // //                 >
+// // // //                   {link.label}
+// // // //                 </Link>
+// // // //               ) : null
+// // // //             ))}
+// // // //             <ThemeToggle />
+// // // //             {isAuthenticated ? (
+// // // //               <button
+// // // //                 onClick={() => supabaseClient.auth.signOut()}
+// // // //                 className={navStyles.button}
+// // // //               >
+// // // //                 {navLinks.authLinks.signOut.label}
+// // // //               </button>
+// // // //             ) : (
+// // // //               <button
+// // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // //                   provider: 'github',
+// // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // //                 })}
+// // // //                 className={navStyles.button}
+// // // //               >
+// // // //                 {navLinks.authLinks.signIn.label}
+// // // //               </button>
 // // // //             )}
-
-// // // //             <button
-// // // //               onClick={toggleTheme}
-// // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-// // // //               aria-label="Toggle theme"
-// // // //             >
-// // // //               {isDarkMode ?
-// // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
-// // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-// // // //               }
-// // // //             </button>
-
-// // // //             <ClientOnly>
-// // // //               {isAuthenticated ? (
-// // // //                 <button
-// // // //                   onClick={handleSignOut}
-// // // //                   className={navStyles.button}
-// // // //                 >
-// // // //                   {navLinks.authLinks.signOut.label}
-// // // //                 </button>
-// // // //               ) : (
-// // // //                 <button
-// // // //                   onClick={handleSignIn}
-// // // //                   className={navStyles.button}
-// // // //                 >
-// // // //                   {navLinks.authLinks.signIn.label}
-// // // //                 </button>
-// // // //               )}
-// // // //             </ClientOnly>
 // // // //           </div>
 // // // //         </div>
 // // // //       </div>
 // // // //     </nav>
 // // // //   )
 // // // // }
+
 // // // // // // src/components/Navbar.tsx
 // // // // // 'use client'
 // // // // // import Link from 'next/link'
@@ -3763,22 +10111,11 @@ export function Navbar() {
 // // // // // import { ClientOnly } from '@/components/ClientOnly'
 // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
 // // // // // import { Sun, Moon } from 'lucide-react'
-// // // // // import { useState, useEffect } from 'react'
+// // // // // import { useTheme } from '@/hooks/useTheme'
 
 // // // // // export function Navbar() {
 // // // // //   const { isAuthenticated } = useAuth()
-// // // // //   const [isDarkMode, setIsDarkMode] = useState(false)
-
-// // // // //   useEffect(() => {
-// // // // //     const isDark = document.documentElement.classList.contains('dark')
-// // // // //     setIsDarkMode(isDark)
-// // // // //   }, [])
-
-// // // // //   const toggleTheme = () => {
-// // // // //     document.documentElement.classList.toggle('dark')
-// // // // //     setIsDarkMode(!isDarkMode)
-// // // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
-// // // // //   }
+// // // // //   const { theme, toggleTheme } = useTheme()
 
 // // // // //   const handleSignIn = () => {
 // // // // //     supabaseClient.auth.signInWithOAuth({
@@ -3800,12 +10137,16 @@ export function Navbar() {
 // // // // //           <div className="flex items-center space-x-8">
 // // // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
 
+// // // // //             {isAuthenticated && (
+// // // // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
+// // // // //             )}
+
 // // // // //             <button
 // // // // //               onClick={toggleTheme}
 // // // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
 // // // // //               aria-label="Toggle theme"
 // // // // //             >
-// // // // //               {isDarkMode ?
+// // // // //               {theme === 'dark' ?
 // // // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
 // // // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
 // // // // //               }
@@ -3813,17 +10154,11 @@ export function Navbar() {
 
 // // // // //             <ClientOnly>
 // // // // //               {isAuthenticated ? (
-// // // // //                 <button
-// // // // //                   onClick={handleSignOut}
-// // // // //                   className={navStyles.button}
-// // // // //                 >
+// // // // //                 <button onClick={handleSignOut} className={navStyles.button}>
 // // // // //                   {navLinks.authLinks.signOut.label}
 // // // // //                 </button>
 // // // // //               ) : (
-// // // // //                 <button
-// // // // //                   onClick={handleSignIn}
-// // // // //                   className={navStyles.button}
-// // // // //                 >
+// // // // //                 <button onClick={handleSignIn} className={navStyles.button}>
 // // // // //                   {navLinks.authLinks.signIn.label}
 // // // // //                 </button>
 // // // // //               )}
@@ -3841,9 +10176,23 @@ export function Navbar() {
 // // // // // // import { supabaseClient } from '@/lib/auth'
 // // // // // // import { ClientOnly } from '@/components/ClientOnly'
 // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+// // // // // // import { Sun, Moon } from 'lucide-react'
+// // // // // // import { useState, useEffect } from 'react'
 
 // // // // // // export function Navbar() {
 // // // // // //   const { isAuthenticated } = useAuth()
+// // // // // //   const [isDarkMode, setIsDarkMode] = useState(false)
+
+// // // // // //   useEffect(() => {
+// // // // // //     const isDark = document.documentElement.classList.contains('dark')
+// // // // // //     setIsDarkMode(isDark)
+// // // // // //   }, [])
+
+// // // // // //   const toggleTheme = () => {
+// // // // // //     document.documentElement.classList.toggle('dark')
+// // // // // //     setIsDarkMode(!isDarkMode)
+// // // // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
+// // // // // //   }
 
 // // // // // //   const handleSignIn = () => {
 // // // // // //     supabaseClient.auth.signInWithOAuth({
@@ -3863,18 +10212,22 @@ export function Navbar() {
 // // // // // //           </Link>
 
 // // // // // //           <div className="flex items-center space-x-8">
-// // // // // //             {navLinks.mainLinks.map((link) => {
-// // // // // //               if (link.authRequired && !isAuthenticated) return null;
-// // // // // //               return (
-// // // // // //                 <Link
-// // // // // //                   key={link.href}
-// // // // // //                   href={link.href}
-// // // // // //                   className={navStyles.link}
-// // // // // //                 >
-// // // // // //                   {link.label}
-// // // // // //                 </Link>
-// // // // // //               );
-// // // // // //             })}
+// // // // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
+
+// // // // // //             {isAuthenticated && (
+// // // // // //               <Link href="/blog/new" className={navStyles.link}>New Post</Link>
+// // // // // //             )}
+
+// // // // // //             <button
+// // // // // //               onClick={toggleTheme}
+// // // // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+// // // // // //               aria-label="Toggle theme"
+// // // // // //             >
+// // // // // //               {isDarkMode ?
+// // // // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
+// // // // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+// // // // // //               }
+// // // // // //             </button>
 
 // // // // // //             <ClientOnly>
 // // // // // //               {isAuthenticated ? (
@@ -3904,11 +10257,34 @@ export function Navbar() {
 // // // // // // // import Link from 'next/link'
 // // // // // // // import { useAuth } from '@/hooks/useAuth'
 // // // // // // // import { supabaseClient } from '@/lib/auth'
-// // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // import { ClientOnly } from '@/components/ClientOnly'
 // // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
+// // // // // // // import { Sun, Moon } from 'lucide-react'
+// // // // // // // import { useState, useEffect } from 'react'
 
 // // // // // // // export function Navbar() {
-// // // // // // //    const { isAuthenticated } = useAuth();
+// // // // // // //   const { isAuthenticated } = useAuth()
+// // // // // // //   const [isDarkMode, setIsDarkMode] = useState(false)
+
+// // // // // // //   useEffect(() => {
+// // // // // // //     const isDark = document.documentElement.classList.contains('dark')
+// // // // // // //     setIsDarkMode(isDark)
+// // // // // // //   }, [])
+
+// // // // // // //   const toggleTheme = () => {
+// // // // // // //     document.documentElement.classList.toggle('dark')
+// // // // // // //     setIsDarkMode(!isDarkMode)
+// // // // // // //     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light')
+// // // // // // //   }
+
+// // // // // // //   const handleSignIn = () => {
+// // // // // // //     supabaseClient.auth.signInWithOAuth({
+// // // // // // //       provider: 'github',
+// // // // // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // //     })
+// // // // // // //   }
+
+// // // // // // //   const handleSignOut = () => supabaseClient.auth.signOut()
 
 // // // // // // //   return (
 // // // // // // //     <nav className={navStyles.base}>
@@ -3917,54 +10293,63 @@ export function Navbar() {
 // // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
 // // // // // // //             {navLinks.brand.label}
 // // // // // // //           </Link>
+
 // // // // // // //           <div className="flex items-center space-x-8">
-// // // // // // //             {navLinks.mainLinks.map(link => (
-// // // // // // //               !link.authRequired || isAuthenticated ? (
-// // // // // // //                 <Link
-// // // // // // //                   key={link.href}
-// // // // // // //                   href={link.href}
-// // // // // // //                   className={navStyles.link}
+// // // // // // //             <Link href="/blog" className={navStyles.link}>Blog</Link>
+
+// // // // // // //             <button
+// // // // // // //               onClick={toggleTheme}
+// // // // // // //               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+// // // // // // //               aria-label="Toggle theme"
+// // // // // // //             >
+// // // // // // //               {isDarkMode ?
+// // // // // // //                 <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" /> :
+// // // // // // //                 <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+// // // // // // //               }
+// // // // // // //             </button>
+
+// // // // // // //             <ClientOnly>
+// // // // // // //               {isAuthenticated ? (
+// // // // // // //                 <button
+// // // // // // //                   onClick={handleSignOut}
+// // // // // // //                   className={navStyles.button}
 // // // // // // //                 >
-// // // // // // //                   {link.label}
-// // // // // // //                 </Link>
-// // // // // // //               ) : null
-// // // // // // //             ))}
-// // // // // // //             <ThemeToggle />
-// // // // // // //             {isAuthenticated ? (
-// // // // // // //               <button
-// // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
-// // // // // // //                 className={navStyles.button}
-// // // // // // //               >
-// // // // // // //                 {navLinks.authLinks.signOut.label}
-// // // // // // //               </button>
-// // // // // // //             ) : (
-// // // // // // //               <button
-// // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
-// // // // // // //                   provider: 'github',
-// // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
-// // // // // // //                 })}
-// // // // // // //                 className={navStyles.button}
-// // // // // // //               >
-// // // // // // //                 {navLinks.authLinks.signIn.label}
-// // // // // // //               </button>
-// // // // // // //             )}
+// // // // // // //                   {navLinks.authLinks.signOut.label}
+// // // // // // //                 </button>
+// // // // // // //               ) : (
+// // // // // // //                 <button
+// // // // // // //                   onClick={handleSignIn}
+// // // // // // //                   className={navStyles.button}
+// // // // // // //                 >
+// // // // // // //                   {navLinks.authLinks.signIn.label}
+// // // // // // //                 </button>
+// // // // // // //               )}
+// // // // // // //             </ClientOnly>
 // // // // // // //           </div>
 // // // // // // //         </div>
 // // // // // // //       </div>
 // // // // // // //     </nav>
 // // // // // // //   )
 // // // // // // // }
-
 // // // // // // // // // src/components/Navbar.tsx
 // // // // // // // // 'use client'
 // // // // // // // // import Link from 'next/link'
 // // // // // // // // import { useAuth } from '@/hooks/useAuth'
 // // // // // // // // import { supabaseClient } from '@/lib/auth'
-// // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // // import { ClientOnly } from '@/components/ClientOnly'
 // // // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
 
 // // // // // // // // export function Navbar() {
-// // // // // // // //   const { user, isAuthenticated } = useAuth()
+// // // // // // // //   const { isAuthenticated } = useAuth()
+
+// // // // // // // //   const handleSignIn = () => {
+// // // // // // // //     supabaseClient.auth.signInWithOAuth({
+// // // // // // // //       provider: 'github',
+// // // // // // // //       options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // //     })
+// // // // // // // //   }
+
+// // // // // // // //   const handleSignOut = () => supabaseClient.auth.signOut()
 
 // // // // // // // //   return (
 // // // // // // // //     <nav className={navStyles.base}>
@@ -3973,9 +10358,11 @@ export function Navbar() {
 // // // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
 // // // // // // // //             {navLinks.brand.label}
 // // // // // // // //           </Link>
+
 // // // // // // // //           <div className="flex items-center space-x-8">
-// // // // // // // //             {navLinks.mainLinks.map(link => (
-// // // // // // // //               !link.authRequired || isAuthenticated ? (
+// // // // // // // //             {navLinks.mainLinks.map((link) => {
+// // // // // // // //               if (link.authRequired && !isAuthenticated) return null;
+// // // // // // // //               return (
 // // // // // // // //                 <Link
 // // // // // // // //                   key={link.href}
 // // // // // // // //                   href={link.href}
@@ -3983,81 +10370,79 @@ export function Navbar() {
 // // // // // // // //                 >
 // // // // // // // //                   {link.label}
 // // // // // // // //                 </Link>
-// // // // // // // //               ) : null
-// // // // // // // //             ))}
-// // // // // // // //             <ThemeToggle />
-// // // // // // // //             {isAuthenticated ? (
-// // // // // // // //               <button
-// // // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
-// // // // // // // //                 className={navStyles.button}
-// // // // // // // //               >
-// // // // // // // //                 {navLinks.authLinks.signOut.label}
-// // // // // // // //               </button>
-// // // // // // // //             ) : (
-// // // // // // // //               <button
-// // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
-// // // // // // // //                   provider: 'github',
-// // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
-// // // // // // // //                 })}
-// // // // // // // //                 className={navStyles.button}
-// // // // // // // //               >
-// // // // // // // //                 {navLinks.authLinks.signIn.label}
-// // // // // // // //               </button>
-// // // // // // // //             )}
+// // // // // // // //               );
+// // // // // // // //             })}
+
+// // // // // // // //             <ClientOnly>
+// // // // // // // //               {isAuthenticated ? (
+// // // // // // // //                 <button
+// // // // // // // //                   onClick={handleSignOut}
+// // // // // // // //                   className={navStyles.button}
+// // // // // // // //                 >
+// // // // // // // //                   {navLinks.authLinks.signOut.label}
+// // // // // // // //                 </button>
+// // // // // // // //               ) : (
+// // // // // // // //                 <button
+// // // // // // // //                   onClick={handleSignIn}
+// // // // // // // //                   className={navStyles.button}
+// // // // // // // //                 >
+// // // // // // // //                   {navLinks.authLinks.signIn.label}
+// // // // // // // //                 </button>
+// // // // // // // //               )}
+// // // // // // // //             </ClientOnly>
 // // // // // // // //           </div>
 // // // // // // // //         </div>
 // // // // // // // //       </div>
 // // // // // // // //     </nav>
 // // // // // // // //   )
 // // // // // // // // }
-
 // // // // // // // // // // src/components/Navbar.tsx
 // // // // // // // // // 'use client'
 // // // // // // // // // import Link from 'next/link'
 // // // // // // // // // import { useAuth } from '@/hooks/useAuth'
 // // // // // // // // // import { supabaseClient } from '@/lib/auth'
 // // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
-// // // // // // // // // import { useTheme } from '@/contexts/ThemeContext'
+// // // // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
 
 // // // // // // // // // export function Navbar() {
-// // // // // // // // //   const { user, isAuthenticated } = useAuth()
-// // // // // // // // //   const { isDark } = useTheme()
+// // // // // // // // //    const { isAuthenticated } = useAuth();
 
 // // // // // // // // //   return (
-// // // // // // // // //     <nav className={`${
-// // // // // // // // //       isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'
-// // // // // // // // //     } shadow-sm transition-colors`}>
-// // // // // // // // //       <div className="container mx-auto px-4">
-// // // // // // // // //         <div className="flex justify-between h-16">
-// // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
-// // // // // // // // //             My Blog
+// // // // // // // // //     <nav className={navStyles.base}>
+// // // // // // // // //       <div className={navStyles.container}>
+// // // // // // // // //         <div className={navStyles.inner}>
+// // // // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // // // // // //             {navLinks.brand.label}
 // // // // // // // // //           </Link>
 // // // // // // // // //           <div className="flex items-center space-x-8">
-// // // // // // // // //             <Link href="/blog" className="hover:text-gray-600 dark:hover:text-gray-300">
-// // // // // // // // //               Blog
-// // // // // // // // //             </Link>
+// // // // // // // // //             {navLinks.mainLinks.map(link => (
+// // // // // // // // //               !link.authRequired || isAuthenticated ? (
+// // // // // // // // //                 <Link
+// // // // // // // // //                   key={link.href}
+// // // // // // // // //                   href={link.href}
+// // // // // // // // //                   className={navStyles.link}
+// // // // // // // // //                 >
+// // // // // // // // //                   {link.label}
+// // // // // // // // //                 </Link>
+// // // // // // // // //               ) : null
+// // // // // // // // //             ))}
 // // // // // // // // //             <ThemeToggle />
 // // // // // // // // //             {isAuthenticated ? (
-// // // // // // // // //               <>
-// // // // // // // // //                 <Link href="/blog/new" className="hover:text-gray-600 dark:hover:text-gray-300">
-// // // // // // // // //                   New Post
-// // // // // // // // //                 </Link>
-// // // // // // // // //                 <button
-// // // // // // // // //                   onClick={() => supabaseClient.auth.signOut()}
-// // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-// // // // // // // // //                 >
-// // // // // // // // //                   Sign Out
-// // // // // // // // //                 </button>
-// // // // // // // // //               </>
+// // // // // // // // //               <button
+// // // // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // //                 className={navStyles.button}
+// // // // // // // // //               >
+// // // // // // // // //                 {navLinks.authLinks.signOut.label}
+// // // // // // // // //               </button>
 // // // // // // // // //             ) : (
 // // // // // // // // //               <button
 // // // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
 // // // // // // // // //                   provider: 'github',
 // // // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
 // // // // // // // // //                 })}
-// // // // // // // // //                 className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // //                 className={navStyles.button}
 // // // // // // // // //               >
-// // // // // // // // //                 Sign In
+// // // // // // // // //                 {navLinks.authLinks.signIn.label}
 // // // // // // // // //               </button>
 // // // // // // // // //             )}
 // // // // // // // // //           </div>
@@ -4067,57 +10452,169 @@ export function Navbar() {
 // // // // // // // // //   )
 // // // // // // // // // }
 
-// // // // // // // // // // // src/components/Navbar.tsx - Updated to use ClientOnly
+// // // // // // // // // // // src/components/Navbar.tsx
 // // // // // // // // // // 'use client'
 // // // // // // // // // // import Link from 'next/link'
 // // // // // // // // // // import { useAuth } from '@/hooks/useAuth'
 // // // // // // // // // // import { supabaseClient } from '@/lib/auth'
-// // // // // // // // // // import { ClientOnly } from '@/components/ClientOnly'
 // // // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // // // // import { navLinks, navStyles } from '@/data/navbarConfig'
 
 // // // // // // // // // // export function Navbar() {
 // // // // // // // // // //   const { user, isAuthenticated } = useAuth()
 
 // // // // // // // // // //   return (
-// // // // // // // // // //    //  <nav className="bg-white shadow-sm">
-// // // // // // // // // //     <nav className="bg-white dark:bg-dark-primary shadow-sm transition-colors duration-200">
-// // // // // // // // // //       <div className="container mx-auto px-4">
-// // // // // // // // // //         <div className="flex justify-between h-16">
-// // // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
-// // // // // // // // // //             My Blog
+// // // // // // // // // //     <nav className={navStyles.base}>
+// // // // // // // // // //       <div className={navStyles.container}>
+// // // // // // // // // //         <div className={navStyles.inner}>
+// // // // // // // // // //           <Link href={navLinks.brand.href} className={navStyles.brand}>
+// // // // // // // // // //             {navLinks.brand.label}
 // // // // // // // // // //           </Link>
-// // // // // // // // // //           <ClientOnly>
-// // // // // // // // // //             <div className="flex items-center space-x-8">
-// // // // // // // // // //               <Link href="/blog" className="hover:text-gray-600">Blog</Link>
-// // // // // // // // // //               <ThemeToggle />
-// // // // // // // // // //               {isAuthenticated ? (
-// // // // // // // // // //                 <>
-// // // // // // // // // //                   <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
-// // // // // // // // // //                   <button
-// // // // // // // // // //                     onClick={() => supabaseClient.auth.signOut()}
-// // // // // // // // // //                     className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-// // // // // // // // // //                   >
-// // // // // // // // // //                     Sign Out
-// // // // // // // // // //                   </button>
-// // // // // // // // // //                 </>
-// // // // // // // // // //               ) : (
-// // // // // // // // // //                 <button
-// // // // // // // // // //                   onClick={() => supabaseClient.auth.signInWithOAuth({
-// // // // // // // // // //                     provider: 'github',
-// // // // // // // // // //                     options: { redirectTo: `${window.location.origin}/auth/callback` }
-// // // // // // // // // //                   })}
-// // // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // //           <div className="flex items-center space-x-8">
+// // // // // // // // // //             {navLinks.mainLinks.map(link => (
+// // // // // // // // // //               !link.authRequired || isAuthenticated ? (
+// // // // // // // // // //                 <Link
+// // // // // // // // // //                   key={link.href}
+// // // // // // // // // //                   href={link.href}
+// // // // // // // // // //                   className={navStyles.link}
 // // // // // // // // // //                 >
-// // // // // // // // // //                   Sign In
-// // // // // // // // // //                 </button>
-// // // // // // // // // //               )}
-// // // // // // // // // //             </div>
-// // // // // // // // // //           </ClientOnly>
+// // // // // // // // // //                   {link.label}
+// // // // // // // // // //                 </Link>
+// // // // // // // // // //               ) : null
+// // // // // // // // // //             ))}
+// // // // // // // // // //             <ThemeToggle />
+// // // // // // // // // //             {isAuthenticated ? (
+// // // // // // // // // //               <button
+// // // // // // // // // //                 onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // // //                 className={navStyles.button}
+// // // // // // // // // //               >
+// // // // // // // // // //                 {navLinks.authLinks.signOut.label}
+// // // // // // // // // //               </button>
+// // // // // // // // // //             ) : (
+// // // // // // // // // //               <button
+// // // // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // // // //                   provider: 'github',
+// // // // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // // // //                 })}
+// // // // // // // // // //                 className={navStyles.button}
+// // // // // // // // // //               >
+// // // // // // // // // //                 {navLinks.authLinks.signIn.label}
+// // // // // // // // // //               </button>
+// // // // // // // // // //             )}
+// // // // // // // // // //           </div>
 // // // // // // // // // //         </div>
 // // // // // // // // // //       </div>
 // // // // // // // // // //     </nav>
 // // // // // // // // // //   )
 // // // // // // // // // // }
+
+// // // // // // // // // // // // src/components/Navbar.tsx
+// // // // // // // // // // // 'use client'
+// // // // // // // // // // // import Link from 'next/link'
+// // // // // // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+// // // // // // // // // // // import { useTheme } from '@/contexts/ThemeContext'
+
+// // // // // // // // // // // export function Navbar() {
+// // // // // // // // // // //   const { user, isAuthenticated } = useAuth()
+// // // // // // // // // // //   const { isDark } = useTheme()
+
+// // // // // // // // // // //   return (
+// // // // // // // // // // //     <nav className={`${
+// // // // // // // // // // //       isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'
+// // // // // // // // // // //     } shadow-sm transition-colors`}>
+// // // // // // // // // // //       <div className="container mx-auto px-4">
+// // // // // // // // // // //         <div className="flex justify-between h-16">
+// // // // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
+// // // // // // // // // // //             My Blog
+// // // // // // // // // // //           </Link>
+// // // // // // // // // // //           <div className="flex items-center space-x-8">
+// // // // // // // // // // //             <Link href="/blog" className="hover:text-gray-600 dark:hover:text-gray-300">
+// // // // // // // // // // //               Blog
+// // // // // // // // // // //             </Link>
+// // // // // // // // // // //             <ThemeToggle />
+// // // // // // // // // // //             {isAuthenticated ? (
+// // // // // // // // // // //               <>
+// // // // // // // // // // //                 <Link href="/blog/new" className="hover:text-gray-600 dark:hover:text-gray-300">
+// // // // // // // // // // //                   New Post
+// // // // // // // // // // //                 </Link>
+// // // // // // // // // // //                 <button
+// // // // // // // // // // //                   onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // // //                 >
+// // // // // // // // // // //                   Sign Out
+// // // // // // // // // // //                 </button>
+// // // // // // // // // // //               </>
+// // // // // // // // // // //             ) : (
+// // // // // // // // // // //               <button
+// // // // // // // // // // //                 onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // // // // //                   provider: 'github',
+// // // // // // // // // // //                   options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // // // // //                 })}
+// // // // // // // // // // //                 className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // // //               >
+// // // // // // // // // // //                 Sign In
+// // // // // // // // // // //               </button>
+// // // // // // // // // // //             )}
+// // // // // // // // // // //           </div>
+// // // // // // // // // // //         </div>
+// // // // // // // // // // //       </div>
+// // // // // // // // // // //     </nav>
+// // // // // // // // // // //   )
+// // // // // // // // // // // }
+
+// // // // // // // // // // // // // src/components/Navbar.tsx - Updated to use ClientOnly
+// // // // // // // // // // // // 'use client'
+// // // // // // // // // // // // import Link from 'next/link'
+// // // // // // // // // // // // import { useAuth } from '@/hooks/useAuth'
+// // // // // // // // // // // // import { supabaseClient } from '@/lib/auth'
+// // // // // // // // // // // // import { ClientOnly } from '@/components/ClientOnly'
+// // // // // // // // // // // // import { ThemeToggle } from '@/components/ThemeToggle'
+
+// // // // // // // // // // // // export function Navbar() {
+// // // // // // // // // // // //   const { user, isAuthenticated } = useAuth()
+
+// // // // // // // // // // // //   return (
+// // // // // // // // // // // //    //  <nav className="bg-white shadow-sm">
+// // // // // // // // // // // //     <nav className="bg-white dark:bg-dark-primary shadow-sm transition-colors duration-200">
+// // // // // // // // // // // //       <div className="container mx-auto px-4">
+// // // // // // // // // // // //         <div className="flex justify-between h-16">
+// // // // // // // // // // // //           <Link href="/" className="flex items-center font-bold text-xl">
+// // // // // // // // // // // //             My Blog
+// // // // // // // // // // // //           </Link>
+// // // // // // // // // // // //           <ClientOnly>
+// // // // // // // // // // // //             <div className="flex items-center space-x-8">
+// // // // // // // // // // // //               <Link href="/blog" className="hover:text-gray-600">Blog</Link>
+// // // // // // // // // // // //               <ThemeToggle />
+// // // // // // // // // // // //               {isAuthenticated ? (
+// // // // // // // // // // // //                 <>
+// // // // // // // // // // // //                   <Link href="/blog/new" className="hover:text-gray-600">New Post</Link>
+// // // // // // // // // // // //                   <button
+// // // // // // // // // // // //                     onClick={() => supabaseClient.auth.signOut()}
+// // // // // // // // // // // //                     className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // // // //                   >
+// // // // // // // // // // // //                     Sign Out
+// // // // // // // // // // // //                   </button>
+// // // // // // // // // // // //                 </>
+// // // // // // // // // // // //               ) : (
+// // // // // // // // // // // //                 <button
+// // // // // // // // // // // //                   onClick={() => supabaseClient.auth.signInWithOAuth({
+// // // // // // // // // // // //                     provider: 'github',
+// // // // // // // // // // // //                     options: { redirectTo: `${window.location.origin}/auth/callback` }
+// // // // // // // // // // // //                   })}
+// // // // // // // // // // // //                   className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+// // // // // // // // // // // //                 >
+// // // // // // // // // // // //                   Sign In
+// // // // // // // // // // // //                 </button>
+// // // // // // // // // // // //               )}
+// // // // // // // // // // // //             </div>
+// // // // // // // // // // // //           </ClientOnly>
+// // // // // // // // // // // //         </div>
+// // // // // // // // // // // //       </div>
+// // // // // // // // // // // //     </nav>
+// // // // // // // // // // // //   )
+// // // // // // // // // // // // }
 
 ```
 
@@ -4190,171 +10687,550 @@ import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
 import { Loader2 } from "lucide-react";
 import { categories, CategoryId } from "@/data/categories";
 
+type PostType = 'markdown' | 'component';
+
+type FormData = {
+  title: string;
+  content: string;
+  excerpt: string;
+  cover_image: string;
+  category: CategoryId;
+  type: PostType;
+  component_name?: string;
+  props?: string;
+};
+
 export function PostForm() {
-	const router = useRouter();
-	const { user } = useAuth();
-	const [formData, setFormData] = useState({
-		title: "",
-		content: "",
-		excerpt: "",
-		cover_image: "",
-		category: "tech" as CategoryId,
-	});
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState("");
-	const [saveAsDraft, setSaveAsDraft] = useState(false);
+  const router = useRouter();
+  const { user } = useAuth();
+  const [formData, setFormData] = useState<FormData>({
+    title: "",
+    content: "",
+    excerpt: "",
+    cover_image: "",
+    category: "tech" as CategoryId,
+    type: "markdown",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [saveAsDraft, setSaveAsDraft] = useState(false);
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!user) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+   e.preventDefault();
+   if (!user) {
+     setError("User not authenticated");
+     return;
+   }
 
-		setIsSubmitting(true);
-		setError("");
+   setIsSubmitting(true);
+   setError("");
 
-		try {
-			const slug = formData.title
-				.toLowerCase()
-				.trim()
-				.replace(/[^a-z0-9]+/g, "-")
-				.replace(/(^-|-$)+/g, "");
+   try {
+     const slug = formData.title
+       .toLowerCase()
+       .trim()
+       .replace(/[^a-z0-9]+/g, "-")
+       .replace(/(^-|-$)+/g, "");
 
-			// Add logging
-			console.log("Saving post with data:", {
-				...formData,
-				slug,
-				published: !saveAsDraft,
-				author_id: user.id,
-			});
+     // Prepare the base post data
+     const basePostData = {
+       title: formData.title,
+       slug,
+       excerpt: formData.excerpt,
+       cover_image: formData.cover_image,
+       category: formData.category,
+       published: !saveAsDraft,
+       author_id: user.id,
+     };
 
-			const { data, error: postError } = await supabaseClient
-				.from("posts")
-				.insert([
-					{
-						...formData,
-						slug,
-						published: !saveAsDraft,
-						author_id: user.id,
-					},
-				])
-				.select();
+     // Add type-specific data
+     const postData = formData.type === 'markdown'
+       ? {
+           ...basePostData,
+           content: formData.content,
+           type: 'markdown' as const
+         }
+       : {
+           ...basePostData,
+           content: '', // Empty content for component posts
+           type: 'component' as const,
+           component_name: formData.component_name || '',
+           component_props: formData.props ? JSON.stringify(formData.props) : '{}'
+         };
 
-			console.log("Save response:", { data, error: postError });
+     // Log the data being sent
+     console.log('Sending post data:', postData);
 
-			if (postError) throw postError;
+     // Create the post
+     const { data, error: postError } = await supabaseClient
+       .from("posts")
+       .insert([postData])
+       .select()
+       .single();
 
-			router.push(saveAsDraft ? "/blog/drafts" : "/blog");
-			router.refresh();
-		} catch (err) {
-			console.error("Error:", err);
-			setError(err instanceof Error ? err.message : "Failed to create post");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+     if (postError) {
+       console.error('Supabase error:', postError);
+       throw new Error(postError.message);
+     }
 
-	return (
-		<form
-			onSubmit={handleSubmit}
-			className='space-y-6'
-		>
-			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+     if (!data) {
+       throw new Error('No data returned from insert');
+     }
 
-			<div>
-				<label className='block text-sm font-medium mb-2'>Title</label>
-				<input
-					type='text'
-					value={formData.title}
-					onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
-					required
-				/>
-			</div>
+     console.log('Post created successfully:', data);
 
-			<div>
-				<label className='block text-sm font-medium mb-2'>Category</label>
-				<select
-					value={formData.category}
-					onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
-					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
-					required
-				>
-					{categories.map((category) => (
-						<option
-							key={category.id}
-							value={category.id}
-						>
-							{category.name}
-						</option>
-					))}
-				</select>
-			</div>
+     // Navigate and refresh
+     router.push(saveAsDraft ? "/blog/drafts" : "/blog");
+     router.refresh();
+   } catch (err) {
+     console.error("Error details:", {
+       name: err?.name,
+       message: err?.message,
+       stack: err?.stack,
+       error: err
+     });
 
-			<div>
-				<label className='block text-sm font-medium mb-2'>Cover Image</label>
-				<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
-			</div>
+     if (err instanceof Error) {
+       setError(err.message);
+     } else {
+       setError("Failed to create post. Please check the console for details.");
+     }
+   } finally {
+     setIsSubmitting(false);
+   }
+ };
 
-			<div>
-				<label className='block text-sm font-medium mb-2'>Excerpt</label>
-				<textarea
-					value={formData.excerpt}
-					onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
-					className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
-				/>
-			</div>
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (!user) return;
 
-			<div>
-				<label className='block text-sm font-medium mb-2'>Content</label>
-				<div className='border border-gray-700 rounded-lg overflow-hidden'>
-					<RichMarkdownEditor
-						initialContent={formData.content}
-						onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
-					/>
-				</div>
-			</div>
+//     setIsSubmitting(true);
+//     setError("");
 
-			<button
-				type='submit'
-				disabled={isSubmitting}
-				className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
-			>
-				{isSubmitting && (
-					<Loader2
-						className='animate-spin'
-						size={16}
-					/>
-				)}
-				{isSubmitting ? "Creating..." : "Create Post"}
-			</button>
-			{/* Save as Draft */}
-			<div className='flex items-center gap-4'>
-				<button
-					type='submit'
-					disabled={isSubmitting}
-					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
-				>
-					{isSubmitting && (
-						<Loader2
-							className='animate-spin'
-							size={16}
-						/>
-					)}
-					{isSubmitting ? "Saving..." : saveAsDraft ? "Save Draft" : "Publish"}
-				</button>
+//     try {
+//       const slug = formData.title
+//         .toLowerCase()
+//         .trim()
+//         .replace(/[^a-z0-9]+/g, "-")
+//         .replace(/(^-|-$)+/g, "");
 
-				<label className='flex items-center gap-2'>
-					<input
-						type='checkbox'
-						checked={saveAsDraft}
-						onChange={(e) => setSaveAsDraft(e.target.checked)}
-						className='rounded border-gray-300'
-					/>
-					<span>Save as draft</span>
-				</label>
-			</div>
-		</form>
-	);
+//       let postData = {
+//         title: formData.title,
+//         slug,
+//         excerpt: formData.excerpt,
+//         cover_image: formData.cover_image,
+//         category: formData.category,
+//         published: !saveAsDraft,
+//         author_id: user.id,
+//         type: formData.type
+//       };
+
+//       // Add type-specific fields
+//       if (formData.type === 'markdown') {
+//         postData = {
+//           ...postData,
+//           content: formData.content
+//         };
+//       } else {
+//         postData = {
+//           ...postData,
+//           component_name: formData.component_name || '',
+//           props: formData.props ? JSON.parse(formData.props) : {},
+//           content: '' // Empty content for component posts
+//         };
+//       }
+
+//       const { data, error: postError } = await supabaseClient
+//         .from("posts")
+//         .insert([postData])
+//         .select();
+
+//       if (postError) throw postError;
+
+//       router.push(saveAsDraft ? "/blog/drafts" : "/blog");
+//       router.refresh();
+//     } catch (err) {
+//       console.error("Error creating post:", err);
+//       if (err instanceof Error) {
+//         setError(err.message);
+//       } else {
+//         setError("Failed to create post");
+//       }
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-500/10 text-red-500 p-4 rounded">
+          {error}
+        </div>
+      )}
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Post Type</label>
+        <select
+          value={formData.type}
+          onChange={(e) => setFormData(prev => ({
+            ...prev,
+            type: e.target.value as PostType
+          }))}
+          className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+        >
+          <option value="markdown">Markdown</option>
+          <option value="component">React Component</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Title</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({
+            ...prev,
+            title: e.target.value
+          }))}
+          className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Category</label>
+        <select
+          value={formData.category}
+          onChange={(e) => setFormData(prev => ({
+            ...prev,
+            category: e.target.value as CategoryId
+          }))}
+          className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+          required
+        >
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Cover Image</label>
+        <ImageUpload
+          onUploadComplete={(url) => setFormData(prev => ({
+            ...prev,
+            cover_image: url
+          }))}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Excerpt</label>
+        <textarea
+          value={formData.excerpt}
+          onChange={(e) => setFormData(prev => ({
+            ...prev,
+            excerpt: e.target.value
+          }))}
+          className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
+        />
+      </div>
+
+      {formData.type === 'markdown' ? (
+        <div>
+          <label className="block text-sm font-medium mb-2">Content</label>
+          <div className="border border-gray-700 rounded-lg overflow-hidden">
+            <RichMarkdownEditor
+              initialContent={formData.content}
+              onChange={(content) => setFormData(prev => ({
+                ...prev,
+                content
+              }))}
+            />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div>
+            <label className="block text-sm font-medium mb-2">Component Name</label>
+            <input
+              type="text"
+              value={formData.component_name || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                component_name: e.target.value
+              }))}
+              className="w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100"
+              placeholder="e.g., InteractiveCounterPost"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Component Props (JSON)
+            </label>
+            <textarea
+              value={formData.props || '{}'}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                props: e.target.value
+              }))}
+              className="w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100"
+              placeholder="{}"
+            />
+          </div>
+        </>
+      )}
+
+      <div className="flex items-center gap-4">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+        >
+          {isSubmitting && (
+            <Loader2 className="animate-spin" size={16} />
+          )}
+          {isSubmitting ? "Saving..." : saveAsDraft ? "Save Draft" : "Publish"}
+        </button>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={saveAsDraft}
+            onChange={(e) => setSaveAsDraft(e.target.checked)}
+            className="rounded border-gray-300"
+          />
+          <span>Save as draft</span>
+        </label>
+      </div>
+    </form>
+  );
 }
+
+// // src/components/PostForm.tsx
+// "use client";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { supabaseClient } from "@/lib/auth";
+// import { useAuth } from "@/hooks/useAuth";
+// import { ImageUpload } from "@/components/ImageUpload";
+// import { RichMarkdownEditor } from "@/components/RichMarkdownEditor";
+// import { Loader2 } from "lucide-react";
+// import { categories, CategoryId } from "@/data/categories";
+
+// export function PostForm() {
+// 	const router = useRouter();
+// 	const { user } = useAuth();
+// 	const [formData, setFormData] = useState({
+// 		title: "",
+// 		content: "",
+// 		excerpt: "",
+// 		cover_image: "",
+// 		category: "tech" as CategoryId,
+// 	});
+// 	const [isSubmitting, setIsSubmitting] = useState(false);
+// 	const [error, setError] = useState("");
+// 	const [saveAsDraft, setSaveAsDraft] = useState(false);
+// 	// Multiple post templates
+// 	const [postType, setPostType] = useState<"markdown" | "component">("markdown");
+// 	const [componentName, setComponentName] = useState("");
+// 	const [componentProps, setComponentProps] = useState("{}");
+
+// 	const handleSubmit = async (e: React.FormEvent) => {
+// 		e.preventDefault();
+// 		if (!user) return;
+
+// 		setIsSubmitting(true);
+// 		setError("");
+
+// 		try {
+// 			const slug = formData.title
+// 				.toLowerCase()
+// 				.trim()
+// 				.replace(/[^a-z0-9]+/g, "-")
+// 				.replace(/(^-|-$)+/g, "");
+
+// 			// Add logging
+// 			console.log("Saving post with data:", {
+// 				...formData,
+// 				slug,
+// 				published: !saveAsDraft,
+// 				author_id: user.id,
+// 			});
+
+// 			const { data, error: postError } = await supabaseClient
+// 				.from("posts")
+// 				.insert([
+// 					{
+// 						...formData,
+// 						slug,
+// 						published: !saveAsDraft,
+// 						author_id: user.id,
+// 					},
+// 				])
+// 				.select();
+
+// 			console.log("Save response:", { data, error: postError });
+
+// 			if (postError) throw postError;
+
+// 			router.push(saveAsDraft ? "/blog/drafts" : "/blog");
+// 			router.refresh();
+// 		} catch (err) {
+// 			console.error("Error:", err);
+// 			setError(err instanceof Error ? err.message : "Failed to create post");
+// 		} finally {
+// 			setIsSubmitting(false);
+// 		}
+// 	};
+
+// 	return (
+// 		<form onSubmit={handleSubmit}>
+// 			<div>
+// 				<label>Post Type</label>
+// 				<select
+// 					value={postType}
+// 					onChange={(e) => setPostType(e.target.value as "markdown" | "component")}
+// 				>
+// 					<option value='markdown'>Markdown</option>
+// 					<option value='component'>React Component</option>
+// 				</select>
+// 			</div>
+
+// 			{postType === "markdown" ? (
+// 				<RichMarkdownEditor
+// 					initialContent={formData.content}
+// 					onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// 				/>
+// 			) : (
+// 				<>
+// 					<div>
+// 						<label>Component Name</label>
+// 						<input
+// 							type='text'
+// 							value={componentName}
+// 							onChange={(e) => setComponentName(e.target.value)}
+// 							placeholder='e.g., InteractiveChart'
+// 						/>
+// 					</div>
+// 					<div>
+// 						<label>Component Props (JSON)</label>
+// 						<textarea
+// 							value={componentProps}
+// 							onChange={(e) => setComponentProps(e.target.value)}
+// 							placeholder='{"data": [], "config": {}}'
+// 						/>
+// 					</div>
+// 				</>
+// 			)}
+// 		</form>
+
+// 		// <form
+// 		// 	onSubmit={handleSubmit}
+// 		// 	className='space-y-6'
+// 		//    >
+// 		// 	{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+
+// 		// 	<div>
+// 		// 		<label className='block text-sm font-medium mb-2'>Title</label>
+// 		// 		<input
+// 		// 			type='text'
+// 		// 			value={formData.title}
+// 		// 			onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+// 		// 			className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// 		// 			required
+// 		// 		/>
+// 		// 	</div>
+
+// 		// 	<div>
+// 		// 		<label className='block text-sm font-medium mb-2'>Category</label>
+// 		// 		<select
+// 		// 			value={formData.category}
+// 		// 			onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value as CategoryId }))}
+// 		// 			className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+// 		// 			required
+// 		// 		>
+// 		// 			{categories.map((category) => (
+// 		// 				<option
+// 		// 					key={category.id}
+// 		// 					value={category.id}
+// 		// 				>
+// 		// 					{category.name}
+// 		// 				</option>
+// 		// 			))}
+// 		// 		</select>
+// 		// 	</div>
+
+// 		// 	<div>
+// 		// 		<label className='block text-sm font-medium mb-2'>Cover Image</label>
+// 		// 		<ImageUpload onUploadComplete={(url) => setFormData((prev) => ({ ...prev, cover_image: url }))} />
+// 		// 	</div>
+
+// 		// 	<div>
+// 		// 		<label className='block text-sm font-medium mb-2'>Excerpt</label>
+// 		// 		<textarea
+// 		// 			value={formData.excerpt}
+// 		// 			onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
+// 		// 			className='w-full p-2 border rounded h-[700px] bg-gray-800 border-gray-700 text-gray-100'
+// 		// 		/>
+// 		// 	</div>
+
+// 		// 	<div>
+// 		// 		<label className='block text-sm font-medium mb-2'>Content</label>
+// 		// 		<div className='border border-gray-700 rounded-lg overflow-hidden'>
+// 		// 			<RichMarkdownEditor
+// 		// 				initialContent={formData.content}
+// 		// 				onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+// 		// 			/>
+// 		// 		</div>
+// 		// 	</div>
+
+// 		// 	<button
+// 		// 		type='submit'
+// 		// 		disabled={isSubmitting}
+// 		// 		className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// 		// 	>
+// 		// 		{isSubmitting && (
+// 		// 			<Loader2
+// 		// 				className='animate-spin'
+// 		// 				size={16}
+// 		// 			/>
+// 		// 		)}
+// 		// 		{isSubmitting ? "Creating..." : "Create Post"}
+// 		// 	</button>
+// 		// 	{/* Save as Draft */}
+// 		// 	<div className='flex items-center gap-4'>
+// 		// 		<button
+// 		// 			type='submit'
+// 		// 			disabled={isSubmitting}
+// 		// 			className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+// 		// 		>
+// 		// 			{isSubmitting && (
+// 		// 				<Loader2
+// 		// 					className='animate-spin'
+// 		// 					size={16}
+// 		// 				/>
+// 		// 			)}
+// 		// 			{isSubmitting ? "Saving..." : saveAsDraft ? "Save Draft" : "Publish"}
+// 		// 		</button>
+
+// 		// 		<label className='flex items-center gap-2'>
+// 		// 			<input
+// 		// 				type='checkbox'
+// 		// 				checked={saveAsDraft}
+// 		// 				onChange={(e) => setSaveAsDraft(e.target.checked)}
+// 		// 				className='rounded border-gray-300'
+// 		// 			/>
+// 		// 			<span>Save as draft</span>
+// 		// 		</label>
+// 		// 	</div>
+// 		// </form>
+// 	);
+// }
 
 ```
 
@@ -4727,7 +11603,7 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 							}
 						}
 					}}
-					className='w-full min-h-[300px] p-4 bg-gray-800 text-gray-100 font-mono text-sm resize-y focus:outline-none'
+					className='w-full min-h-[900px] p-4 bg-gray-800 text-gray-100 font-mono text-sm resize-y focus:outline-none'
 					placeholder='Write your content here... You can drag & drop images or paste them directly!'
 				/>
 			</div>
@@ -5164,9 +12040,9 @@ export const categories = [
    },
    {
       id: 'media',
-      name: 'Other Media',
+      name: 'Visual Media',
       icon: Newspaper,
-      description: 'Exploring movies, books, games, and digital content.'
+      description: 'In this section, I share my experiences working on creative projects like video editing with DaVinci Resolve, creating simple animations, designing clean static layouts, and developing intros for corporate presentations. It’s a place to explore the practical side of visual storytelling and design.'
    },
    {
       id: 'food',
@@ -5178,7 +12054,7 @@ export const categories = [
       id: 'personal',
       name: 'Personal',
       icon: User,
-      description: 'Personal reflections, experiences, and life lessons.'
+      description: 'Personal reflections, experiences, and life lessons. In this section, I share my thoughts, experiences, and lessons I’ve learned along the way. It’s a place for personal stories and reflections on everyday life, offering a glimpse into my journey and the moments that matter most to me.'
    }
 ] as const;
 
@@ -5205,7 +12081,7 @@ export const navLinks = {
    brand: {
       href: '/',
       label: 'Mash Media Studio',
-      logo: '/assets/MashMediaStudio.png'
+      logo: '/assets/GD-Fusion-logo.png'
    },
    mainLinks: [
       {
@@ -5237,7 +12113,8 @@ export const navLinks = {
 
 export const navStyles = {
    base: "bg-white dark:bg-gray-900 shadow-lg transition-colors",
-   container: "container mx-auto px-4",
+   // container: "container mx-auto px-4",
+   container: "max-w-page mx-auto px-4",
    inner: "flex justify-between h-16",
    brand: "flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white",
    link: "hover:text-gray-600 dark:hover:text-gray-300",
@@ -5492,9 +12369,9 @@ export const blogApi = {
 //src/lib/theme-config.ts : used for portfolio-theme.ts
 
 // Add Styled Components declaration
-declare module 'styled-components' {
-   export interface DefaultTheme extends Theme { }
-}
+// declare module 'styled-components' {
+//    export interface DefaultTheme extends Theme { }
+// }
 
 import {
    ThemeMode,
@@ -5902,7 +12779,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
     }
 
     p {
-      font-size: ${({ theme }) => theme.typography.body.sizes.lg};
+      font-size: ${({ theme }) => theme.typography.body.sizes.base};
       line-height: 1.75;
       margin-bottom: 1.5rem;
     }
@@ -6215,8 +13092,12 @@ export default {
    content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
    theme: {
       extend: {
+         maxWidth: {
+            'page': 'var(--page-width)',
+         },
          fontFamily: {
-            baskerville: ["Libre Baskerville", "serif"],
+            baskerville: ["var(--font-baskerville)", "serif"],
+            opensans: ["var(--font-opensans)", "system-ui", "sans-serif"],
          },
          colors: {
             primary: {
@@ -6316,6 +13197,16 @@ export default {
                950: "#1b3201",
             },
          },
+         typography: {
+            DEFAULT: {
+               css: {
+                  fontSize: '1rem',
+                  p: {
+                     fontSize: '1rem',
+                  }
+               }
+            }
+         }
       },
    },
    plugins: [typography],
@@ -6353,6 +13244,38 @@ export default {
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
+
+```
+
+# types/blog.ts
+
+```ts
+// types/blog.ts
+export type BasePost = {
+   id: string;
+   title: string;
+   slug: string;
+   category: string;
+   excerpt?: string;
+   cover_image?: string;
+   created_at: string;
+   updated_at: string;
+   author_id: string;
+};
+
+export type MarkdownPost = BasePost & {
+   type: 'markdown';
+   content: string;
+};
+
+export type ComponentPost = BasePost & {
+   type: 'component';
+   component_name: string;
+   props?: Record<string, unknown>;
+};
+
+export type Post = MarkdownPost | ComponentPost;
+
 
 ```
 

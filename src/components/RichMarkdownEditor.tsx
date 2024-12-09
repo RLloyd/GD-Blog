@@ -200,7 +200,7 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 							}
 						}
 					}}
-					className='w-full min-h-[300px] p-4 bg-gray-800 text-gray-100 font-mono text-sm resize-y focus:outline-none'
+					className='w-full min-h-[900px] p-4 bg-gray-800 text-gray-100 font-mono text-sm resize-y focus:outline-none'
 					placeholder='Write your content here... You can drag & drop images or paste them directly!'
 				/>
 			</div>
