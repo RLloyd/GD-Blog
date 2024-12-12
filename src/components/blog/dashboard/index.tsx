@@ -57,7 +57,7 @@ export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) 
 			)} */}
 
 			{!activeCategory && (
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+				<div className='featuredPostsContainer grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
 					{featuredPosts.map(({ post, category, size, title, description }) => {
 						const categoryData = categories.find((c): c is (typeof categories)[number] => c.id === category);
 						if (!categoryData) return null;

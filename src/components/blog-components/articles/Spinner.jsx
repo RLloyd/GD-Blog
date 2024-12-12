@@ -14,12 +14,16 @@ const Spinner = () => {
 	// if (!mounted) return null;
 
 	const htmlCode = `
+      /*-= Usage =-*/
+
       <div className='spinner-container'>
          <div className='spinner'></div>
       </div>
    `;
 
 	const cssCode = `
+      /*-= CSS Styling & Animation =-*/
+
       .spinner-container {
          display: flex;
          justify-content: center;
@@ -62,7 +66,7 @@ const Spinner = () => {
 			<div className='spinner-container'>
 				<div className='spinner'></div>
 			</div>
-			<h3>Basic Spinner Codes:</h3>
+			<p>Simple Spinner Codes:</p>
 			<CodeBlock
 				code={htmlCode}
 				language='HTML'

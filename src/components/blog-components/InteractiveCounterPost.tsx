@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 // import LoadingSpinner from "../blog/articles/LoadingSpinner";
-import Spinner from "../blog/articles/Spinner";
+import Spinner from "./articles/Spinner";
 
 export default function InteractiveCounterPost() {
 	const [count, setCount] = useState(0);

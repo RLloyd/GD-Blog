@@ -24,7 +24,7 @@ type CodeBlockProps = {
 export function CodeBlock({
 	code,
 	language = "typescript",
-	fontSize = "0.875rem", // Default size (14px)
+	fontSize = "1.875rem", // Default size (14px)
 }: CodeBlockProps) {
 	const [copied, setCopied] = useState(false);
 
@@ -49,7 +49,7 @@ export function CodeBlock({
 	};
 
 	return (
-		<div className='relative group my-6'>
+		<div className='relative group my-0'>
 			<div className='absolute right-2 top-2 flex items-center space-x-2'>
 				<span className='text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded'>{language}</span>
 				<button
@@ -68,7 +68,8 @@ export function CodeBlock({
 			</div>
 
 			<pre
-				className='!mt-0 !bg-[#282c34]'
+				className='!bg-[#282c34] max-h-[300px] max-w-[700px] p-4 mt-0 mb-8'
+				// className='!mt-0 !bg-[#282c34] max-h-[300px] max-w-[700px] p-4 mt-0 mb-8'
 				style={{ fontSize }}
 			>
 				<code className={`language-${language}`}>{code}</code>

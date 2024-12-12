@@ -1,4 +1,5 @@
 // src/components/blog/articles/LoadingSpinner.tsx
+"use client";
 import { CodeBlock } from "@/components/blog-components/CodeBlock";
 import { useState, useEffect } from "react";
 
@@ -12,19 +13,18 @@ const LoadingSpinner = () => {
 	if (!mounted) return null;
 
 	const sampleCode = `
-   <div className='flex justify-center items-center min-h-[200px]'>
-      <div className="relative w-[120px] h-[120px] before:content-['']
-         before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
-         before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"
-      />
-   </div>
+      <div className='flex justify-center items-center min-h-[200px]'>
+         <div className="relative w-[120px] h-[120px] before:content-['']
+            before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
+            before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"
+         />
+      </div>
    `;
 
 	return (
 		<>
 			<div className='flex justify-center items-center min-h-[200px]'>
-				<div
-					className="
+				<div className="
             relative w-[120px] h-[120px] before:content-['']
             before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
             before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"

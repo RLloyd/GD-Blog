@@ -121,7 +121,30 @@ export default {
                   }
                }
             }
-         }
+         },
+         keyframes: {
+            rise: {
+              '0%': {
+                transform: 'translateY(100%) scale(0)',
+                opacity: '0'
+              },
+              '20%': {
+                opacity: '0.5',
+                transform: 'translateY(80%) scale(0.8)'
+              },
+              '80%': {
+                opacity: '0.8',
+                transform: 'translateY(20%) scale(1)'
+              },
+              '100%': {
+                transform: 'translateY(-100%) scale(1)',
+                opacity: '0'
+              }
+            }
+          },
+          animation: {
+            'rise': 'rise 4s ease-out forwards'
+          }
       },
    },
    plugins: [typography],

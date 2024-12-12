@@ -365,7 +365,7 @@ export default function BlogDashboard({ posts, featuredSetup }: { posts: Post[];
 	return (
 		<div className='max-w-page mx-auto px-4 py-8 space-y-8'>
 			{/* Category buttons */}
-			<div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
+			<div className='categoryButtonsContainer grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
 				{categories.map((category) => {
 					const Icon = category.icon;
 					const isActive = activeCategory === category.id;

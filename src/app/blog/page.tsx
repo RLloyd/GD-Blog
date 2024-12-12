@@ -1,9 +1,9 @@
 // src/app/blog/page.tsx
-import Link from "next/link";
+// import Link from "next/link";
 import { supabaseClient } from "@/lib/auth";
 // import BlogDashboard from "@/components/BlogDashboard";
 import { CategoryId } from "@/data/categories";
-import { GridSize } from "@/components/BlogDashboard";
+import { GridSize } from "@/components/BlogDashboard-Old";
 import { unstable_noStore } from "next/cache";
 import BlogDashboard from "@/components/blog/dashboard";
 
@@ -31,6 +31,12 @@ const featuredSetup: FeaturedSetup = [
 		order: 1,
 		title: "Media & Reviews",
 	},
+	{
+		category: "personal", // Add the third featured card
+		size: "medium",
+		order: 2,
+		title: "Personal Stories",
+	},
 ];
 
 export default async function BlogList() {
@@ -43,16 +49,15 @@ export default async function BlogList() {
 		return <div>Error loading posts</div>;
 	}
 
-	const formattedPosts =
-		posts?.map((post) => ({
-			id: post.id,
-			title: post.title,
-			excerpt: post.excerpt || "",
-			category: (post.category || "tech") as CategoryId,
-			date: new Date(post.created_at).toLocaleDateString(),
-			slug: post.slug,
-			cover_image: post.cover_image,
-		})) || [];
+	// const formattedPosts = posts?.map((post) => ({
+	//    id: post.id,
+	//    title: post.title,
+	//    excerpt: post.excerpt || "",
+	//    category: (post.category || "tech") as CategoryId,
+	//    date: new Date(post.created_at).toLocaleDateString(),
+	//    slug: post.slug,
+	//    cover_image: post.cover_image,
+	// })) || [];
 
 	return (
 		// <div className='max-w-7xl mx-auto'>
