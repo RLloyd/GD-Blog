@@ -13,9 +13,9 @@ interface ImageLoaderProps {
 	mode?: string;
 	timerDuration?: number; // Time in milliseconds
 }
-const imageLoaderTSXCode = `
+const circularLoaderTSXCode = `
    import React, { useState, useEffect } from "react";
-   import "./ImageLoader.css"; // Import the separated CSS file
+   import "./CircularLoader.css"; // Import the separated CSS file
 
    interface ImageLoaderProps {
    src: string;
@@ -23,7 +23,7 @@ const imageLoaderTSXCode = `
    className?: string;
    }
 
-   const ImageLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
+   const CircularLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
    const [progress, setProgress] = useState(0);
    const [isLoaded, setIsLoaded] = useState(false);
 
@@ -110,9 +110,9 @@ const imageLoaderTSXCode = `
    );
    };
 
-   export default ImageLoader;
+   export default CircularLoader;
 `;
-const imageLoaderCSSCode = `
+const circularLoaderCSSCode = `
    .image-loader-container {
    position: relative;
    width: 100%;
@@ -168,7 +168,7 @@ const imageLoaderCSSCode = `
    transition: opacity 0.5s ease-in-out;
    }
 `;
-const imageLoaderSVGCode = `
+const circularLoaderSVGCode = `
    import { motion } from "framer-motion";
 
    const ImageLoaderSVG = () => {
@@ -327,14 +327,14 @@ const imageLoaderSVGCode = `
    export default ImageLoaderSVG;
 
 `;
-const imageLoaderUsageCode = `
+const circularLoaderUsageCode = `
    import React from "react";
-   import ImageLoader from "./ImageLoader";
+   import CircularLoader from "./CircularLoader";
 
    const App = () => {
    return (
       <div>
-         <ImageLoader
+         <CircularLoader
          src="https://via.placeholder.com/1200x800"
          alt="Sample Image"
          />
@@ -385,27 +385,27 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({
 			</div>
 			<div>
 				<div>Progress Indicators Codes:</div>
-				<p className='mb-1'>ImageLoader.tsx</p>
+				<p className='mb-1'>CircularLoader.tsx</p>
 				<CodeBlock
-					code={imageLoaderTSXCode}
+					code={circularLoaderTSXCode}
 					language='TSX'
 					fontSize='1rem' // 16px
 				/>
-				<p className='mb-1'>ImageLoader.css</p>
+				<p className='mb-1'>CircularLoader.css</p>
 				<CodeBlock
-					code={imageLoaderCSSCode}
+					code={circularLoaderCSSCode}
 					language='CSS'
 					fontSize='1rem' // 16px
 				/>
 				<p className='mb-1'>ImageLoaderSVG.tsx</p>
 				<CodeBlock
-					code={imageLoaderSVGCode}
+					code={circularLoaderSVGCode}
 					language='CSS'
 					fontSize='1rem' // 16px
 				/>
 				<p className='mb-1'>Usage: In a parent component</p>
 				<CodeBlock
-					code={imageLoaderUsageCode}
+					code={circularLoaderUsageCode}
 					language='TSX'
 					fontSize='1rem' // 16px
 				/>

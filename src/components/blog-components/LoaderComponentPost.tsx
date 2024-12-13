@@ -2,32 +2,20 @@
 "use client";
 import React, { Suspense } from "react";
 import Spinner from "./articles/Spinner";
-import ImageLoader from "./ImageLoader";
+// import CircularLoader from "./CircularLoader";
 import LazyLoader from "./LazyLoader";
-
-// import BubbleLoaderApp from "./BubbleLoaderApp";
-// import BubbleLoader from "./BubbleLoader";
-
 import dynamic from "next/dynamic";
+// import LoaderModalApp from "../modal-components/CircularLoaderModalApp";
+import CircularLoaderModalApp from "../modal-components/CircularLoaderModalApp";
+import SkeletonLoaderAppApp from "./../skeleton-components/SkeletonLoaderApp";
+import UserProfile from "../skeleton-components/UserProfile";
 
 const PercentageSVG2 = React.lazy(() => import("./articles/PercentageSVG2"));
 
-// const LoadingPlaceholder = () => <div className='w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg animate-pulse' />;
-
-// const BubbleLoader = dynamic(() => import("@/components/blog-components/BubbleLoader"), {
-// 	ssr: false,
-// 	loading: LoadingPlaceholder,
-// });
-const BubbleLoader = dynamic(
-   () => import("./BubbleLoader"),
-   {
-     ssr: false,
-     loading: () => (
-       <div className="w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg" />
-     )
-   }
- );
-
+const BubbleLoader = dynamic(() => import("./BubbleLoader"), {
+	ssr: false,
+	loading: () => <div className='w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg' />,
+});
 
 const LoaderComponentPost = () => {
 	return (
@@ -41,9 +29,8 @@ const LoaderComponentPost = () => {
 				<ul>
 					<li>They provided no context or feedback about the progress or what was loading.</li>
 					<li>Users had no way of knowing how long they needed to wait. </li>
-               Despite these drawbacks, spinners were lightweight and easy to implement, making them a staple in early web applications.
 				</ul>
-
+				Despite these drawbacks, spinners were lightweight and easy to implement, making them a staple in early web applications.
 				<Spinner />
 			</div>
 			<div>
@@ -59,21 +46,26 @@ const LoaderComponentPost = () => {
 				<ul>
 					<li>Linear progress bars (e.g., the classic loading bar).</li>
 					<li>Circular progress indicators showing incremental loading. Progress indicators improved user satisfaction by setting clearer expectations about wait times but were limited to applications where precise loading percentages could be calculated.</li>
+					<li>Check out a sample usage and simulation: https://rlloydgonzales.com/loaders/</li>
 				</ul>
 			</div>
 
 			{/* <SpinningDots /> */}
-			{/* <CircularLoader timer={4} /> */}
-			{/* <ImageLoader /> */}
+			{/* <CircularLoaderOld timer={4} /> */}
+			{/* <CircularLoader /> */}
 			<Suspense fallback={<div>Loading...</div>}>
 				<PercentageSVG2 />
 			</Suspense>
 
-			<ImageLoader
-				// src='./../../../public/assets/Be-the-first.png'
+			{/* <CircularLoader
 				src='/assets/somethingBig.png'
 				alt='Sample Image'
-			/>
+			/> */}
+
+			{/*---= Modal for circular svg =---*/}
+         <div className="my-20">
+			   <CircularLoaderModalApp />
+         </div>
 
 			{/*---= Skeleton Loader =---*/}
 			<div>
@@ -91,11 +83,15 @@ const LoaderComponentPost = () => {
 					<li>Add a modern, polished touch to loaders.</li>
 					<li>Are lightweight to implement using CSS or libraries. Apps like Facebook and LinkedIn popularized shimmer skeleton loaders, setting a new standard for modern web loaders.</li>
 				</ul>
+
+             <UserProfile />
+
+            {/*---= Intelligent Loader =---*/}
 				<h3>Intelligent Loaders:</h3>
 				<div>AI and Predictive Loading Today, loaders are becoming smarter, leveraging AI and predictive techniques to optimize the loading experience. Examples include:</div>
 				<ul>
 					<li>Progressive Rendering: Content is rendered in chunks, with critical sections prioritized, reducing the need for noticeable loaders.</li>
-					<li>Lazy Loading: Loaders are triggered only when content comes into view, improving perceived performance.</li>
+					<li>Lazy Loading: Loaders are triggered only when content comes into view, improving perceived performance. Check out the UserProfile sample above.</li>
 					<li>Preemptive Loading: AI analyzes user behavior to predict what they might view next and preloads content, reducing the need for loaders altogether.</li>
 				</ul>
 
@@ -105,28 +101,19 @@ const LoaderComponentPost = () => {
 				<ul>
 					<li>Gamified Loaders: Interactive loaders that turn waiting into a playful experience.</li>
 					<li>Personalized Loaders: Custom messages or visuals that align with user preferences.</li>
-					<li>Invisible Loaders: Innovations like instantaneous loading states (e.g., skeleton loaders seamlessly integrated into the DOM) make traditional loaders less noticeable. With the rise of WebAssembly and edge computing, loaders might one day become obsolete as websites achieve near-instantaneous load times. Conclusion The evolution of loaders reflects the changing landscape of web development and user expectations. From simple spinners to sophisticated skeleton loaders and intelligent predictive systems, loaders have transformed into a critical component of user experience. As web technologies continue to advance, the focus will increasingly shift toward making loaders seamless, invisible, or entirely unnecessary.</li>
+					<li>Invisible Loaders: Innovations like instantaneous loading states (e.g., skeleton loaders seamlessly integrated into the DOM) make traditional loaders less noticeable. With the rise of WebAssembly and edge computing, loaders might one day become obsolete as websites achieve near-instantaneous load times. </li>
 				</ul>
-            <LazyLoader
-               duration={10000}
-               threshold={0.1} // Optional: percentage of component visible before loading
-               onComplete={() => console.log('Animation complete')}
-            />
-            {/* <div className="p-4">
-               <BubbleLoader
-                  duration={5000}
-                  onComplete={() => console.log("Animation complete")}
-               />
-            </div> */}
-            {/* <BubbleLoader
-               duration={5000}
-               bubbleCount={15}
-               minSize={15}
-               maxSize={35}
-               primaryColor="rgb(99, 102, 241)"
-               secondaryColor="rgb(67, 56, 202)"
-               onComplete={() => console.log('Loading complete')}
-            /> */}
+				<LazyLoader
+					duration={10000}
+					threshold={0.1} // Optional: percentage of component visible before loading
+					onComplete={() => console.log("Animation complete")}
+				/>
+
+            {/*---= Conclusion =---*/}
+				<h3>Conclusion:</h3>
+				<div>The evolution of loaders reflects the changing landscape of web development and user expectations. From simple spinners to sophisticated skeleton loaders and intelligent predictive systems, loaders have transformed into a critical component of user experience. As web technologies continue to advance, the focus will increasingly shift toward making loaders seamless, invisible, or entirely unnecessary.</div>
+
+
 			</div>
 		</div>
 	);

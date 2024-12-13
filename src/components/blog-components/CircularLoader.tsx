@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import "./ImageLoader.css"; // Import the separated CSS file
+import "./CircularLoader.css"; // Import the separated CSS file
 import "./articles/PercentageSVG2.css";
 import Image from "next/image";
 import CircularSVG2 from "./articles/CircularSVG2";
@@ -14,8 +14,8 @@ import { AnimatePresence } from "framer-motion";
 // 	className?: string;
 // }
 
-// const ImageLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
-const ImageLoader = ({ src, alt }: { src: string; alt: string }) => {
+// const CircularLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
+const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
 	const [progress, setProgress] = useState(0);
 	const [isLoaded, setIsLoaded] = useState(false);
 
@@ -81,4 +81,4 @@ const ImageLoader = ({ src, alt }: { src: string; alt: string }) => {
 	);
 };
 
-export default ImageLoader;
+export default CircularLoader;

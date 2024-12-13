@@ -1,7 +1,7 @@
 // Codes for the actual codeblocks. Not the same as the sample playing on the article.
 
 import React from "react";
-import "./ImageLoader.css";
+import "./CircularLoader.css";
 
 interface ImageLoaderProps {
   src: string;
@@ -26,12 +26,12 @@ const ImageLoaderApp: React.FC<ImageLoaderProps> = ({ src, alt, className }) => 
 export default ImageLoaderApp;
 
 // import React from "react";
-// import ImageLoader from "./ImageLoaderApp";
+// import CircularLoader from "./ImageLoaderApp";
 
 // const ImageLoaderApp = () => {
 // 	return (
 // 		<div>
-// 			<ImageLoader
+// 			<CircularLoader
 // 				src='./../../../public/assets/somethingBig.png'
 // 				alt='Sample Image'
 // 			/>
