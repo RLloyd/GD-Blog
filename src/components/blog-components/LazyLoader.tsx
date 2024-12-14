@@ -49,7 +49,7 @@ const LazyLoader: React.FC<LazyLoaderProps> = ({
 
 export default LazyLoader;
 
-// // src/components/blog-components/LazyLoader.tsx
+// /*-= src/components/blog-components/LazyLoader.tsx =-*/
 // "use client";
 // import React, { useState, useEffect, useRef } from "react";
 // import dynamic from "next/dynamic";

@@ -1,4 +1,4 @@
-// src/components/ThemeToggle.tsx
+/*-= src/components/ThemeToggle.tsx =-*/
 "use client";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";

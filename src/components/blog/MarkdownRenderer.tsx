@@ -1,4 +1,4 @@
-// src/components/blog/MarkdownRenderer.tsx
+/*-= src/components/blog/MarkdownRenderer.tsx =-*/
 "use client";
 
 import ReactMarkdown from "react-markdown";
@@ -134,7 +134,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 	);
 }
 
-// // src/components/blog/MarkdownRenderer.tsx
+// /*-= src/components/blog/MarkdownRenderer.tsx =-*/
 // "use client";
 
 // import ReactMarkdown from "react-markdown";
@@ -261,7 +261,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 // 		</ReactMarkdown>
 // 	);
 // }
-// // // src/components/blog/MarkdownRenderer.tsx
+// // /*-= src/components/blog/MarkdownRenderer.tsx =-*/
 // // "use client";
 
 // // import ReactMarkdown from "react-markdown";
@@ -381,7 +381,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 // // 	);
 // // }
 
-// // // // src/components/blog/MarkdownRenderer.tsx
+// // // /*-= src/components/blog/MarkdownRenderer.tsx =-*/
 // // // import ReactMarkdown from "react-markdown";
 // // // import Image from "next/image";
 // // // import rehypeHighlight from "rehype-highlight";
@@ -547,7 +547,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 // // // 	);
 // // // }
 
-// // // // // src/components/blog/MarkdownRenderer.tsx
+// // // // /*-= src/components/blog/MarkdownRenderer.tsx =-*/
 // // // // import ReactMarkdown from "react-markdown";
 // // // // import Image from "next/image";
 // // // // import rehypeHighlight from "rehype-highlight";

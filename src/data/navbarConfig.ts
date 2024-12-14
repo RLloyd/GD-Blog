@@ -1,4 +1,4 @@
-// src/data/navbarConfig.ts
+/*-= src/data/navbarConfig.ts =-*/
 import type { ReactNode } from 'react'
 import Image from 'next/image'
 

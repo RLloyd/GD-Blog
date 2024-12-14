@@ -25,10 +25,7 @@ const CircularSVG2 = () => {
 				d='M106.965 1774.99C154.874 2068.61 291.756 2340.44 499.115 2553.76C706.475 2767.08 974.318 2911.61 1266.46 2967.83L1329.8 2638.64C1105.06 2595.4 899.008 2484.21 739.488 2320.11C579.968 2156 474.667 1946.88 437.811 1721.01L106.965 1774.99Z'
 				fill='#BE2809'
 			/>
-			{/* <motion.circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100" initial={{ rotate: 0 }} animate={{ rotate: -360 }} transition={{ duration: 5, ease: "easeIn", repeat: Infinity }} /> */}
-			{/* <motion.circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100" initial={{ rotate: 0 }} animate={{ rotate: -360 }} transition={{ duration: 5, ease: "easeIn", repeat: Infinity }} style={{ originX: "50%", originY: "50%" }}/> */}
-			{/* <circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100"/> */}
-			<motion.path
+      	<motion.path
 				initial={{ rotate: 0 }}
 				animate={{ rotate: 360 }}
 				transition={{ duration: 6, ease: "easeOut", repeat: Infinity }}
@@ -65,18 +62,6 @@ const CircularSVG2 = () => {
 				d='M2443.14 2607.8C2662.4 2422.36 2819.18 2173.82 2892.15 1896.03C2965.12 1618.23 2950.72 1324.69 2850.91 1055.38C2751.1 786.072 2570.74 554.081 2334.39 391.005C2098.03 227.93 1817.18 141.695 1530.07 144.047L1531.69 342.385C1778.04 340.367 2019.02 414.358 2221.81 554.28C2424.61 694.203 2579.37 893.256 2665 1124.33C2750.64 1355.4 2762.99 1607.27 2700.39 1845.62C2637.78 2083.97 2503.25 2297.23 2315.13 2456.34L2443.14 2607.8Z'
 				fill='#0E9DBA'
 			/>
-			{/* <motion.circle
-               initial={{ rotate: 0 }}
-               animate={{ rotate: 360 }}
-               transition={{ duration: 9, ease: "easeInOut", repeat: Infinity }}
-               style={{ originX: "0%", originY: "0%" }}
-               r='1271'
-               stroke='#1EBCDC'
-               stroke-width='250'
-               stroke-dasharray='100 100'
-               /> */}
-			{/* <motion.circle cx="1541" cy="1523" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100"/> */}
-
 			<motion.path
 				initial={{ rotate: 0 }}
 				animate={{ rotate: -360 }}

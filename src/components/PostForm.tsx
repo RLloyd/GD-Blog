@@ -1,4 +1,4 @@
-// src/components/PostForm.tsx
+/*-= src/components/PostForm.tsx =-*/
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -368,7 +368,7 @@ export function PostForm() {
 	);
 }
 
-// // src/components/PostForm.tsx
+// /*-= src/components/PostForm.tsx =-*/
 // "use client";
 // import { useState } from "react";
 // import { useRouter } from "next/navigation";

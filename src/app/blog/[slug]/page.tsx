@@ -23,7 +23,7 @@ export default async function BlogPostPage({ params: { slug }, searchParams }: {
 
 	return <BlogPostContent post={post} />;
 }
-// // src/app/blog/[slug]/page.tsx - Server Component
+// /*-= src/app/blog/[slug]/page.tsx - Server Component =-*/
 // import { supabaseClient } from '@/lib/auth'
 // import { notFound } from 'next/navigation'
 // import BlogPostContent from '@/components/BlogPostContent'

@@ -1,4 +1,4 @@
-// src/components/AuthButton.tsx
+/*-= src/components/AuthButton.tsx =-*/
 'use client'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/auth'

@@ -1,4 +1,4 @@
-// src/app/api/revalidate/route.ts
+/*-= src/app/api/revalidate/route.ts =-*/
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 

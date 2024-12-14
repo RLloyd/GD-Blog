@@ -1,4 +1,4 @@
-// src/app/blog/page.tsx
+/*-= src/app/blog/page.tsx =-*/
 // import Link from "next/link";
 import { supabaseClient } from "@/lib/auth";
 // import BlogDashboard from "@/components/BlogDashboard";

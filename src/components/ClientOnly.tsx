@@ -1,4 +1,4 @@
-// src/components/ClientOnly.tsx - New component for client-only rendering
+/*-= src/components/ClientOnly.tsx - New component for client-only rendering =-*/
 'use client'
 import { useEffect, useState } from 'react'
 

@@ -6,7 +6,7 @@ const steps = [
    {
       title: 'Step 1: Create an SVG',
       subtitle: 'Using Figma or any vector-based tools',
-      description: 'Copy an illustration as SVG from Figma or another tool.',
+      description: 'Select and right click, copy an illustration as SVG from Figma or another tool.',
       isCode: false,
       imageUrl: '/assets/Screenshot-CircularLoader-SaveSVG.png',
       altText: 'SVG creation screenshot',
@@ -39,7 +39,7 @@ const steps = [
    {
       title: 'Step 3: Adding animation',
       subtitle: 'Using framer-motion',
-      description: 'Add the motion component from Framer Motion as shown in the example below. Apply it to each path, assigning unique rotation and transition values to create a more dynamic and engaging effect.',
+      description: 'Add the motion component from Framer Motion as shown in the example below. Apply it to each path, assigning unique rotation and transition values to create a more dynamic and engaging effect. You can use the sample code from ImageLoaderSVG.tsx as a reference for this step.',
       isCode: true,
       code: `
       import { motion } from 'framer-motion';
@@ -70,6 +70,7 @@ const CircularLoaderModalApp: React.FC = () => {
 
    return (
       <div>
+         <p className='mb-1'>How to create...</p>
          <button
             onClick={() => setShowModal(true)}
             className='py-2 px-4 bg-accent-500 text-white rounded hover:bg-accent-600'
@@ -82,7 +83,7 @@ const CircularLoaderModalApp: React.FC = () => {
             //    cursor: 'pointer',
             // }}
          >
-            Circular Illustration: How to...
+            Circular SVG Animation
          </button>
          {showModal && <MultiStepModal steps={steps} onClose={() => setShowModal(false)} />}
       </div>

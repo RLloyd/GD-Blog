@@ -26,7 +26,7 @@ export default async function EditPost({ params: { slug } }: { params: { slug: s
 	);
 }
 
-// // src/app/blog/edit/[slug]/page.tsx
+// /*-= src/app/blog/edit/[slug]/page.tsx =-*/
 // import { supabaseClient } from '@/lib/auth'
 // import { notFound } from 'next/navigation'
 // import { EditForm } from '@/components/EditForm'

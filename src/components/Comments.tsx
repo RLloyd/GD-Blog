@@ -1,4 +1,4 @@
-// src/components/Comments.tsx
+/*-= src/components/Comments.tsx =-*/
 "use client";
 import { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";

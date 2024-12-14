@@ -1,4 +1,4 @@
-// src/components/blog-components/InteractiveChartPost.tsx
+/*-= src/components/blog-components/InteractiveChartPost.tsx =-*/
 "use client";
 import React, { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";

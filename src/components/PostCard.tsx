@@ -1,4 +1,4 @@
-// src/components/PostCard.tsx
+/*-= src/components/PostCard.tsx =-*/
 import Link from "next/link";
 import Image from "next/image";
 import { getCategoryName, getCategoryTextColor, CategoryId } from "@/data/categories";

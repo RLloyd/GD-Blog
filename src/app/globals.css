@@ -14,7 +14,8 @@
 	}
 
 	body {
-		@apply min-h-screen flex flex-col font-opensans;
+		/* @apply min-h-screen flex flex-col font-opensans; */
+		@apply min-h-screen flex flex-col font-nunitosans;
 		@apply bg-primary-50/20 min-h-screen text-primary-900;
 		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
 	}
@@ -29,7 +30,8 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
+		/* @apply font-baskerville text-primary-600 dark:text-primary-400 font-bold; */
+      @apply font-garamond text-primary-600 dark:text-primary-400 font-bold;
 	}
 
 	p,
@@ -37,7 +39,8 @@
 	div,
 	li,
 	a {
-		@apply font-opensans;
+		/* @apply font-opensans; */
+      @apply font-nunitosans;
 	}
 
 	h1 {
@@ -59,6 +62,15 @@
 		@apply text-base mb-2;
 	}
 }
+
+.content-wrapper {
+   contain: layout paint;
+   content-visibility: auto;
+ }
+
+ .fade-transition {
+   transition: opacity 0.3s ease-in-out;
+ }
 
 /*
 @layer base {

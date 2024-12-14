@@ -1,4 +1,4 @@
-// src/components/Reactions.tsx
+/*-= src/components/Reactions.tsx =-*/
 'use client'
 import { useState, useEffect } from 'react'
 import { supabaseClient } from '@/lib/auth'
@@ -63,7 +63,7 @@ export function Reactions({ postId }: { postId: string }) {
   )
 }
 
-// // src/components/Reactions.tsx
+// /*-= src/components/Reactions.tsx =-*/
 // 'use client'
 // import { useState, useEffect } from 'react'
 // import { useAuth } from '@/hooks/useAuth'

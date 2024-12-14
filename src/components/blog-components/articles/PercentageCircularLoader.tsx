@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import "./PercentageCircularLoader.css";
+// import "./PercentageCircularLoader.css";
 
 const PercentageCircularLoader = ({ timer }: { timer: number }) => {
 	const [count, setCount] = useState(0);
@@ -20,23 +20,31 @@ const PercentageCircularLoader = ({ timer }: { timer: number }) => {
 		return () => clearInterval(interval);
 	}, []);
 
-	const animationProps = useMemo(
-		() => ({
-			rotate: { duration: tymer, ease: easing },
-			colors: ["#85aab6", "#ff8d53"],
-		}),
-		[tymer, easing]
-	);
+	// const animationProps = useMemo(
+	// 	() => ({
+	// 		rotate: { duration: tymer, ease: easing },
+	// 		colors: ["#85aab6", "#ff8d53"],
+	// 	}),
+	// 	[tymer, easing]
+	// );
 
 	return (
-		<div className='loaderAnimationContainer'>
-			<div className='counterAnimContainer'>
-				<div className='loadingText'>LOADING...</div>
-				<div style={{ display: "flex", alignItems: "center" }}>
-					<h2 className='countdown'>{Math.floor((count / (timer / 100)) * 100)}</h2>
-					<span style={{ fontSize: "2rem" }}>%</span>
-				</div>
+		// <div className='loaderAnimationContainer'>
+		// 	<div className='counterAnimContainer'>
+		// 		<div className='loadingText'>LOADING...</div>
+		// 		<div style={{ display: "flex", alignItems: "center" }}>
+		// 			<h2 className='countdown'>{Math.floor((count / (timer / 100)) * 100)}</h2>
+		// 			<span style={{ fontSize: "2rem" }}>%</span>
+		// 		</div>
+      <div className="loaderAnimationContainer flex flex-col justify-center items-center relative">
+      <div className="counterAnimContainer flex flex-col items-center leading-none relative top-1.5">
+        <div className="text-base font-bold">LOADING...</div>
+        <div className="flex items-center">
+          <h2 className="countdown text-5xl m-0">{Math.floor((count / (timer / 100)) * 100)}</h2>
+          <span className="text-3xl">%</span>
+        </div>
 			</div>
+
 			{/* Rings animation */}
 			<div className='svgContainer'>
 				<motion.svg

@@ -1,4 +1,4 @@
-// src/contexts/ThemeContext.tsx
+/*-= src/contexts/ThemeContext.tsx =-*/
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -56,7 +56,7 @@ export function useTheme() {
 	}
 	return context;
 }
-// // src/contexts/ThemeContext.tsx
+// /*-= src/contexts/ThemeContext.tsx =-*/
 // "use client";
 // import { createContext, useContext, useEffect, useState } from "react";
 
@@ -117,7 +117,7 @@ export function useTheme() {
 // 	}
 // 	return context;
 // }
-// // // src/contexts/ThemeContext.tsx
+// // /*-= src/contexts/ThemeContext.tsx =-*/
 // // "use client";
 // // import { createContext, useContext, useEffect, useState } from "react";
 
@@ -171,7 +171,7 @@ export function useTheme() {
 // // 	}
 // // 	return context;
 // // }
-// // // // src/contexts/ThemeContext.tsx
+// // // /*-= src/contexts/ThemeContext.tsx =-*/
 // // // 'use client'
 // // // import { createContext, useContext, useEffect, useState } from 'react'
 // // // import { lightTheme, darkTheme } from '@/lib/theme-config'

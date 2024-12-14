@@ -1,4 +1,4 @@
-// src/components/blog/articles/LoadingSpinner.tsx
+/*-= src/components/blog/articles/LoadingSpinner.tsx =-*/
 "use client";
 import { CodeBlock } from "@/components/blog-components/CodeBlock";
 import { useState, useEffect } from "react";

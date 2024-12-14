@@ -1,4 +1,4 @@
-// src/components/blog/AuthorInfo.tsx
+/*-= src/components/blog/AuthorInfo.tsx =-*/
 import Image from "next/image";
 
 type AuthorInfoProps = {

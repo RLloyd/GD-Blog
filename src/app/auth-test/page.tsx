@@ -1,4 +1,4 @@
-// src/app/auth-test/page.tsx
+/*-= src/app/auth-test/page.tsx =-*/
 'use client'
 import { useState, useEffect } from 'react'
 import { supabaseClient } from '@/lib/auth'

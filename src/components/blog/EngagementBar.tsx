@@ -1,4 +1,4 @@
-// src/components/blog/EngagementBar.tsx
+/*-= src/components/blog/EngagementBar.tsx =-*/
 import { Reactions } from "@/components/Reactions";
 
 type EngagementBarProps = {

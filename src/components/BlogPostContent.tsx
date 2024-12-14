@@ -1,4 +1,4 @@
-// src/components/BlogPostContent.tsx
+/*-= src/components/BlogPostContent.tsx =-*/
 import Link from "next/link";
 import { Comments } from "@/components/Comments";
 import { AuthorInfo } from "./blog/AuthorInfo";
@@ -93,7 +93,7 @@ export default function BlogPostContent({ post }: { post: Post }) {
 	);
 }
 
-// // src/components/BlogPostContent.tsx
+// /*-= src/components/BlogPostContent.tsx =-*/
 // "use client";
 // import Link from "next/link";
 // import { Comments } from "@/components/Comments";
@@ -184,7 +184,7 @@ export default function BlogPostContent({ post }: { post: Post }) {
 // 	return <Component {...props} />;
 // }
 
-// // // src/components/BlogPostContent.tsx (Refactored)
+// // /*-= src/components/BlogPostContent.tsx (Refactored) =-*/
 // // import Link from "next/link";
 // // import { Comments } from "@/components/Comments";
 // // import { AuthorInfo } from "./blog/AuthorInfo";

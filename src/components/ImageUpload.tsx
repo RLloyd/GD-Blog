@@ -1,4 +1,4 @@
-// src/components/ImageUpload.tsx
+/*-= src/components/ImageUpload.tsx =-*/
 'use client'
 import { useState } from 'react'
 import { supabaseClient } from '@/lib/auth'

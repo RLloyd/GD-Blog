@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import "./PercentageSVG2.css";
+// import "./PercentageSVG2.css";
 // import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 import CircularSVG2 from "./CircularSVG2";
 import { CodeBlock } from "../CodeBlock";
@@ -14,160 +14,78 @@ interface ImageLoaderProps {
 	timerDuration?: number; // Time in milliseconds
 }
 const circularLoaderTSXCode = `
+   "use client";
    import React, { useState, useEffect } from "react";
-   import "./CircularLoader.css"; // Import the separated CSS file
+   import Image from "next/image";
+   import CircularSVG2 from "./articles/CircularSVG2";
 
-   interface ImageLoaderProps {
-   src: string;
-   alt: string;
-   className?: string;
-   }
+   const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
+      const [progress, setProgress] = useState(0);
+      const [isLoaded, setIsLoaded] = useState(false);
 
-   const CircularLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
-   const [progress, setProgress] = useState(0);
-   const [isLoaded, setIsLoaded] = useState(false);
+      useEffect(() => {
+         const loadImage = (src: string): Promise<void> => {
+            return new Promise((resolve, reject) => {
+               const xhr = new XMLHttpRequest();
+               xhr.open("GET", src, true);
+               xhr.responseType = "arraybuffer";
 
-   useEffect(() => {
-      const loadImage = (): Promise<void> => {
-         return new Promise((resolve, reject) => {
-         const xhr = new XMLHttpRequest();
-         xhr.open("GET", src, true);
-         xhr.responseType = "arraybuffer";
+               xhr.onprogress = (event) => {
+                  if (event.lengthComputable) {
+                     const percentComplete = (event.loaded / event.total) * 100;
+                     setProgress(Math.round(percentComplete));
+                  }
+               };
 
-         xhr.onprogress = (event) => {
-            if (event.lengthComputable) {
-               const percentComplete = (event.loaded / event.total) * 100;
-               setProgress(Math.round(percentComplete));
-            }
+               xhr.onload = () => {
+                  if (xhr.status === 200) {
+                     setProgress(100);
+                     resolve();
+                  } else {
+                     reject(new Error(\`Failed to load image: \${xhr.statusText}\`));
+                  }
+               };
+               xhr.onerror = () => reject(new Error("Error loading image"));
+               xhr.send();
+            });
          };
 
-         xhr.onload = () => {
-            if (xhr.status === 200) {
-               setProgress(100);
-               resolve();
-            } else {
-               reject(new Error(\`Failed to load image: \${xhr.statusText}\`));
-            }
+         loadImage(src)
+            .then(() => setIsLoaded(true))
+            .catch((err) => console.error(err));
+
+         return () => {
+            // Optional cleanup if needed
          };
+      }, [src]);
 
-         xhr.onerror = () => reject(new Error("Error loading image"));
-         xhr.send();
-         });
-      };
-
-      loadImage()
-         .then(() => setIsLoaded(true))
-         .catch((err) => console.error(err));
-
-      return () => {
-         // Optional cleanup if needed
-      };
-   }, [src]);
-
-   return (
-      <div className="image-loader-container">
-         {!isLoaded && (
-         <div className="loader-overlay">
-            <div className="loader-animation">
-               {/* Replace this with your custom SVG animation */}
-               <svg
-               className="placeholder-svg"
-               xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 100 100"
-               >
-               <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  stroke="#4caf50"
-                  strokeWidth="5"
-                  fill="none"
-               />
-               <text
-                  x="50%"
-                  y="50%"
-                  textAnchor="middle"
-                  dy=".3em"
-                  fontSize="20"
-                  fill="#4caf50"
-               >
-                  Loading
-               </text>
-               </svg>
-            </div>
-            <div className="loader-progress">
-               {progress}% {/* Shows the loading percentage */}
-            </div>
+      return (
+         <>
+         <div className='image-loader-container'>
+            {!isLoaded && (
+               <div className='loader-overlay'>
+                  <div className='loader-animation'>
+                  </div>
+                  <CircularSVG2 />
+                  <div className='loader-progress'>
+                     {progress}% {/* Shows the loading percentage */}
+                  </div>
+               </div>
+            )}
+            <Image
+               src={src}
+               alt={alt}
+               width={500} // Replace with actual image width
+               height={300} // Replace with actual image height
+            />
          </div>
-         )}
-         <img
-         src={src}
-         alt={alt}
-         className={\`\${className} image-loader-image\`}
-         style={{ opacity: isLoaded ? 1 : 0 }}
-         />
-      </div>
-   );
+         </>
+      );
    };
 
    export default CircularLoader;
 `;
-const circularLoaderCSSCode = `
-   .image-loader-container {
-   position: relative;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   overflow: hidden;
-   }
 
-   .loader-overlay {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   background: rgba(255, 255, 255, 0.8); /* Slight white overlay */
-   z-index: 10;
-   }
-
-   .loader-animation {
-   margin-bottom: 10px;
-   }
-
-   .placeholder-svg {
-   width: 100px;
-   height: 100px;
-   animation: rotate 2s linear infinite;
-   }
-
-   @keyframes rotate {
-   from {
-      transform: rotate(0deg);
-   }
-   to {
-      transform: rotate(360deg);
-   }
-   }
-
-   .loader-progress {
-   font-size: 1.5rem;
-   color: #4caf50;
-   font-weight: bold;
-   }
-
-   .image-loader-image {
-   max-width: 100%;
-   height: auto;
-   transition: opacity 0.5s ease-in-out;
-   }
-`;
 const circularLoaderSVGCode = `
    import { motion } from "framer-motion";
 
@@ -365,7 +283,7 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({
 
 	return (
 		<>
-			<div className='container'>
+			{/* <div className='container'>
 				<AnimatePresence>
 					<div className='loader-container'>
 						<div className='counter-container'>
@@ -379,7 +297,22 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({
 							<CircularSVG2 />
 						</div>
 					</div>
-				</AnimatePresence>
+				</AnimatePresence> */}
+            <div className="relative w-full h-full min-h-[314px] flex justify-center items-center">
+               <AnimatePresence>
+                  <div className="absolute flex flex-col justify-center items-center w-[200px] h-[200px]">
+                     <div className="flex flex-col items-center leading-none relative">
+                     <p className="text-base font-sans text-[#3f1f0b] m-0">LOADING...</p>
+                     <h1 className="flex items-center text-5xl m-0 text-[#3f1f0b]">
+                        {progress}
+                        <span>%</span>
+                     </h1>
+                     </div>
+                     <div className="absolute rounded-full w-[300px] h-[300px] flex justify-center items-center">
+                     <CircularSVG2 />
+                     </div>
+                  </div>
+               </AnimatePresence>
 
 				{/* <LoadingOverlay progress={progress} mode={mode} /> */}
 			</div>
@@ -389,12 +322,6 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({
 				<CodeBlock
 					code={circularLoaderTSXCode}
 					language='TSX'
-					fontSize='1rem' // 16px
-				/>
-				<p className='mb-1'>CircularLoader.css</p>
-				<CodeBlock
-					code={circularLoaderCSSCode}
-					language='CSS'
 					fontSize='1rem' // 16px
 				/>
 				<p className='mb-1'>ImageLoaderSVG.tsx</p>

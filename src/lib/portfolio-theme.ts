@@ -1,4 +1,4 @@
-// src/styles/theme.ts : originall from Portfolio 2025
+/*-= src/styles/theme.ts : originall from Portfolio 2025 =-*/
 
 export type {
    ThemeMode,

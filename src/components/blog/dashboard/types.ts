@@ -1,4 +1,4 @@
-// src/components/blog/dashboard/types.ts
+/*-= src/components/blog/dashboard/types.ts =-*/
 import { CategoryId } from "@/data/categories";
 
 export type GridSize = "large" | "medium" | "full";

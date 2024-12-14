@@ -1,29 +1,16 @@
-// src/components/blog-components/Spinner.jsx
+/*-= src/components/blog-components/Spinner.jsx =-*/
 "use client";
-import "./Spinner.css";
 import { CodeBlock } from "@/components/blog-components/CodeBlock";
-// import { useState, useEffect } from "react";
 
 const Spinner = () => {
-	// const [mounted, setMounted] = useState(false);
 
-	// useEffect(() => {
-	// 	setMounted(true);
-	// }, []);
-
-	// if (!mounted) return null;
-
-	const htmlCode = `
-      /*-= Usage =-*/
-
+   const htmlCode = `
       <div className='spinner-container'>
          <div className='spinner'></div>
       </div>
    `;
 
-	const cssCode = `
-      /*-= CSS Styling & Animation =-*/
-
+   const cssCode = `
       .spinner-container {
          display: flex;
          justify-content: center;
@@ -47,7 +34,7 @@ const Spinner = () => {
          border: 16px dashed;
          border-color: gray;
          border-radius: 50%;
-         animation: spin 4s ease-in-out 7;
+         animation: spin 4s ease-in-out infinite;
       }
 
       /* Keyframes for spin animation */
@@ -61,24 +48,32 @@ const Spinner = () => {
       }
    `;
 
-	return (
-		<>
-			<div className='spinner-container'>
-				<div className='spinner'></div>
-			</div>
-			<p>Simple Spinner Codes:</p>
-			<CodeBlock
-				code={htmlCode}
-				language='HTML'
-				fontSize='1rem' // 16px
-			/>
-			<CodeBlock
-				code={cssCode}
-				language='CSS'
-				fontSize='1rem' // 16px
-			/>
-		</>
-	);
+   return (
+      <>
+         <div className='spinner-container min-h-[200px] flex justify-center items-center'>
+            <div className='spinner
+               relative w-[120px] h-[120px]
+               before:content-[""]
+               before:absolute
+               before:inset-0
+               before:border-[16px]
+               before:border-dashed
+               before:rounded-full
+               before:border-gray-400
+               before:animate-spin-custom
+               '>
+            </div>
+         </div>
+
+         {/* Codeblocks */}
+         <div className='mt-8 mb-1'>Simple Spinner Codes:</div>
+         <p className='mt-0 mb-1'>Usage: HTML component</p>
+         <CodeBlock code={htmlCode} language='HTML' fontSize='1rem' />
+         <p className='mt-8 mb-1'>CSS Styling & Animation</p>
+         <CodeBlock code={cssCode} language='CSS' fontSize='1rem' />
+
+      </>
+   );
 };
 
 export default Spinner;

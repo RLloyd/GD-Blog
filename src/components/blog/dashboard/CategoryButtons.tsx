@@ -1,4 +1,4 @@
-// src/components/blog/dashboard/CategoryButtons.tsx
+/*-= src/components/blog/dashboard/CategoryButtons.tsx =-*/
 import { categories, CategoryId } from "@/data/categories";
 
 type CategoryButtonsProps = {

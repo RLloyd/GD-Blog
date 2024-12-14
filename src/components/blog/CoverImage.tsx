@@ -1,4 +1,4 @@
-// src/components/blog/CoverImage.tsx
+/*-= src/components/blog/CoverImage.tsx =-*/
 import Image from "next/image";
 
 type CoverImageProps = {

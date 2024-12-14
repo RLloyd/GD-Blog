@@ -1,4 +1,4 @@
-// src/components/StagingArea.tsx
+/*-= src/components/StagingArea.tsx =-*/
 "use client";
 import React, { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";

@@ -1,4 +1,4 @@
-// tailwind.config.ts
+/*-= tailwind.config.ts =-*/
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
 
@@ -7,12 +7,21 @@ export default {
    content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
    theme: {
       extend: {
+         height: {
+            screen: '100vh',
+            'screen-small': '100svh',
+         },
+         transitionProperty: {
+            height: 'height',
+         },
          maxWidth: {
             'page': 'var(--page-width)',
          },
          fontFamily: {
-            baskerville: ["var(--font-baskerville)", "serif"],
-            opensans: ["var(--font-opensans)", "system-ui", "sans-serif"],
+            // baskerville: ["var(--font-baskerville)", "serif"],
+            // opensans: ["var(--font-opensans)", "system-ui", "sans-serif"],
+            garamond: ["var(--font-garamond)", "serif"],
+            nunitosans: ["var(--font-nunitosans)", "system-ui", "sans-serif"],
          },
          colors: {
             primary: {
@@ -124,27 +133,35 @@ export default {
          },
          keyframes: {
             rise: {
-              '0%': {
-                transform: 'translateY(100%) scale(0)',
-                opacity: '0'
-              },
-              '20%': {
-                opacity: '0.5',
-                transform: 'translateY(80%) scale(0.8)'
-              },
-              '80%': {
-                opacity: '0.8',
-                transform: 'translateY(20%) scale(1)'
-              },
-              '100%': {
-                transform: 'translateY(-100%) scale(1)',
-                opacity: '0'
-              }
+               '0%': {
+                  transform: 'translateY(100%) scale(0)',
+                  opacity: '0'
+               },
+               '20%': {
+                  opacity: '0.5',
+                  transform: 'translateY(80%) scale(0.8)'
+               },
+               '80%': {
+                  opacity: '0.8',
+                  transform: 'translateY(20%) scale(1)'
+               },
+               '100%': {
+                  transform: 'translateY(-100%) scale(1)',
+                  opacity: '0'
+               }
+            },
+            loader: {
+               '0%': { transform: 'scale(0)' },
+               '100%': { transform: 'scale(1)' },
             }
-          },
-          animation: {
-            'rise': 'rise 4s ease-out forwards'
-          }
+         },
+         animation: {
+            'rise': 'rise 4s ease-out forwards',
+            'spin-slow': 'spin 3s linear infinite',
+            'spin-custom': 'spin 4s ease-in-out infinite',
+            // 'spin-custom': 'spin 4s ease-in-out 7',
+            'loader': 'loader 1s linear infinite',
+         }
       },
    },
    plugins: [typography],

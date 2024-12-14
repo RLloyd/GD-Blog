@@ -1,4 +1,4 @@
-// src/components/dashboard/index.tsx
+/*-= src/components/dashboard/index.tsx =-*/
 "use client";
 import { useState, useEffect } from "react";
 import { categories, CategoryId } from "@/data/categories";

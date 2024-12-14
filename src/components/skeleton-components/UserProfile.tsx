@@ -2,9 +2,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import SkeletonLoader from './SkeletonLoader';
-import { CodeBlock } from '../blog/CodeBlock';
+import { CodeBlock } from '../blog-components/CodeBlock';
+// import { CodeBlock } from '../blog/CodeBlock';
+
+interface User {
+   name: string;
+   email: string;
+   bio: string;
+}
 
 const skeletonLoaderCode = `
+   ...
    {loading ? (
       <div className="mt-12 space-y-4">
          <SkeletonLoader height="h-8" width="w-1/2" />
@@ -18,13 +26,8 @@ const skeletonLoaderCode = `
          <p className="text-gray-800 mt-4">{user?.bio}</p>
       </div>
    )}
+   ...
 `;
-
-interface User {
-   name: string;
-   email: string;
-   bio: string;
-}
 
 const UserProfile: React.FC = () => {
    const [loading, setLoading] = useState<boolean>(true);
@@ -92,7 +95,7 @@ const UserProfile: React.FC = () => {
             )}
          </div>
             <div>
-               <p className='mt-8mb-1'>UserProfile.tsx</p>
+               <p className='mt-8 mb-1'>UserProfile.tsx</p>
                <CodeBlock
                   code={skeletonLoaderCode}
                   language='typescript'

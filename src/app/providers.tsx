@@ -1,4 +1,4 @@
-// src/app/providers.tsx
+/*-= src/app/providers.tsx =-*/
 "use client";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 

@@ -1,4 +1,4 @@
-// src/components/blog/dashboard/FeaturedCard.tsx
+/*-= src/components/blog/dashboard/FeaturedCard.tsx =-*/
 import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/data/categories";

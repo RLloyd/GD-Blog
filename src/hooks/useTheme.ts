@@ -1,4 +1,4 @@
-// src/hooks/useTheme.ts
+/*-= src/hooks/useTheme.ts =-*/
 'use client'
 import { useState, useEffect } from 'react'
 
@@ -29,7 +29,7 @@ export function useTheme() {
 }
 
 
-// // src/hooks/useTheme.ts
+// /*-= src/hooks/useTheme.ts =-*/
 // 'use client'
 // import { useState, useEffect } from 'react'
 // import { Theme } from '@/lib/types'

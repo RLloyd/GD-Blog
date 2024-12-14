@@ -1,4 +1,4 @@
-// src/components/blog-components/LazyImageLoader.tsx
+/*-= src/components/blog-components/LazyImageLoader.tsx =-*/
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 

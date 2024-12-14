@@ -1,4 +1,4 @@
-// src/components/RichMarkdownEditor.tsx
+/*-= src/components/RichMarkdownEditor.tsx =-*/
 "use client";
 import { useState, useRef } from "react";
 import { supabaseClient } from "@/lib/auth";

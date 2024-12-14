@@ -1,4 +1,4 @@
-// src/components/blog/CodeBlock.tsx
+/*-= src/components/blog/CodeBlock.tsx =-*/
 "use client";
 import { useState } from "react";
 import { Copy, CheckCircle } from "lucide-react";
@@ -9,7 +9,7 @@ type CodeBlockProps = {
 	showLineNumbers?: boolean;
 };
 
-export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockProps) {
+export function CodeBlockXXX({ code, language, showLineNumbers = true }: CodeBlockProps) {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = async () => {

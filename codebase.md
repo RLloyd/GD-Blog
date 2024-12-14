@@ -2,8 +2,9 @@
 
 ```json
 {
-	"extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript"]
 }
+
 ```
 
 # .gitignore
@@ -59,83 +60,156 @@ public/notes/*
 {
 	"editor.fontWeight": "normal"
 }
+
+```
+
+# cleanup.sh
+
+```sh
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Starting codebase cleanup...${NC}"
+
+# Create backup
+timestamp=$(date +%Y%m%d_%H%M%S)
+backup_dir="../blog-backup-$timestamp"
+
+echo -e "${BLUE}Creating backup in $backup_dir...${NC}"
+mkdir -p $backup_dir
+cp -r . $backup_dir
+
+# First, let's list all CSS files to see what we have
+echo -e "${BLUE}Listing all CSS files in the project:${NC}"
+find . -name "*.css"
+
+echo -e "${BLUE}Proceeding with cleanup of unused files...${NC}"
+
+# Clean up unused imports
+echo -e "${BLUE}Cleaning up unused imports...${NC}"
+npm install -D eslint-plugin-unused-imports
+npx eslint --fix "src/**/*.{ts,tsx}"
+
+echo -e "${GREEN}Cleanup complete! Please review changes.${NC}"
+
 ```
 
 # next-env.d.ts
 
 ```ts
 
+
+
+
+
+
 ```
 
 # next.config.ts
 
 ```ts
-import type { NextConfig } from "next";
+
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-	images: {
-		domains: ["example.com", "localhost", "images.unsplash.com"],
-		remotePatterns: [
-			{
-				protocol: "https",
-				hostname: "**",
-			},
-		],
-	},
+   images: {
+      domains: ['example.com', 'localhost', 'images.unsplash.com'],
+      remotePatterns: [
+         {
+            protocol: 'https',
+            hostname: '**',
+         },
+      ],
+   },
 };
 
 export default nextConfig;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # package.json
 
 ```json
 {
-	"name": "gd-blog",
-	"version": "0.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev --turbopack",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
-	},
-	"dependencies": {
-		"@supabase/auth-helpers-nextjs": "^0.10.0",
-		"@supabase/supabase-js": "^2.46.2",
-		"@types/prismjs": "^1.26.5",
-		"@types/react-syntax-highlighter": "^15.5.13",
-		"encoding": "^0.1.13",
-		"framer-motion": "^11.13.4",
-		"highlight.js": "^11.10.0",
-		"lucide-react": "^0.462.0",
-		"next": "15.0.3",
-		"prismjs": "^1.29.0",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"react-intersection-observer": "^9.13.1",
-		"react-markdown": "^9.0.1",
-		"react-syntax-highlighter": "^15.6.1",
-		"recharts": "^2.14.1",
-		"rehype-highlight": "^7.0.1",
-		"rehype-prism-plus": "^2.0.0",
-		"rehype-raw": "^7.0.0",
-		"rehype-sanitize": "^6.0.0",
-		"remark-gfm": "^4.0.0"
-	},
-	"devDependencies": {
-		"@tailwindcss/typography": "^0.5.15",
-		"@types/node": "^20",
-		"@types/react": "^18",
-		"@types/react-dom": "^18",
-		"eslint": "^8",
-		"eslint-config-next": "15.0.3",
-		"postcss": "^8",
-		"prisma": "^5.22.0",
-		"tailwindcss": "^3.4.1",
-		"typescript": "^5"
-	}
+  "name": "gd-blog",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@next/font": "^14.2.15",
+    "@studio-freight/lenis": "^1.0.42",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/supabase-js": "^2.46.2",
+    "@types/prismjs": "^1.26.5",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "encoding": "^0.1.13",
+    "framer-motion": "^11.13.4",
+    "gsap": "^3.12.5",
+    "highlight.js": "^11.10.0",
+    "lucide-react": "^0.462.0",
+    "next": "15.0.3",
+    "prismjs": "^1.29.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-intersection-observer": "^9.13.1",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "recharts": "^2.14.1",
+    "rehype-highlight": "^7.0.1",
+    "rehype-prism-plus": "^2.0.0",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "postcss": "^8",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
 }
+
 ```
 
 # postcss.config.mjs
@@ -143,12 +217,13 @@ export default nextConfig;
 ```mjs
 /** @type {import('postcss-load-config').Config} */
 const config = {
-	plugins: {
-		tailwindcss: {},
-	},
+  plugins: {
+    tailwindcss: {},
+  },
 };
 
 export default config;
+
 ```
 
 # prisma/schema.prisma
@@ -187,7 +262,15 @@ This is a binary file of the type: Image
 
 This is a binary file of the type: Image
 
+# public/assets/Loaders-Cover.webp
+
+This is a binary file of the type: Image
+
 # public/assets/MashMediaStudio.png
+
+This is a binary file of the type: Image
+
+# public/assets/Screenshot-CircularLoader-SaveSVG.png
 
 This is a binary file of the type: Image
 
@@ -211,7 +294,7 @@ This is a file of the type: SVG Image
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -230,17 +313,13 @@ body {
 <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
 
 # Article Ideas
-
 ## Tech
-
 - Light & Dark image backgrounds
-
-  - Published in LinkedIn ✅ Done!
-  - Need to add in MyBlog
+   - Published in LinkedIn  ✅ Done!
+   - Need to add in MyBlog
 
 - Loaders
-
-  - WIP
+   - WIP
 
 - AudioPlayer
 - Using both TailwindCSS and Styled-Components
@@ -248,8 +327,8 @@ body {
 - Animations: CSS, Framer-Motion
 
 ## Media
-
 - Video animations
+
 ```
 
 # public/notes/Bridge-ColorPalette.md
@@ -259,136 +338,13 @@ Bridge Color Palette:
 #675CC8
 #F8951F
 #F8951F - #9CDA66
+
 ```
 
 # public/notes/misc.tsx
 
 ```tsx
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play } from "lucide-react";
-import Image from "next/image";
 
-interface BubbleLoaderProps {
-	duration?: number;
-	onComplete?: () => void;
-}
-
-interface Bubble {
-	id: number;
-	x: number;
-	size: number;
-	color: string;
-	delay: number;
-}
-
-const BubbleLoader: React.FC<BubbleLoaderProps> = ({ duration = 5000, onComplete }) => {
-	const [isActive, setIsActive] = useState(false);
-	const [isComplete, setIsComplete] = useState(false);
-	const [progress, setProgress] = useState(0);
-	const [bubbles, setBubbles] = useState<Bubble[]>([]);
-	const [points, setPoints] = useState(0);
-	const progressIntervalRef = useRef<NodeJS.Timer>();
-	const bubbleIntervalRef = useRef<NodeJS.Timer>();
-
-	const colors = ["#60A5FA", "#C084FC", "#34D399", "#F472B6", "#A5B4FC", "#93C5FD", "#F9A8D4", "#86EFAC", "#38BDF8", "#FB7185", "#4ADE80", "#F472B6"];
-
-	const handleBubblePop = (id: number) => {
-		setBubbles((prev) => prev.filter((bubble) => bubble.id !== id));
-		setPoints((prev) => prev + 10);
-	};
-
-	const startLoader = () => {
-		setIsActive(true);
-		setProgress(0);
-		setBubbles([]);
-		setPoints(0);
-		setIsComplete(false);
-
-		bubbleIntervalRef.current = setInterval(() => {
-			setBubbles((prev) => [
-				...prev.slice(-20),
-				{
-					id: Date.now(),
-					x: Math.random() * 1000,
-					size: Math.random() * 30 + 15,
-					color: colors[Math.floor(Math.random() * colors.length)],
-					delay: Math.random() * 0.5,
-				},
-			]);
-		}, 200);
-
-		progressIntervalRef.current = setInterval(() => {
-			setProgress((prev) => {
-				const newProgress = Math.min(prev + 1, 100);
-				if (newProgress === 100) {
-					if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-					if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
-					setIsComplete(true);
-					onComplete?.();
-				}
-				return newProgress;
-			});
-		}, duration / 100);
-	};
-
-	useEffect(() => {
-		return () => {
-			if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-			if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
-		};
-	}, []);
-
-	return (
-		<div className='relative w-full max-w-2xl mx-auto'>
-			<div className='relative aspect-[16/9] bg-gray-800 rounded-lg overflow-hidden'>
-				{!isActive ? (
-					<button onClick={startLoader} className='absolute inset-0 m-auto w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white'>
-						<Play size={32} />
-					</button>
-				) : (
-					<>
-						<AnimatePresence>
-							{isComplete ? (
-								<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='absolute inset-0'>
-									<Image src='/api/placeholder/400/320' alt='Completion' fill className='object-cover' sizes='(max-width: 768px) 100vw, 32rem' />
-								</motion.div>
-							) : (
-								<svg viewBox='0 0 1000 500' preserveAspectRatio='none' className='absolute inset-0 w-full h-full'>
-									{bubbles.map((bubble) => (
-										<motion.circle
-											key={bubble.id}
-											cx={bubble.x}
-											r={bubble.size}
-											fill={bubble.color}
-											initial={{ cy: 500, opacity: 0 }}
-											animate={{ cy: -50, opacity: [0, 0.8, 0] }}
-											transition={{
-												duration: 4,
-												delay: bubble.delay,
-												ease: "easeOut",
-											}}
-											onMouseEnter={() => handleBubblePop(bubble.id)}
-											style={{ cursor: "pointer" }}
-										/>
-									))}
-								</svg>
-							)}
-						</AnimatePresence>
-
-						<div className='absolute bottom-0 left-0 h-2 bg-gradient-to-r from-blue-400 to-purple-400 transition-all' style={{ width: `${progress}%` }} />
-						<div className='absolute top-4 left-4 flex justify-between w-full px-4'>
-							<span className='text-lg font-semibold text-white'>{Math.floor(progress)}%</span>
-							<span className='text-lg font-semibold text-yellow-400'>Points: {points}</span>
-						</div>
-					</>
-				)}
-			</div>
-		</div>
-	);
-};
-
-export default BubbleLoader;
 ```
 
 # public/notes/misc2.tsx
@@ -401,7 +357,7 @@ export default BubbleLoader;
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -570,23 +526,22 @@ strong {
 # Project Structure
 
 gd-blog/
-├── src/ <- Source code directory
-│ ├── app/ <- This is where your pages live
-│ │ ├── page.tsx <- This is your homepage (/)
-│ │ └── layout.tsx <- Main layout template
-│ └── lib/ <- For utility functions and shared code
-├── public/ <- For static files (images, etc.)
-└── .env.local <- For private environment variables
+  ├── src/              <- Source code directory
+  │   ├── app/          <- This is where your pages live
+  │   │   ├── page.tsx  <- This is your homepage (/)
+  │   │   └── layout.tsx <- Main layout template
+  │   └── lib/          <- For utility functions and shared code
+  ├── public/           <- For static files (images, etc.)
+  └── .env.local        <- For private environment variables
 
-- src
-  - app
-    - page.tsx
-    - layout.tsx
-- lib
-  - supabase.ts
+  - src
+    - app
+      - page.tsx
+      - layout.tsx
+   - lib
+     - supabase.ts
 
 ## Basic Concepts:
-
 app/page.tsx becomes your homepage (URL: /)
 app/about/page.tsx becomes your about page (URL: /about)
 app/layout.tsx wraps around all pages
@@ -597,7 +552,6 @@ Files in src/lib are for shared code (like our Supabase setup)
 
 ```md
 # Ingredients
-
 ### For the Asado Filling
 
 - 1 tablespoon canola oil
@@ -612,7 +566,6 @@ Files in src/lib are for shared code (like our Supabase setup)
 - 1 tablespoon cornstarch
 
 ### For the Siopao Dough
-
 - 260 ml warm milk (105 to 115 F)
 - 2 teaspoons dry instant yeast
 - 2 tablespoons sugar
@@ -624,20 +577,16 @@ Files in src/lib are for shared code (like our Supabase setup)
 - lime
 
 ## Instructions
-
 ### For the Siopao Filling
-
 1. In a pot over medium heat, heat oil. Add onions and garlic and cook until softened.
 2. Add pork and cook, turning as needed, until lightly browned.
 3. Add 2 cups of the water, soy sauce, oyster sauce, sugar, and star anise. Stir until well-dispersed. Bring to a boil, skimming scum that may float on top.
 4. Lower heat, cover, and continue to cook for about 1 hour or until meat is fork-tender. Add more water in half cup increments as needed to maintain 1 1 /2 cups liquid.
 5. With a slotted spoon, remove pork from the pot and let cool to touch. Using two forks, shred meat.
-   Remove about 1 cup of the braising liquid and set aside. Return shredded meat to pot and bring to a boil.
-   In a bowl, combine cornstarch and bout ¼ cup water. Stir until smooth and cornstarch is dissolved. Add half of the cornstarch slurry to the pot of meat and stir to distribute. Continue to cook for about 1 to 2 minutes or until thickened. Remove from pan and allow to cool.
-   In a saucepan over medium heat, combine the reserved 1 cup braising liquid and the remaining half of the cornstarch slurry. Bring to a boil, stirring regularly, for about 2 to 3 minutes or until thickened. This well be the siopao sauce.
-
+Remove about 1 cup of the braising liquid and set aside. Return shredded meat to pot and bring to a boil.
+In a bowl, combine cornstarch and bout ¼ cup water. Stir until smooth and cornstarch is dissolved. Add half of the cornstarch slurry to the pot of meat and stir to distribute. Continue to cook for about 1 to 2 minutes or until thickened. Remove from pan and allow to cool.
+In a saucepan over medium heat, combine the reserved 1 cup braising liquid and the remaining half of the cornstarch slurry. Bring to a boil, stirring regularly, for about 2 to 3 minutes or until thickened. This well be the siopao sauce.
 ### For the Siopao Dough
-
 In a bowl, combine milk, yeast, the 2 tablespoons sugar, and salt. Stir well until dissolved. Let stand for about 5 to 10 minutes or until the mixture is foamy.
 In a large bowl, combine flour, the 100 grams sugar, baking powder, and vegetable oil. Mix well. Add a few drops of lime juice into the flour mixture.
 Add yeast mixture to the flour mixture. Mix together until it forms a dough. Continue to mix and knead until the dough is smooth and no longer sticky.
@@ -657,7 +606,7 @@ Remove from steamer and serve with the asado sauce.
 
 <!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -819,13 +768,15 @@ strong {
   color: #A0AEC0;
 }
 </style>
+
+
 ```
 
 # public/notes/To-Do.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -867,7 +818,7 @@ body {
     - Personal
   - Show two large cards of favorite category and show all the posts underneath in cards format as well ✅ Done!
     - Expanded to be able to show 1 - .n of Featured cards ✅ Done!
-  - Similar to this design: https:
+  - Similar to this design: https://www.loopple.com/preview-sample/dashboard-blogs-asteria?hide-banner=true&buttons=true
 
 - Does readers have to be logged in to read, comment, like
 - Fix <img to <Image in src/components/BlogDashboard.tsx line: 71, 97
@@ -878,20 +829,20 @@ body {
 ### Codeblock:
 
 \`\`\`javascript
-/_ Code blocks _/
+/* Code blocks */
 code {
-font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
-font-size: 0.9em;
-background-color: #F7FAFC;
-padding: 0.2em 0.4em;
-border-radius: 3px;
-border: 1px solid #E2E8F0;
+  font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 0.9em;
+  background-color: #F7FAFC;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border: 1px solid #E2E8F0;
 }
 \`\`\`
 
 \`\`\`javascript
 const greet = (name) => {
-console.log(`Hello, ${name}!`);
+	console.log(`Hello, ${name}!`);
 };
 greet("World");
 \`\`\`
@@ -954,7 +905,7 @@ Future requirements:
 
 ### December 06, 2024
 
--
+- /* src/components/BlogDashboard.tsx */
 - Adjusted Featured text area container to wrap around content {/_---== Featured Posts Grid ===---_/}
 - Adjusted the all posts layout template to accomodate padding and changed background {/_---== Regular Posts Grid ===---_/}
 - Changed the light & dark mode background : /_ src/app/globals.css _/
@@ -977,13 +928,32 @@ Future requirements:
     ├── PostGrid.tsx
     └── DynamicComponentPreview.tsx
 - EditForm: Not editing React Component mode
+
+### December 10, 2024
+- BlogDashboard
+### December 11, 2024
+- Gamified Loader: BubbleLoaders
+
+### December 12, 2024
+- Rename: ImageLoader to CircularLoader
+
+### December 13, 2024
+- Adding Portfolio as part of the Blog setup
+- npm install gsap @studio-freight/lenis
+- Codebase Cleanup and Styling Doc.md
+
+### Search and Replace using Regex in codebase.md file
+- /* src/(.+) : Search for anything that starts with
+- /* src/$1 */ : Replace with /* src/... */
+-
+
 ```
 
 # public/project-summaries/BlogDashboard Category Colors.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1028,10 +998,11 @@ Here's what we accomplished with the blog's theme and styling:
 
    localStorage.setItem("theme", newIsDark ? "dark" : "light");
 
+
    const [mounted, setMounted] = useState(false);
    if (!mounted)
-   return null
-   `${isActive ? "bg-primary-600" : "bg-gray-800 hover:bg-gray-700"}`;
+   	return null
+   	`${isActive ? "bg-primary-600" : "bg-gray-800 hover:bg-gray-700"}`;
    \`\`\`
 
 Outstanding tasks:
@@ -1046,13 +1017,14 @@ Location of key theme configuration:
 - `src/contexts/ThemeContext.tsx`: Theme state management
 - `src/app/layout.tsx`: Global theme application
 - `tailwind.config.ts`: Color palette definition
+
 ```
 
 # public/project-summaries/BlogDashboard Category Fix.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1072,17 +1044,13 @@ body {
 # BlogDashboard Category Fix
 
 ## Issue
-
 The BlogDashboard component was incorrectly handling posts in the "media" category, causing the latest media post to be one post behind in the display.
 
 ## Root Cause
-
 The original implementation tried to handle both tech and media posts as "featured" posts, which created complexities in the filtering logic. This dual-featured approach caused media posts to be filtered incorrectly from the main display.
 
 ## Solution
-
 Simplified the post filtering logic by:
-
 1. Only keeping tech posts as featured
 2. Removing the latestMediaPost handling
 3. Implementing a cleaner filtering approach that:
@@ -1090,25 +1058,23 @@ Simplified the post filtering logic by:
    - Only excludes the featured tech post from the main list
 
 ## Code Changes
-
 \`\`\`typescript
 
 const latestMediaPost = posts.find(post => post.category === 'media');
 const remainingPosts = posts.filter(post => {
-const isFeaturedTech = post.id === latestTechPost?.id;
-const isFeaturedMedia = post.id === latestMediaPost?.id;
-return !isFeaturedTech && !isFeaturedMedia;
+  const isFeaturedTech = post.id === latestTechPost?.id;
+  const isFeaturedMedia = post.id === latestMediaPost?.id;
+  return !isFeaturedTech && !isFeaturedMedia;
 });
 
+
 const filteredPosts = activeCategory
-? posts.filter(post => post.category === activeCategory)
-: posts.filter(post => post.id !== latestTechPost?.id);
+  ? posts.filter(post => post.category === activeCategory)
+  : posts.filter(post => post.id !== latestTechPost?.id);
 \`\`\`
 
 ## Testing
-
 Test the fix by:
-
 1. Creating new posts in the media category
 2. Verifying posts appear immediately after creation
 3. Checking category filtering works correctly
@@ -1190,6 +1156,7 @@ type Size = "large" | "medium" | "full";
 	description='Optional description'
 />
 \`\`\`
+
 ```
 
 # public/project-summaries/BlogDashboard-Component-Refactoring.md
@@ -1313,13 +1280,191 @@ Enhanced post display with:
 5. Enhanced error handling
 
 Let me know if you need any clarification or have questions about the refactoring!
+
+```
+
+# public/project-summaries/Codebase Cleanup and Styling Doc.md
+
+```md
+# Blog Codebase Documentation
+
+## Recent Changes and Improvements
+
+### 1. CSS Standardization
+- Removed individual CSS modules and styled-components
+- Standardized on Tailwind CSS for all styling
+- Converted component-specific CSS to Tailwind classes
+
+### 2. Component Updates
+The following components were updated to use Tailwind:
+
+#### Spinner Component
+\`\`\`tsx
+
+
+<div className='min-h-[200px] flex justify-center items-center'>
+  <div className='relative w-[120px] h-[120px] before:content-[""]
+    before:absolute before:inset-0 before:border-[16px]
+    before:border-dashed before:rounded-full before:border-gray-400
+    before:animate-spin'>
+  </div>
+</div>
+\`\`\`
+
+#### PercentageSVG2
+\`\`\`tsx
+
+
+<div className="relative w-full h-full min-h-[314px] flex justify-center items-center">
+  <div className="absolute flex flex-col justify-center items-center w-[200px] h-[200px]">
+    {/* Component content */}
+  </div>
+</div>
+\`\`\`
+
+#### CircularLoader
+\`\`\`tsx
+
+
+<div className="relative w-full flex justify-center items-center min-h-[200px]">
+  <div className="relative w-[200px] h-[200px] flex flex-col justify-center items-center">
+    {/* Loader content */}
+  </div>
+</div>
+\`\`\`
+
+### 3. Tailwind Configuration
+Added custom configurations in `tailwind.config.ts`:
+
+\`\`\`typescript
+module.exports = {
+  theme: {
+    extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+        'loader': 'loader 1s linear infinite',
+      },
+      keyframes: {
+        loader: {
+          '0%': { transform: 'scale(0)' },
+          '100%': { transform: 'scale(1)' },
+        }
+      }
+    }
+  },
+
+}
+\`\`\`
+
+## Best Practices
+
+### 1. Styling Guidelines
+- Use Tailwind utility classes instead of custom CSS
+- Implement dark mode using the `dark:` prefix
+- Use `@apply` in globals.css for commonly reused class combinations
+
+Example:
+\`\`\`css
+/* In globals.css */
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600;
+  }
+}
+\`\`\`
+
+### 2. Performance Optimization
+- Use React.memo() for static components
+- Implement dynamic imports for larger components
+- Add proper loading states
+
+Example:
+\`\`\`tsx
+const MemoizedComponent = React.memo(({ props }) => {
+
+});
+\`\`\`
+
+### 3. Component Structure
+Follow this structure for new components:
+\`\`\`tsx
+'use client';
+
+import React from 'react';
+
+interface ComponentProps {
+
+}
+
+const Component: React.FC<ComponentProps> = ({ props }) => {
+
+  return (
+    <div className="[tailwind-classes]">
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default Component;
+\`\`\`
+
+## Common Patterns
+
+### 1. Loading States
+\`\`\`tsx
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center min-h-[200px]">
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-500" />
+  </div>
+);
+\`\`\`
+
+### 2. Dark Mode Support
+\`\`\`tsx
+<div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+  {/* Content */}
+</div>
+\`\`\`
+
+### 3. Responsive Design
+\`\`\`tsx
+<div className="w-full md:w-1/2 lg:w-1/3 p-4">
+  {/* Responsive content */}
+</div>
+\`\`\`
+
+## Future Considerations
+
+1. Component Updates:
+   - Continue converting any remaining CSS to Tailwind
+   - Implement error boundaries
+   - Add proper TypeScript types
+
+2. Performance:
+   - Add Suspense boundaries
+   - Implement proper code splitting
+   - Optimize image loading
+
+3. Maintenance:
+   - Regular dependency updates
+   - Code quality checks
+   - Performance monitoring
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Run development server: `npm run dev`
+4. Build for production: `npm run build`
+
+For questions or clarifications about these changes, please refer to the documentation or create an issue in the repository.
 ```
 
 # public/project-summaries/Delete Posy Implementation.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1350,9 +1495,9 @@ Added a new Row Level Security policy to allow users to delete only their own po
 
 \`\`\`sql
 create policy "Users can delete own posts"
-on posts
-for delete
-using (auth.uid() = author_id);
+  on posts
+  for delete
+  using (auth.uid() = author_id);
 \`\`\`
 
 ### 2. DeletePost Component
@@ -1365,45 +1510,44 @@ Location: `src/components/DeletePost.tsx`
 
 \`\`\`typescript
 export function DeletePost({ postId }: { postId: string }) {
-const [isDeleting, setIsDeleting] = useState(false);
-const router = useRouter();
+	const [isDeleting, setIsDeleting] = useState(false);
+	const router = useRouter();
 
-    const handleDelete = async () => {
-    	if (!confirm("Are you sure you want to delete this post?")) return;
-    	setIsDeleting(true);
+	const handleDelete = async () => {
+		if (!confirm("Are you sure you want to delete this post?")) return;
+		setIsDeleting(true);
 
-    	try {
-    		const { error: deleteError } = await supabaseClient.from("posts").delete().eq("id", postId);
+		try {
+			const { error: deleteError } = await supabaseClient.from("posts").delete().eq("id", postId);
 
-    		if (deleteError) throw deleteError;
+			if (deleteError) throw deleteError;
 
-    		await router.push("/blog");
-    		router.refresh();
-    		await fetch("/api/revalidate", { method: "POST" });
-    	} catch (err) {
-    		console.error("Delete error:", err);
-    		alert("Failed to delete post");
-    	} finally {
-    		setIsDeleting(false);
-    	}
-    };
+			await router.push("/blog");
+			router.refresh();
+			await fetch("/api/revalidate", { method: "POST" });
+		} catch (err) {
+			console.error("Delete error:", err);
+			alert("Failed to delete post");
+		} finally {
+			setIsDeleting(false);
+		}
+	};
 
-    return (
-    	<button
-    		onClick={handleDelete}
-    		disabled={isDeleting}
-    		className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
-    	>
-    		{isDeleting && (
-    			<Loader2
-    				className='animate-spin'
-    				size={16}
-    			/>
-    		)}
-    		{isDeleting ? "Deleting..." : "Delete Post"}
-    	</button>
-    );
-
+	return (
+		<button
+			onClick={handleDelete}
+			disabled={isDeleting}
+			className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+		>
+			{isDeleting && (
+				<Loader2
+					className='animate-spin'
+					size={16}
+				/>
+			)}
+			{isDeleting ? "Deleting..." : "Delete Post"}
+		</button>
+	);
 }
 \`\`\`
 
@@ -1460,6 +1604,7 @@ Requires Supabase RLS policy to be set up for post deletion.
 - [x] Successful deletion redirects to blog listing
 - [x] Blog listing updates after deletion
 - [x] Error messages appear for failed deletions
+
 ```
 
 # public/project-summaries/Markdown Implementation.md
@@ -1487,17 +1632,14 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
 <ReactMarkdown
-rehypePlugins={[rehypeHighlight]}
-components={{
+	rehypePlugins={[rehypeHighlight]}
+	components={{
 		p: ({ children }) => <p className='text-gray-300 mb-4'>{children}</p>,
 		h2: ({ children }) => <h2 className='text-2xl font-bold mt-8 mb-4'>{children}</h2>,
 
 	}}
-
 >
-
-    {content}
-
+	{content}
 </ReactMarkdown>;
 \`\`\`
 
@@ -1516,13 +1658,14 @@ components={{
 - Lists (-, 1.)
 - Blockquotes (>)
 - Inline styles (**bold**, _italic_)
+
 ```
 
 # public/project-summaries/Project-Structure-Overview.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1599,13 +1742,14 @@ Core Features:
 - Image Uploads
 - Dark/Light Themes
 - Draft System
+
 ```
 
 # public/project-summaries/Resolving-Hydration-Styling-Issues.md
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1623,41 +1767,34 @@ body {
 <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 # Resolving Hydration and Styling Issues
-
 ### Here's what we've implemented in the blog codebase:
-
 #### Date: 12.02.2024 : 10:30am
 
 1. Theme Integration
-
 - Set up styled-components with Next.js 13+ App Router
 - Created proper theme types and configuration
 - Implemented dark/light mode detection
 - Added global styles with proper theme support
 
 2. Component Architecture
-
 - Split server/client components appropriately
 - Created BlogPostContent as client component
 - Added BlogPost.styles with styled-components
 - Implemented ClientOnly wrapper for hydration fixes
 
 3. Fixed Hydration Issues
-
 - Added proper mounting checks
 - Used suppressHydrationWarning where needed
 - Separated client-side functionality
 - Fixed async client component error
 
 4. Styling System
-
 - Created type-safe theme utilities
 - Set up proper font loading
 - Implemented responsive styles
 - Added proper CSS organization
 
 Outstanding tasks:
-
 1. Complete dark mode toggle implementation
 2. Add more category-specific styling
 3. Enhance loading states
@@ -1672,7 +1809,7 @@ Would you like to proceed with any of these tasks?
 
 ```md
 <style>
-@import url('https:
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* Base styles */
 body {
@@ -1696,23 +1833,27 @@ body {
 
 \`\`\`typescript
 
+
+
 type ThemeContextType = {
-theme: Theme;
-isDark: boolean;
-toggleTheme: () => void;
+	theme: Theme;
+	isDark: boolean;
+	toggleTheme: () => void;
 };
 
+
 export function useTheme() {
-const context = useContext(ThemeContext);
-if (!context) {
-throw new Error("useTheme must be used within ThemeContextProvider");
-}
-return context;
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error("useTheme must be used within ThemeContextProvider");
+	}
+	return context;
 }
 
+
 function Component() {
-const { theme, isDark, toggleTheme } = useTheme();
-return <button onClick={toggleTheme}>Toggle</button>;
+	const { theme, isDark, toggleTheme } = useTheme();
+	return <button onClick={toggleTheme}>Toggle</button>;
 }
 \`\`\`
 
@@ -1720,33 +1861,32 @@ return <button onClick={toggleTheme}>Toggle</button>;
 
 \`\`\`typescript
 export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
-const [isDark, setIsDark] = useState(false);
-const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme);
+	const [isDark, setIsDark] = useState(false);
+	const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme);
 
-    useEffect(() => {
-    	const stored = localStorage.getItem("theme");
-    	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    	const shouldBeDark = stored ? stored === "dark" : prefersDark;
+	useEffect(() => {
+		const stored = localStorage.getItem("theme");
+		const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		const shouldBeDark = stored ? stored === "dark" : prefersDark;
 
-    	setIsDark(shouldBeDark);
-    	setCurrentTheme(shouldBeDark ? darkTheme : lightTheme);
+		setIsDark(shouldBeDark);
+		setCurrentTheme(shouldBeDark ? darkTheme : lightTheme);
 
-    	if (shouldBeDark) document.documentElement.classList.add("dark");
-    }, []);
+		if (shouldBeDark) document.documentElement.classList.add("dark");
+	}, []);
 
-    const toggleTheme = () => {
-    	setIsDark((prev) => {
-    		const newIsDark = !prev;
-    		const newTheme = newIsDark ? darkTheme : lightTheme;
-    		setCurrentTheme(newTheme);
-    		localStorage.setItem("theme", newIsDark ? "dark" : "light");
-    		document.documentElement.classList.toggle("dark");
-    		return newIsDark;
-    	});
-    };
+	const toggleTheme = () => {
+		setIsDark((prev) => {
+			const newIsDark = !prev;
+			const newTheme = newIsDark ? darkTheme : lightTheme;
+			setCurrentTheme(newTheme);
+			localStorage.setItem("theme", newIsDark ? "dark" : "light");
+			document.documentElement.classList.toggle("dark");
+			return newIsDark;
+		});
+	};
 
-    return <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
-
+	return <ThemeContext.Provider value={{ theme: currentTheme, isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 \`\`\`
 
@@ -1755,15 +1895,17 @@ const [currentTheme, setCurrentTheme] = useState<Theme>(lightTheme);
 ### Styled Components
 
 \`\`\`typescript
-const StyledComponent = styled.div<{ theme: Theme }>`	color: ${({ theme }) => (theme.isDark ? theme.colors.text.dark : theme.colors.text.light)};`;
+const StyledComponent = styled.div<{ theme: Theme }>`
+	color: ${({ theme }) => (theme.isDark ? theme.colors.text.dark : theme.colors.text.light)};
+`;
 \`\`\`
 
 ### Tailwind CSS
 
 \`\`\`typescript
 function Component() {
-const { isDark } = useTheme();
-return <div className='bg-white text-gray-900 dark:bg-gray-900 dark:text-white'>{/_ Content _/}</div>;
+	const { isDark } = useTheme();
+	return <div className='bg-white text-gray-900 dark:bg-gray-900 dark:text-white'>{/* Content */}</div>;
 }
 \`\`\`
 
@@ -1783,6 +1925,7 @@ return <div className='bg-white text-gray-900 dark:bg-gray-900 dark:text-white'>
 3. Combine with Tailwind for responsive design
 4. Use theme object for complex dynamic styles
 5. Maintain TypeScript types for theme objects
+
 ```
 
 # public/vercel.svg
@@ -1804,17 +1947,11 @@ First, run the development server:
 
 \`\`\`bash
 npm run dev
-
 # or
-
 yarn dev
-
 # or
-
 pnpm dev
-
 # or
-
 bun dev
 \`\`\`
 
@@ -1838,95 +1975,104 @@ You can check out [the Next.js GitHub repository](https:
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https:
 
 Check out our [Next.js deployment documentation](https:
-
 # GD-Blog
+
 ```
 
 # src/app/api/revalidate/route.ts
 
 ```ts
-import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+/* src/app/api/revalidate/route.ts */
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(request: NextRequest) {
-	revalidatePath("/blog");
-	return NextResponse.json({ revalidated: true, now: Date.now() });
+   revalidatePath('/blog')
+   return NextResponse.json({ revalidated: true, now: Date.now() })
 }
+
 ```
 
 # src/app/auth-test/page.tsx
 
 ```tsx
-"use client";
-import { useState, useEffect } from "react";
-import { supabaseClient } from "@/lib/auth";
-import type { User } from "@supabase/supabase-js";
+/* src/app/auth-test/page.tsx */
+'use client'
+import { useState, useEffect } from 'react'
+import { supabaseClient } from '@/lib/auth'
+import type { User } from '@supabase/supabase-js'
 
 export default function AuthTest() {
-	const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null)
 
-	useEffect(() => {
-		const {
-			data: { subscription },
-		} = supabaseClient.auth.onAuthStateChange((_, session) => {
-			setUser(session?.user ?? null);
-		});
-		return () => subscription.unsubscribe();
-	}, []);
+  useEffect(() => {
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
-	const signIn = () => {
-		supabaseClient.auth.signInWithOAuth({
-			provider: "github",
-			options: { redirectTo: `${window.location.origin}/auth/callback` },
-		});
-	};
+  const signIn = () => {
+    supabaseClient.auth.signInWithOAuth({
+      provider: 'github',
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
+    })
+  }
 
-	const signOut = () => supabaseClient.auth.signOut();
+  const signOut = () => supabaseClient.auth.signOut()
 
-	return (
-		<div className='p-8'>
-			<h1 className='text-2xl mb-4'>Auth Test</h1>
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl mb-4">Auth Test</h1>
 
-			{user ? (
-				<div>
-					<p>Logged in as: {user.email}</p>
-					<button onClick={signOut} className='bg-red-500 text-white px-4 py-2 rounded mt-4'>
-						Sign Out
-					</button>
-				</div>
-			) : (
-				<button onClick={signIn} className='bg-black text-white px-4 py-2 rounded'>
-					Sign in with GitHub
-				</button>
-			)}
-		</div>
-	);
+      {user ? (
+        <div>
+          <p>Logged in as: {user.email}</p>
+          <button
+            onClick={signOut}
+            className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={signIn}
+          className="bg-black text-white px-4 py-2 rounded"
+        >
+          Sign in with GitHub
+        </button>
+      )}
+    </div>
+  )
 }
 ```
 
 # src/app/auth/callback/route.ts
 
 ```ts
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+/* src/app/auth/callback/route.ts */
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
-	const requestUrl = new URL(request.url);
-	const code = requestUrl.searchParams.get("code");
+  const requestUrl = new URL(request.url)
+  const code = requestUrl.searchParams.get('code')
 
-	if (code) {
-		const supabase = createRouteHandlerClient({ cookies });
-		await supabase.auth.exchangeCodeForSession(code);
-	}
+  if (code) {
+    const supabase = createRouteHandlerClient({ cookies })
+    await supabase.auth.exchangeCodeForSession(code)
+  }
 
-	return NextResponse.redirect(requestUrl.origin);
+  return NextResponse.redirect(requestUrl.origin)
 }
 ```
 
 # src/app/blog/[slug]/page.tsx
 
 ```tsx
+
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -1940,6 +2086,7 @@ export default async function BlogPostPage({ params: { slug }, searchParams }: {
 
 	const query = supabase.from("posts").select("*, profiles(username)").eq("slug", slug).single();
 
+
 	if (!searchParams.preview || !session) {
 		query.eq("published", true);
 	}
@@ -1950,11 +2097,33 @@ export default async function BlogPostPage({ params: { slug }, searchParams }: {
 
 	return <BlogPostContent post={post} />;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/app/blog/drafts/page.tsx
 
 ```tsx
+
 import StagingArea from "@/components/StagingArea";
 import { redirect } from "next/navigation";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -1977,11 +2146,13 @@ export default async function DraftsPage() {
 		</div>
 	);
 }
+
 ```
 
 # src/app/blog/edit/[slug]/page.tsx
 
 ```tsx
+
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
@@ -2008,32 +2179,65 @@ export default async function EditPost({ params: { slug } }: { params: { slug: s
 		</div>
 	);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/app/blog/new/page.tsx
 
 ```tsx
-import { PostForm } from "@/components/PostForm";
+/* src/app/blog/new/page.tsx */
+import { PostForm } from '@/components/PostForm'
 
 export default function NewPost() {
-	return (
-		<div className='max-w-4xl mx-auto'>
-			<h1 className='text-3xl font-bold mb-8'>Create New Post</h1>
-			<PostForm />
-		</div>
-	);
+  return (
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8">Create New Post</h1>
+      <PostForm />
+    </div>
+  )
 }
+
+
 ```
 
 # src/app/blog/page.tsx
 
 ```tsx
+/* src/app/blog/page.tsx */
+
 import { supabaseClient } from "@/lib/auth";
 
 import { CategoryId } from "@/data/categories";
 import { GridSize } from "@/components/BlogDashboard-Old";
 import { unstable_noStore } from "next/cache";
 import BlogDashboard from "@/components/blog/dashboard";
+
 
 type FeaturedSetup = {
 	category: CategoryId;
@@ -2042,6 +2246,7 @@ type FeaturedSetup = {
 	title?: string;
 	description?: string;
 }[];
+
 
 const featuredSetup: FeaturedSetup = [
 	{
@@ -2075,16 +2280,31 @@ export default async function BlogList() {
 		return <div>Error loading posts</div>;
 	}
 
+
+
+
+
+
+
+
+
+
+
 	return (
+
 		<div className='max-w-page mx-auto'>
 			<div className='flex justify-between items-center mb-8 px-4'>
 				<h1 className='text-3xl font-bold'>Blog Posts</h1>
 			</div>
 
-			<BlogDashboard posts={posts} featuredSetup={featuredSetup} />
+			<BlogDashboard
+				posts={posts}
+				featuredSetup={featuredSetup}
+			/>
 		</div>
 	);
 }
+
 ```
 
 # src/app/favicon.ico
@@ -2118,7 +2338,8 @@ This is a binary file of the type: Binary
 	}
 
 	body {
-		@apply min-h-screen flex flex-col font-opensans;
+		/* @apply min-h-screen flex flex-col font-opensans; */
+		@apply min-h-screen flex flex-col font-nunitosans;
 		@apply bg-primary-50/20 min-h-screen text-primary-900;
 		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
 	}
@@ -2133,7 +2354,8 @@ This is a binary file of the type: Binary
 	h4,
 	h5,
 	h6 {
-		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
+		/* @apply font-baskerville text-primary-600 dark:text-primary-400 font-bold; */
+      @apply font-garamond text-primary-600 dark:text-primary-400 font-bold;
 	}
 
 	p,
@@ -2141,7 +2363,8 @@ This is a binary file of the type: Binary
 	div,
 	li,
 	a {
-		@apply font-opensans;
+		/* @apply font-opensans; */
+      @apply font-nunitosans;
 	}
 
 	h1 {
@@ -2221,33 +2444,54 @@ This is a binary file of the type: Binary
 .prose h6 {
 	@apply font-baskerville text-primary-600 dark:text-primary-400;
 } */
+
 ```
 
 # src/app/layout.tsx
 
 ```tsx
-import { Libre_Baskerville, Open_Sans } from "next/font/google";
+/* src/app/layout.tsx */
+
 import { Providers } from "./providers";
 
 import "./globals.css";
 
 import { Navbar } from "@/components/MobileNavbar";
 
-const baskerville = Libre_Baskerville({
-	subsets: ["latin"],
-	weight: ["400", "700"],
-	variable: "--font-baskerville",
+
+
+
+
+
+
+
+
+
+
+
+
+import { EB_Garamond, Nunito_Sans } from "next/font/google";
+
+const garamond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-garamond",
 });
 
-const openSans = Open_Sans({
-	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
-	variable: "--font-opensans",
+const nunitoSans = Nunito_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-nunitosans",
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang='en' suppressHydrationWarning className={`${baskerville.variable} ${openSans.variable}`}>
+		<html
+			lang='en'
+			suppressHydrationWarning
+
+         className={`${garamond.variable} ${nunitoSans.variable}`}
+		>
 			<head>
 				<script
 					dangerouslySetInnerHTML={{
@@ -2262,7 +2506,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					}}
 				/>
 			</head>
-			<body className={openSans.className} suppressHydrationWarning>
+			<body
+
+				className={nunitoSans.className}
+				suppressHydrationWarning
+			>
 				<Providers>
 					<div className='min-h-screen flex flex-col'>
 						<Navbar />
@@ -2275,15 +2523,63 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
 	/* <Navbar />; */
 }
+
+
+
+
+
+
+
+
 ```
 
 # src/app/page.tsx
 
 ```tsx
+/* src/app/page.tsx */
 "use client";
+
+
 
 /*---==================================================================
 The homepage serves as the entry point to our blog platform, providing:
@@ -2311,50 +2607,71 @@ export default function HomePage() {
 		</main>
 	);
 }
+
+```
+
+# src/app/portfolio/page.tsx
+
+```tsx
+
+```
+
+# src/app/portfolio/projects/page.tsx
+
+```tsx
+
 ```
 
 # src/app/providers.tsx
 
 ```tsx
+/* src/app/providers.tsx */
 "use client";
 import { ThemeContextProvider } from "@/contexts/ThemeContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	return <ThemeContextProvider>{children}</ThemeContextProvider>;
 }
+
 ```
 
 # src/components/AuthButton.tsx
 
 ```tsx
-"use client";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/auth";
+/* src/components/AuthButton.tsx */
+'use client'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/auth'
 
 export function AuthButton() {
-	const router = useRouter();
-	const supabase = createClient();
+  const router = useRouter()
+  const supabase = createClient()
 
-	const handleSignIn = async () => {
-		await supabase.auth.signInWithOAuth({
-			provider: "github",
-			options: {
-				redirectTo: `${window.location.origin}/auth/callback`,
-			},
-		});
-	};
+  const handleSignIn = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+  }
 
-	const handleSignOut = async () => {
-		await supabase.auth.signOut();
-		router.refresh();
-	};
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.refresh()
+  }
 
-	return (
-		<button onClick={handleSignIn} className='bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700'>
-			Sign In with GitHub
-		</button>
-	);
+  return (
+    <button
+      onClick={handleSignIn}
+      className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
+    >
+      Sign In with GitHub
+    </button>
+  )
 }
+
+
 ```
 
 # src/components/blog-components/articles/CircularSVG2.tsx
@@ -2369,7 +2686,7 @@ const CircularSVG2 = () => {
 			height='3082'
 			viewBox='0 0 3082 3082'
 			fill='none'
-			xmlns='http:
+			xmlns='http://www.w3.org/2000/svg'
 		>
 			<motion.path
 				initial={{ rotate: 0 }}
@@ -2387,10 +2704,7 @@ const CircularSVG2 = () => {
 				d='M106.965 1774.99C154.874 2068.61 291.756 2340.44 499.115 2553.76C706.475 2767.08 974.318 2911.61 1266.46 2967.83L1329.8 2638.64C1105.06 2595.4 899.008 2484.21 739.488 2320.11C579.968 2156 474.667 1946.88 437.811 1721.01L106.965 1774.99Z'
 				fill='#BE2809'
 			/>
-			{/* <motion.circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100" initial={{ rotate: 0 }} animate={{ rotate: -360 }} transition={{ duration: 5, ease: "easeIn", repeat: Infinity }} /> */}
-			{/* <motion.circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100" initial={{ rotate: 0 }} animate={{ rotate: -360 }} transition={{ duration: 5, ease: "easeIn", repeat: Infinity }} style={{ originX: "50%", originY: "50%" }}/> */}
-			{/* <circle cx="1541" cy="1541" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100"/> */}
-			<motion.path
+      	<motion.path
 				initial={{ rotate: 0 }}
 				animate={{ rotate: 360 }}
 				transition={{ duration: 6, ease: "easeOut", repeat: Infinity }}
@@ -2427,18 +2741,6 @@ const CircularSVG2 = () => {
 				d='M2443.14 2607.8C2662.4 2422.36 2819.18 2173.82 2892.15 1896.03C2965.12 1618.23 2950.72 1324.69 2850.91 1055.38C2751.1 786.072 2570.74 554.081 2334.39 391.005C2098.03 227.93 1817.18 141.695 1530.07 144.047L1531.69 342.385C1778.04 340.367 2019.02 414.358 2221.81 554.28C2424.61 694.203 2579.37 893.256 2665 1124.33C2750.64 1355.4 2762.99 1607.27 2700.39 1845.62C2637.78 2083.97 2503.25 2297.23 2315.13 2456.34L2443.14 2607.8Z'
 				fill='#0E9DBA'
 			/>
-			{/* <motion.circle
-               initial={{ rotate: 0 }}
-               animate={{ rotate: 360 }}
-               transition={{ duration: 9, ease: "easeInOut", repeat: Infinity }}
-               style={{ originX: "0%", originY: "0%" }}
-               r='1271'
-               stroke='#1EBCDC'
-               stroke-width='250'
-               stroke-dasharray='100 100'
-               /> */}
-			{/* <motion.circle cx="1541" cy="1523" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100"/> */}
-
 			<motion.path
 				initial={{ rotate: 0 }}
 				animate={{ rotate: -360 }}
@@ -2516,12 +2818,12 @@ const CircularSVG2 = () => {
 };
 
 export default CircularSVG2;
-
 ```
 
 # src/components/blog-components/articles/LoadingSpinner.tsx
 
 ```tsx
+/* src/components/blog/articles/LoadingSpinner.tsx */
 "use client";
 import { CodeBlock } from "@/components/blog-components/CodeBlock";
 import { useState, useEffect } from "react";
@@ -2547,8 +2849,7 @@ const LoadingSpinner = () => {
 	return (
 		<>
 			<div className='flex justify-center items-center min-h-[200px]'>
-				<div
-					className="
+				<div className="
             relative w-[120px] h-[120px] before:content-['']
             before:absolute before:inset-0 before:border-[16px] before:border-gray-200 dark:before:border-gray-700
             before:border-dashed before:rounded-full before:border-t-primary-500 before:animate-[spin_4s_linear_3]"
@@ -2557,7 +2858,13 @@ const LoadingSpinner = () => {
 
 			<div className='space-y-6'>
 				<h3>Codeblock Theme</h3>
-				<CodeBlock code={sampleCode} language='HTML' fontSize='1rem' />
+				<CodeBlock
+					code={sampleCode}
+					language='HTML'
+
+
+					fontSize='1rem'
+				/>
 
 				{/* <h2>GitHub Dark Theme</h2>
 				<CodeBlock
@@ -2578,43 +2885,7 @@ const LoadingSpinner = () => {
 };
 
 export default LoadingSpinner;
-```
 
-# src/components/blog-components/articles/PercentageCircularLoader.css
-
-```css
-/* styles.css */
-.loaderAnimationContainer {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-}
-
-.counterAnimContainer {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	line-height: 1;
-	position: relative;
-	top: 6px;
-}
-
-.countdown {
-	font-size: 3rem;
-	text-align: center;
-	margin: 0;
-}
-
-.loadingText {
-	font-size: 1rem;
-	font-weight: bold;
-}
-
-.svgContainer {
-	position: absolute;
-}
 ```
 
 # src/components/blog-components/articles/PercentageCircularLoader.tsx
@@ -2623,7 +2894,7 @@ export default LoadingSpinner;
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import "./PercentageCircularLoader.css";
+
 
 const PercentageCircularLoader = ({ timer }: { timer: number }) => {
 	const [count, setCount] = useState(0);
@@ -2642,23 +2913,31 @@ const PercentageCircularLoader = ({ timer }: { timer: number }) => {
 		return () => clearInterval(interval);
 	}, []);
 
-	const animationProps = useMemo(
-		() => ({
-			rotate: { duration: tymer, ease: easing },
-			colors: ["#85aab6", "#ff8d53"],
-		}),
-		[tymer, easing]
-	);
+
+
+
+
+
+
+
 
 	return (
-		<div className='loaderAnimationContainer'>
-			<div className='counterAnimContainer'>
-				<div className='loadingText'>LOADING...</div>
-				<div style={{ display: "flex", alignItems: "center" }}>
-					<h2 className='countdown'>{Math.floor((count / (timer / 100)) * 100)}</h2>
-					<span style={{ fontSize: "2rem" }}>%</span>
-				</div>
+
+
+
+
+
+
+
+      <div className="loaderAnimationContainer flex flex-col justify-center items-center relative">
+      <div className="counterAnimContainer flex flex-col items-center leading-none relative top-1.5">
+        <div className="text-base font-bold">LOADING...</div>
+        <div className="flex items-center">
+          <h2 className="countdown text-5xl m-0">{Math.floor((count / (timer / 100)) * 100)}</h2>
+          <span className="text-3xl">%</span>
+        </div>
 			</div>
+
 			{/* Rings animation */}
 			<div className='svgContainer'>
 				<motion.svg
@@ -2666,7 +2945,7 @@ const PercentageCircularLoader = ({ timer }: { timer: number }) => {
 					height='314'
 					viewBox='0 0 314 314'
 					fill='none'
-					xmlns='http:
+					xmlns='http://www.w3.org/2000/svg'
 				>
 					<motion.path
 						initial={{ rotate: 0 }}
@@ -2750,87 +3029,13 @@ export default PercentageCircularLoader;
 
 ```
 
-# src/components/blog-components/articles/PercentageSVG2.css
-
-```css
-/* styles.css */
-
-.container {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	min-height: 314px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	/* margin-bottom: 10rem; */
-}
-
-.loader-container {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 200px;
-	height: 200px;
-}
-
-.circular-svg {
-	position: absolute;
-	border-radius: 100%;
-	width: 300px;
-	height: 300px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	/* z-index: 100; */
-}
-
-.image {
-	max-width: 100%;
-	width: 100%;
-	height: auto;
-	opacity: 0;
-	transition: opacity 0.5s ease-in-out;
-}
-
-.image.loaded {
-	opacity: 1;
-}
-
-.counter-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	line-height: 1;
-	position: relative;
-	/* z-index: 101; */
-}
-
-.loading-text {
-	font-size: 1rem;
-	font-family: "Open Sans", sans-serif;
-	margin: 0;
-	color: #3f1f0b;
-}
-
-.countdown-text {
-	display: flex;
-	align-items: center;
-	font-size: 3rem;
-	margin: 0;
-	color: #3f1f0b;
-}
-```
-
 # src/components/blog-components/articles/PercentageSVG2.tsx
 
 ```tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import "./PercentageSVG2.css";
+
 
 import CircularSVG2 from "./CircularSVG2";
 import { CodeBlock } from "../CodeBlock";
@@ -2842,162 +3047,80 @@ interface ImageLoaderProps {
 	mode?: string;
 	timerDuration?: number;
 }
-const imageLoaderTSXCode = `
+const circularLoaderTSXCode = `
+   "use client";
    import React, { useState, useEffect } from "react";
-   import "./ImageLoader.css";
+   import Image from "next/image";
+   import CircularSVG2 from "./articles/CircularSVG2";
 
-   interface ImageLoaderProps {
-   src: string;
-   alt: string;
-   className?: string;
-   }
+   const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
+      const [progress, setProgress] = useState(0);
+      const [isLoaded, setIsLoaded] = useState(false);
 
-   const ImageLoader: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
-   const [progress, setProgress] = useState(0);
-   const [isLoaded, setIsLoaded] = useState(false);
+      useEffect(() => {
+         const loadImage = (src: string): Promise<void> => {
+            return new Promise((resolve, reject) => {
+               const xhr = new XMLHttpRequest();
+               xhr.open("GET", src, true);
+               xhr.responseType = "arraybuffer";
 
-   useEffect(() => {
-      const loadImage = (): Promise<void> => {
-         return new Promise((resolve, reject) => {
-         const xhr = new XMLHttpRequest();
-         xhr.open("GET", src, true);
-         xhr.responseType = "arraybuffer";
+               xhr.onprogress = (event) => {
+                  if (event.lengthComputable) {
+                     const percentComplete = (event.loaded / event.total) * 100;
+                     setProgress(Math.round(percentComplete));
+                  }
+               };
 
-         xhr.onprogress = (event) => {
-            if (event.lengthComputable) {
-               const percentComplete = (event.loaded / event.total) * 100;
-               setProgress(Math.round(percentComplete));
-            }
+               xhr.onload = () => {
+                  if (xhr.status === 200) {
+                     setProgress(100);
+                     resolve();
+                  } else {
+                     reject(new Error(\`Failed to load image: \${xhr.statusText}\`));
+                  }
+               };
+               xhr.onerror = () => reject(new Error("Error loading image"));
+               xhr.send();
+            });
          };
 
-         xhr.onload = () => {
-            if (xhr.status === 200) {
-               setProgress(100);
-               resolve();
-            } else {
-               reject(new Error(\`Failed to load image: \${xhr.statusText}\`));
-            }
+         loadImage(src)
+            .then(() => setIsLoaded(true))
+            .catch((err) => console.error(err));
+
+         return () => {
+
          };
+      }, [src]);
 
-         xhr.onerror = () => reject(new Error("Error loading image"));
-         xhr.send();
-         });
-      };
-
-      loadImage()
-         .then(() => setIsLoaded(true))
-         .catch((err) => console.error(err));
-
-      return () => {
-
-      };
-   }, [src]);
-
-   return (
-      <div className="image-loader-container">
-         {!isLoaded && (
-         <div className="loader-overlay">
-            <div className="loader-animation">
-               {/* Replace this with your custom SVG animation */}
-               <svg
-               className="placeholder-svg"
-               xmlns="http:
-               viewBox="0 0 100 100"
-               >
-               <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  stroke="#4caf50"
-                  strokeWidth="5"
-                  fill="none"
-               />
-               <text
-                  x="50%"
-                  y="50%"
-                  textAnchor="middle"
-                  dy=".3em"
-                  fontSize="20"
-                  fill="#4caf50"
-               >
-                  Loading
-               </text>
-               </svg>
-            </div>
-            <div className="loader-progress">
-               {progress}% {/* Shows the loading percentage */}
-            </div>
+      return (
+         <>
+         <div className='image-loader-container'>
+            {!isLoaded && (
+               <div className='loader-overlay'>
+                  <div className='loader-animation'>
+                  </div>
+                  <CircularSVG2 />
+                  <div className='loader-progress'>
+                     {progress}% {/* Shows the loading percentage */}
+                  </div>
+               </div>
+            )}
+            <Image
+               src={src}
+               alt={alt}
+               width={500}
+               height={300}
+            />
          </div>
-         )}
-         <img
-         src={src}
-         alt={alt}
-         className={\`\${className} image-loader-image\`}
-         style={{ opacity: isLoaded ? 1 : 0 }}
-         />
-      </div>
-   );
+         </>
+      );
    };
 
-   export default ImageLoader;
+   export default CircularLoader;
 `;
-const imageLoaderCSSCode = `
-   .image-loader-container {
-   position: relative;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   overflow: hidden;
-   }
 
-   .loader-overlay {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   background: rgba(255, 255, 255, 0.8); /* Slight white overlay */
-   z-index: 10;
-   }
-
-   .loader-animation {
-   margin-bottom: 10px;
-   }
-
-   .placeholder-svg {
-   width: 100px;
-   height: 100px;
-   animation: rotate 2s linear infinite;
-   }
-
-   @keyframes rotate {
-   from {
-      transform: rotate(0deg);
-   }
-   to {
-      transform: rotate(360deg);
-   }
-   }
-
-   .loader-progress {
-   font-size: 1.5rem;
-   color: #4caf50;
-   font-weight: bold;
-   }
-
-   .image-loader-image {
-   max-width: 100%;
-   height: auto;
-   transition: opacity 0.5s ease-in-out;
-   }
-`;
-const imageLoaderSVGCode = `
+const circularLoaderSVGCode = `
    import { motion } from "framer-motion";
 
    const ImageLoaderSVG = () => {
@@ -3007,7 +3130,7 @@ const imageLoaderSVGCode = `
             height='3082'
             viewBox='0 0 3082 3082'
             fill='none'
-            xmlns='http:
+            xmlns='http://www.w3.org/2000/svg'
          >
             <motion.path
                initial={{ rotate: 0 }}
@@ -3156,14 +3279,14 @@ const imageLoaderSVGCode = `
    export default ImageLoaderSVG;
 
 `;
-const imageLoaderUsageCode = `
+const circularLoaderUsageCode = `
    import React from "react";
-   import ImageLoader from "./ImageLoader";
+   import CircularLoader from "./CircularLoader";
 
    const App = () => {
    return (
       <div>
-         <ImageLoader
+         <CircularLoader
          src="https:
          alt="Sample Image"
          />
@@ -3175,7 +3298,13 @@ const imageLoaderUsageCode = `
    \`;
 `;
 
-const PercentageSVG2: React.FC<ImageLoaderProps> = ({ timerDuration = 10000 }) => {
+const PercentageSVG2: React.FC<ImageLoaderProps> = ({
+
+
+
+
+	timerDuration = 10000,
+}) => {
 	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
@@ -3188,7 +3317,7 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({ timerDuration = 10000 }) =
 
 	return (
 		<>
-			<div className='container'>
+			{/* <div className='container'>
 				<AnimatePresence>
 					<div className='loader-container'>
 						<div className='counter-container'>
@@ -3202,87 +3331,70 @@ const PercentageSVG2: React.FC<ImageLoaderProps> = ({ timerDuration = 10000 }) =
 							<CircularSVG2 />
 						</div>
 					</div>
-				</AnimatePresence>
+				</AnimatePresence> */}
+            <div className="relative w-full h-full min-h-[314px] flex justify-center items-center">
+               <AnimatePresence>
+                  <div className="absolute flex flex-col justify-center items-center w-[200px] h-[200px]">
+                     <div className="flex flex-col items-center leading-none relative">
+                     <p className="text-base font-sans text-[#3f1f0b] m-0">LOADING...</p>
+                     <h1 className="flex items-center text-5xl m-0 text-[#3f1f0b]">
+                        {progress}
+                        <span>%</span>
+                     </h1>
+                     </div>
+                     <div className="absolute rounded-full w-[300px] h-[300px] flex justify-center items-center">
+                     <CircularSVG2 />
+                     </div>
+                  </div>
+               </AnimatePresence>
 
 				{/* <LoadingOverlay progress={progress} mode={mode} /> */}
 			</div>
 			<div>
 				<div>Progress Indicators Codes:</div>
-				<p className='mb-1'>ImageLoader.tsx</p>
-				<CodeBlock code={imageLoaderTSXCode} language='TSX' fontSize='1rem' />
-				<p className='mb-1'>ImageLoader.css</p>
-				<CodeBlock code={imageLoaderCSSCode} language='CSS' fontSize='1rem' />
+				<p className='mb-1'>CircularLoader.tsx</p>
+				<CodeBlock
+					code={circularLoaderTSXCode}
+					language='TSX'
+					fontSize='1rem'
+				/>
 				<p className='mb-1'>ImageLoaderSVG.tsx</p>
-				<CodeBlock code={imageLoaderSVGCode} language='CSS' fontSize='1rem' />
+				<CodeBlock
+					code={circularLoaderSVGCode}
+					language='CSS'
+					fontSize='1rem'
+				/>
 				<p className='mb-1'>Usage: In a parent component</p>
-				<CodeBlock code={imageLoaderUsageCode} language='TSX' fontSize='1rem' />
+				<CodeBlock
+					code={circularLoaderUsageCode}
+					language='TSX'
+					fontSize='1rem'
+				/>
 			</div>
 		</>
 	);
 };
 
 export default PercentageSVG2;
-```
 
-# src/components/blog-components/articles/Spinner.css
-
-```css
-.spinner-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 200px;
-}
-
-.spinner {
-	position: relative;
-	width: 120px;
-	height: 120px;
-}
-
-.spinner::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	border: 16px dashed;
-	border-color: gray;
-	border-radius: 50%;
-	animation: spin 4s ease-in-out infinite;
-}
-
-/* Keyframes for spin animation */
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
 ```
 
 # src/components/blog-components/articles/Spinner.jsx
 
 ```jsx
+/*-= src/components/blog-components/Spinner.jsx =-*/
 "use client";
-import "./Spinner.css";
 import { CodeBlock } from "@/components/blog-components/CodeBlock";
 
 const Spinner = () => {
-	const htmlCode = `
-      /*-= Usage =-*/
 
+   const htmlCode = `
       <div className='spinner-container'>
          <div className='spinner'></div>
       </div>
    `;
 
-	const cssCode = `
-      /*-= CSS Styling & Animation =-*/
-
+   const cssCode = `
       .spinner-container {
          display: flex;
          justify-content: center;
@@ -3306,7 +3418,7 @@ const Spinner = () => {
          border: 16px dashed;
          border-color: gray;
          border-radius: 50%;
-         animation: spin 4s ease-in-out 7;
+         animation: spin 4s ease-in-out infinite;
       }
 
       /* Keyframes for spin animation */
@@ -3320,19 +3432,36 @@ const Spinner = () => {
       }
    `;
 
-	return (
-		<>
-			<div className='spinner-container'>
-				<div className='spinner'></div>
-			</div>
-			<p>Simple Spinner Codes:</p>
-			<CodeBlock code={htmlCode} language='HTML' fontSize='1rem' />
-			<CodeBlock code={cssCode} language='CSS' fontSize='1rem' />
-		</>
-	);
+   return (
+      <>
+         <div className='spinner-container min-h-[200px] flex justify-center items-center'>
+            <div className='spinner
+               relative w-[120px] h-[120px]
+               before:content-[""]
+               before:absolute
+               before:inset-0
+               before:border-[16px]
+               before:border-dashed
+               before:rounded-full
+               before:border-gray-400
+               before:animate-spin-custom
+               '>
+            </div>
+         </div>
+
+         {/* Codeblocks */}
+         <div className='mt-8 mb-1'>Simple Spinner Codes:</div>
+         <p className='mt-0 mb-1'>Usage: HTML component</p>
+         <CodeBlock code={htmlCode} language='HTML' fontSize='1rem' />
+         <p className='mt-8 mb-1'>CSS Styling & Animation</p>
+         <CodeBlock code={cssCode} language='CSS' fontSize='1rem' />
+
+      </>
+   );
 };
 
 export default Spinner;
+
 ```
 
 # src/components/blog-components/articles/SpinningDots.tsx
@@ -3350,8 +3479,19 @@ const SpinningDots = () => {
 	];
 
 	return (
-		<svg width='300' height='300' viewBox='0 0 300 300'>
-			<circle cx='150' cy='150' r='110' stroke='grey' strokeWidth='2' fill='transparent' />
+		<svg
+			width='300'
+			height='300'
+			viewBox='0 0 300 300'
+		>
+			<circle
+				cx='150'
+				cy='150'
+				r='110'
+				stroke='grey'
+				strokeWidth='2'
+				fill='transparent'
+			/>
 			{rotations.map((item, index) => (
 				<motion.circle
 					key={index}
@@ -3378,136 +3518,14 @@ const SpinningDots = () => {
 };
 
 export default SpinningDots;
-```
 
-# src/components/blog-components/BubbleLoader.css
-
-```css
-@keyframes rise {
-	0% {
-		transform: translateY(100%) scale(0);
-		opacity: 0;
-	}
-	20% {
-		opacity: 0.5;
-		transform: translateY(80%) scale(0.8);
-	}
-	80% {
-		opacity: 0.8;
-		transform: translateY(20%) scale(1);
-	}
-	100% {
-		transform: translateY(-100%) scale(1);
-		opacity: 0;
-	}
-}
-
-.animate-rise {
-	animation: rise 4s ease-out forwards;
-}
-
-/* Prevent animation flash on page load */
-@media (prefers-reduced-motion: no-preference) {
-	.animate-rise {
-		will-change: transform, opacity;
-	}
-}
-```
-
-# src/components/blog-components/BubbleLoader.module.css
-
-```css
-.container {
-	position: relative;
-	width: 100%;
-	max-width: 32rem;
-	margin: 0 auto;
-	isolation: isolate;
-}
-
-.loaderBox {
-	position: relative;
-	aspect-ratio: 16/9;
-	background: #1f2937;
-	border-radius: 0.5rem;
-	overflow: hidden;
-}
-
-.playButton {
-	position: absolute;
-	inset: 0;
-	margin: auto;
-	width: 4rem;
-	height: 4rem;
-	border-radius: 9999px;
-	background-color: #3b82f6;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	cursor: pointer;
-	transition: all 200ms;
-	z-index: 10;
-}
-
-.playButton:hover {
-	background-color: #2563eb;
-	transform: scale(1.1);
-}
-
-.progressBar {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	height: 0.25rem;
-	background-color: #3b82f6;
-	transition: width 300ms ease-out;
-}
-
-.progressText {
-	position: absolute;
-	top: 1rem;
-	left: 1rem;
-	font-size: 1.125rem;
-	font-weight: 600;
-	color: white;
-}
-
-.bubble {
-	position: absolute;
-	border-radius: 9999px;
-	background-color: rgba(96, 165, 250, 0.5);
-	backdrop-filter: blur(4px);
-	cursor: pointer;
-	animation: rise 4s ease-out forwards;
-	will-change: transform, opacity;
-}
-
-@keyframes rise {
-	0% {
-		transform: translateY(100%) scale(0);
-		opacity: 0;
-	}
-	20% {
-		transform: translateY(80%) scale(0.8);
-		opacity: 0.5;
-	}
-	80% {
-		transform: translateY(20%) scale(1);
-		opacity: 0.8;
-	}
-	100% {
-		transform: translateY(-100%) scale(1);
-		opacity: 0;
-	}
-}
 ```
 
 # src/components/blog-components/BubbleLoader.tsx
 
 ```tsx
 /*-= src/components/blog-components/BubbleLoader.tsx =-*/
-/*- Interactive Bubble Loader -*/
+/*- Bubble Loader with Completion Image -*/
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -3515,217 +3533,1992 @@ import { Play } from "lucide-react";
 import Image from "next/image";
 
 interface BubbleLoaderProps {
-	duration?: number;
-	onComplete?: () => void;
+  duration?: number;
+  onComplete?: () => void;
+  autoStart?: boolean;
 }
 
 interface Bubble {
-	id: number;
-	x: number;
-	size: number;
-	color: string;
-	delay: number;
+  id: number;
+  x: number;
+  size: number;
+  color: string;
+  delay: number;
 }
 
-const BubbleLoader: React.FC<BubbleLoaderProps> = ({ duration = 5000, onComplete }) => {
-	const [isActive, setIsActive] = useState(false);
-	const [isComplete, setIsComplete] = useState(false);
-	const [progress, setProgress] = useState(0);
-	const [bubbles, setBubbles] = useState<Bubble[]>([]);
-	const [points, setPoints] = useState(0);
-	const progressIntervalRef = useRef<NodeJS.Timer>();
-	const bubbleIntervalRef = useRef<NodeJS.Timer>();
+const BubbleLoader: React.FC<BubbleLoaderProps> = ({
+  duration = 5000,
+  onComplete,
+  autoStart = false
+}) => {
+  const [isActive, setIsActive] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [bubbles, setBubbles] = useState<Bubble[]>([]);
+  const [points, setPoints] = useState(0);
+  const progressIntervalRef = useRef<NodeJS.Timer>();
+  const bubbleIntervalRef = useRef<NodeJS.Timer>();
 
-	const colors = ["#60A5FA", "#C084FC", "#34D399", "#F472B6", "#A5B4FC", "#93C5FD", "#F9A8D4", "#86EFAC", "#38BDF8", "#FB7185", "#4ADE80", "#F472B6"];
+  const colors = [
+    "#60A5FA", "#C084FC", "#34D399", "#F472B6", "#A5B4FC",
+    "#93C5FD", "#F9A8D4", "#86EFAC", "#38BDF8", "#FB7185",
+    "#4ADE80", "#F472B6"
+  ];
 
-	const handleBubblePop = (id: number) => {
-		setBubbles((prev) => prev.filter((bubble) => bubble.id !== id));
-		setPoints((prev) => prev + 10);
-	};
+  useEffect(() => {
+    if (autoStart) {
+      startLoader();
+    }
+  }, [autoStart]);
 
-	const startLoader = () => {
-		setIsActive(true);
-		setProgress(0);
-		setBubbles([]);
-		setPoints(0);
-		setIsComplete(false);
+  const handleBubblePop = (id: number) => {
+    setBubbles(prev => prev.filter(bubble => bubble.id !== id));
+    setPoints(prev => prev + 10);
+  };
 
-		bubbleIntervalRef.current = setInterval(() => {
-			setBubbles((prev) => [
-				...prev.slice(-20),
-				{
-					id: Date.now(),
-					x: Math.random() * 1000,
-					size: Math.random() * 30 + 15,
-					color: colors[Math.floor(Math.random() * colors.length)],
-					delay: Math.random() * 0.5,
-				},
-			]);
-		}, 200);
+  const startLoader = () => {
+    setIsActive(true);
+    setProgress(0);
+    setBubbles([]);
+    setPoints(0);
+    setIsComplete(false);
 
-		progressIntervalRef.current = setInterval(() => {
-			setProgress((prev) => {
-				const newProgress = Math.min(prev + 1, 100);
-				if (newProgress === 100) {
-					if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-					if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
-					setIsComplete(true);
-					onComplete?.();
-				}
-				return newProgress;
-			});
-		}, duration / 100);
-	};
+    bubbleIntervalRef.current = setInterval(() => {
+      setBubbles(prev => [
+        ...prev.slice(-40),
+        {
+          id: Date.now(),
+          x: Math.random() * 1000,
+          size: Math.random() * 30 + 15,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          delay: Math.random() * 0.5
+        }
+      ]);
+    }, 200);
 
-	useEffect(() => {
-		return () => {
-			if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-			if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
-		};
-	}, []);
+    progressIntervalRef.current = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = Math.min(prev + 1, 100);
+        if (newProgress === 100) {
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
+          setIsComplete(true);
+          onComplete?.();
+        }
+        return newProgress;
+      });
+    }, duration / 100);
+  };
 
-	return (
-		<div className='relative w-full max-w-2xl mx-auto'>
-			<div className='relative aspect-[16/9] bg-gray-800 rounded-lg overflow-hidden'>
-				{!isActive ? (
-					<button onClick={startLoader} className='absolute inset-0 m-auto w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white'>
-						<Play size={32} />
-					</button>
-				) : (
-					<>
-						<AnimatePresence>
-							{isComplete ? (
-								<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='absolute inset-0'>
-									<Image src='/public/assets/Bubbles-Fishes.webp' alt='Bubbles & Fishes' fill className='object-cover' sizes='(max-width: 768px) 100vw, 32rem' />
-								</motion.div>
-							) : (
-								<svg viewBox='0 0 1000 500' preserveAspectRatio='none' className='absolute inset-0 w-full h-full'>
-									{bubbles.map((bubble) => (
-										<motion.circle
-											key={bubble.id}
-											cx={bubble.x}
-											r={bubble.size}
-											fill={bubble.color}
-											initial={{ cy: 500, opacity: 0 }}
-											animate={{ cy: -50, opacity: [0, 0.8, 0] }}
-											transition={{
-												duration: 4,
-												delay: bubble.delay,
-												ease: "easeOut",
-											}}
-											onMouseEnter={() => handleBubblePop(bubble.id)}
-											style={{ cursor: "pointer" }}
-										/>
-									))}
-								</svg>
-							)}
-						</AnimatePresence>
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (bubbleIntervalRef.current) clearInterval(bubbleIntervalRef.current);
+    };
+  }, []);
 
-						<div className='absolute bottom-0 left-0 h-2 bg-gradient-to-r from-blue-400 to-purple-400 transition-all' style={{ width: `${progress}%` }} />
-						<div className='absolute top-4 left-4 flex justify-between w-full px-4'>
-							<span className='text-lg font-semibold text-white'>{Math.floor(progress)}%</span>
-							<span className='text-lg font-semibold text-yellow-400'>Points: {points}</span>
-						</div>
-					</>
-				)}
-			</div>
-		</div>
-	);
+  return (
+    <div className="relative w-full max-w-2xl mx-auto">
+      <div className="relative aspect-[16/9] bg-gray-800 rounded-lg overflow-hidden">
+        <AnimatePresence>
+          {isComplete && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-10"
+            >
+              <Image
+                src="/assets/Bubbles-Fishes.webp"
+                alt="Bubbles & Fishes"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 32rem"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {(!isActive || isComplete) ? (
+          <button
+            onClick={startLoader}
+            className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-primary-400/60 hover:bg-primary-500/70 flex items-center justify-center text-white z-20"
+          >
+            <Play size={32} />
+          </button>
+        ) : (
+          <>
+            <svg
+              viewBox="0 0 1000 500"
+              preserveAspectRatio="none"
+              className="absolute inset-0 w-full h-full"
+            >
+              {bubbles.map(bubble => (
+                <motion.circle
+                  key={bubble.id}
+                  cx={bubble.x}
+                  r={bubble.size}
+                  fill={bubble.color}
+                  initial={{ cy: 500, opacity: 0 }}
+                  animate={{ cy: -50, opacity: [0, 0.8, 0] }}
+                  transition={{
+                    duration: 4,
+                    delay: bubble.delay,
+                    ease: "easeOut"
+                  }}
+                  onMouseEnter={() => handleBubblePop(bubble.id)}
+                  style={{ cursor: "pointer" }}
+                />
+              ))}
+            </svg>
+
+            <div
+              className="absolute bottom-0 left-0 h-2 bg-gradient-to-r from-blue-400 to-purple-400 transition-all"
+              style={{ width: `${progress}%` }}
+            />
+            <div className="absolute top-4 left-4 flex justify-between w-full px-4">
+              <span className="text-lg font-semibold text-white">
+                {Math.floor(progress)}%
+              </span>
+              <span className="text-lg font-semibold text-success-400 mr-6">
+                Points: {points}
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default BubbleLoader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/blog-components/BubbleLoaderApp.tsx
 
 ```tsx
-"use client";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
-const BubbleLoaderApp = dynamic(() => import("@/components/blog-components/BubbleLoader"), { ssr: false });
+"use client";
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+
+
+const BubbleLoaderApp = dynamic(
+  () => import('@/components/blog-components/BubbleLoader'),
+  { ssr: false }
+);
 
 function MyPage() {
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			{/* <DynamicBubbleLoader */}
-			<BubbleLoaderApp duration={5000} onComplete={() => console.log("Complete!")} />
-		</Suspense>
-	);
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      {/* <DynamicBubbleLoader */}
+      <BubbleLoaderApp
+        duration={5000}
+        onComplete={() => console.log('Complete!')}
+      />
+    </Suspense>
+  );
 }
 
 export default BubbleLoaderApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
-# src/components/blog-components/CodeBlock.tsx
-
-```tsx
-"use client";
-import Prism from "prismjs";
-import { useState, useEffect } from "react";
-import { Copy, CheckCircle } from "lucide-react";
-import "prismjs/themes/prism-tomorrow.css";
-
-import "prismjs/components/prism-markup";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-jsx";
-import "prismjs/components/prism-tsx";
-import "prismjs/components/prism-css";
-import "prismjs/plugins/normalize-whitespace/prism-normalize-whitespace";
-
-type CodeBlockProps = {
-	code: string;
-	language?: string;
-	fontSize?: string;
-};
-
-export function CodeBlock({ code, language = "typescript", fontSize = "1.875rem" }: CodeBlockProps) {
-	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		Prism.plugins.NormalizeWhitespace.setDefaults({
-			"remove-trailing": true,
-			"remove-indent": true,
-			"left-trim": true,
-			"right-trim": true,
-		});
-
-		Prism.highlightAll();
-	}, [code]);
-
-	const handleCopy = async () => {
-		await navigator.clipboard.writeText(code);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
-	};
-
-	return (
-		<div className='relative group my-0'>
-			<div className='absolute right-2 top-2 flex items-center space-x-2'>
-				<span className='text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded'>{language}</span>
-				<button onClick={handleCopy} className='p-2 text-gray-400 hover:text-white transition-colors'>
-					{copied ? <CheckCircle size={16} className='text-green-500' /> : <Copy size={16} />}
-				</button>
-			</div>
-
-			<pre className='!bg-[#282c34] max-h-[300px] max-w-[700px] p-4 mt-0 mb-8' style={{ fontSize }}>
-				<code className={`language-${language}`}>{code}</code>
-			</pre>
-		</div>
-	);
-}
-
-{
-	/* <CodeBlock
-  code={sampleCode}
-  language="javascript"
-  fontSize="1rem"
-/> */
-}
-```
-
-# src/components/blog-components/ImageLoader.css
+# src/components/blog-components/CircularLoader.css
 
 ```css
 .image-loader-container {
@@ -3754,10 +5547,10 @@ export function CodeBlock({ code, language = "typescript", fontSize = "1.875rem"
 
 .loader-animation {
 	margin-bottom: 10px;
-	border: 1px solid red;
-	width: 200px;
-	height: 200px;
-	margin: 5rem;
+   border: 1px solid red;
+   width: 200px;
+   height: 200px;
+   margin: 5rem;
 }
 .loader-progress {
 	font-size: 1.5rem;
@@ -3780,118 +5573,517 @@ export function CodeBlock({ code, language = "typescript", fontSize = "1.875rem"
 	}
 }
 
+
+
 .image-loader-image {
 	max-width: 100%;
 	height: auto;
 	transition: opacity 0.5s ease-in-out;
 }
+
 ```
 
-# src/components/blog-components/ImageLoader.tsx
+# src/components/blog-components/CircularLoader.tsx
 
 ```tsx
 "use client";
 import React, { useState, useEffect } from "react";
-import "./ImageLoader.css";
-import "./articles/PercentageSVG2.css";
 import Image from "next/image";
 import CircularSVG2 from "./articles/CircularSVG2";
 
-import { AnimatePresence } from "framer-motion";
+const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
+   const [progress, setProgress] = useState(0);
+   const [isLoaded, setIsLoaded] = useState(false);
 
-const ImageLoader = ({ src, alt }: { src: string; alt: string }) => {
-	const [progress, setProgress] = useState(0);
-	const [isLoaded, setIsLoaded] = useState(false);
+   useEffect(() => {
+      const loadImage = (src: string): Promise<void> => {
+         return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", src, true);
+            xhr.responseType = "arraybuffer";
 
-	useEffect(() => {
-		const loadImage = (src: string): Promise<void> => {
-			return new Promise((resolve, reject) => {
-				const xhr = new XMLHttpRequest();
-				xhr.open("GET", src, true);
-				xhr.responseType = "arraybuffer";
+            xhr.onprogress = (event) => {
+               if (event.lengthComputable) {
+                  const percentComplete = (event.loaded / event.total) * 100;
+                  setProgress(Math.round(percentComplete));
+               }
+            };
 
-				xhr.onprogress = (event) => {
-					if (event.lengthComputable) {
-						const percentComplete = (event.loaded / event.total) * 100;
-						setProgress(Math.round(percentComplete));
-					}
-				};
+            xhr.onload = () => {
+               if (xhr.status === 200) {
+                  setProgress(100);
+                  resolve();
+               } else {
+                  reject(new Error(`Failed to load image: ${xhr.statusText}`));
+               }
+            };
+            xhr.onerror = () => reject(new Error("Error loading image"));
+            xhr.send();
+         });
+      };
 
-				xhr.onload = () => {
-					if (xhr.status === 200) {
-						setProgress(100);
-						resolve();
-					} else {
-						reject(new Error(`Failed to load image: ${xhr.statusText}`));
-					}
-				};
+      loadImage(src)
+         .then(() => setIsLoaded(true))
+         .catch((err) => console.error(err));
 
-				xhr.onerror = () => reject(new Error("Error loading image"));
-				xhr.send();
-			});
-		};
+      return () => {
 
-		loadImage(src)
-			.then(() => setIsLoaded(true))
-			.catch((err) => console.error(err));
+      };
+   }, [src]);
 
-		return () => {};
-	}, [src]);
-
-	return (
-		<>
-			<div className='image-loader-container'>
-				{!isLoaded && (
-					<div className='loader-overlay'>
-						<div className='loader-animation'></div>
-						<CircularSVG2 />
-						<div className='loader-progress'>
-							{progress}% {/* Shows the loading percentage */}
-						</div>
+   return (
+      <>
+         {/* <div className='image-loader-container'>
+			{!isLoaded && (
+				<div className='loader-overlay'>
+					<div className='loader-animation'>
 					</div>
-				)}
-				<Image src={src} alt={alt} width={500} height={300} />
-			</div>
-		</>
-	);
+               <CircularSVG2 />
+					<div className='loader-progress'>
+						{progress}%
+					</div>
+				</div>
+			)} */}
+         <div className="relative w-full h-full flex justify-center items-center overflow-hidden">
+            {!isLoaded && (
+               <div className="absolute inset-0 flex flex-col justify-center items-center bg-white/80 z-10">
+                  <div className="mb-2.5">
+                     <div className="w-[100px] h-[100px] animate-spin">
+                        <CircularSVG2 />
+                     </div>
+                  </div>
+                  <div className="text-2xl font-bold text-green-500">
+                     {progress}% {/* Shows the loading percentage */}
+                  </div>
+               </div>
+            )}
+            <Image
+               src={src}
+               alt={alt}
+               width={500}
+               height={300}
+            />
+         </div>
+      </>
+   );
 };
 
-export default ImageLoader;
+export default CircularLoader;
+
 ```
 
-# src/components/blog-components/ImageLoaderApp.tsx
+# src/components/blog-components/CircularLoaderApp.tsx
 
 ```tsx
+
+
 import React from "react";
-import "./ImageLoader.css";
+import "./CircularLoader.css";
 
 interface ImageLoaderProps {
-	src: string;
-	alt: string;
-	className?: string;
+  src: string;
+  alt: string;
+  className?: string;
 }
 
 const ImageLoaderApp: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
-	return (
-		<div className='image-loader-container'>
-			<div className='loader-overlay'>Loading...</div>
-			<img src={src} alt={alt} className={`image-loader-image ${className || ""}`} />
-		</div>
-	);
+
+  return (
+    <div className="image-loader-container">
+      <div className="loader-overlay">Loading...</div>
+      <img
+        src={src}
+        alt={alt}
+        className={`image-loader-image ${className || ""}`}
+      />
+    </div>
+  );
 };
 
 export default ImageLoaderApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/blog-components/CodeBlock.tsx
+
+```tsx
+/* src/components/blog-components/CodeBlock.tsx */
+"use client";
+import Prism from "prismjs";
+import { useState, useEffect } from "react";
+import { Copy, CheckCircle } from "lucide-react";
+import "prismjs/themes/prism-tomorrow.css";
+
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/plugins/normalize-whitespace/prism-normalize-whitespace";
+
+
+
+type CodeBlockProps = {
+	code: string;
+	language?: string;
+	fontSize?: string;
+};
+
+export function CodeBlock({
+	code,
+	language = "typescript",
+	fontSize = "1.875rem",
+}: CodeBlockProps) {
+	const [copied, setCopied] = useState(false);
+
+
+
+
+	useEffect(() => {
+		Prism.plugins.NormalizeWhitespace.setDefaults({
+			"remove-trailing": true,
+			"remove-indent": true,
+			"left-trim": true,
+			"right-trim": true,
+		});
+
+		Prism.highlightAll();
+	}, [code]);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(code);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className='relative group my-0'>
+			<div className='absolute right-2 top-2 flex items-center space-x-2'>
+				<span className='text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded'>{language}</span>
+				<button
+					onClick={handleCopy}
+					className='p-2 text-gray-400 hover:text-white transition-colors'
+				>
+					{copied ? (
+						<CheckCircle
+							size={16}
+							className='text-green-500'
+						/>
+					) : (
+						<Copy size={16} />
+					)}
+				</button>
+			</div>
+
+			<pre
+				className='!bg-[#282c34] max-h-[300px] max-w-[700px] p-4 mt-0 mb-8'
+
+				style={{ fontSize }}
+			>
+				<code className={`language-${language}`}>{code}</code>
+			</pre>
+		</div>
+	);
+}
+
+
+{
+	/* <CodeBlock
+  code={sampleCode}
+  language="javascript"
+  fontSize="1rem"
+/> */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/blog-components/InteractiveChartPost.tsx
 
 ```tsx
+/* src/components/blog-components/InteractiveChartPost.tsx */
 "use client";
 import React, { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function InteractiveChartPost() {
 	const [timeframe, setTimeframe] = useState("1y");
+
 
 	const data = {
 		"1m": [
@@ -3936,12 +6128,34 @@ export default function InteractiveChartPost() {
 			</div>
 
 			<div className='h-80'>
-				<ResponsiveContainer width='100%' height='100%'>
-					<LineChart data={data[timeframe]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-						<CartesianGrid strokeDasharray='3 3' stroke='#374151' />
-						<XAxis dataKey='date' stroke='#9CA3AF' tick={{ fill: "#9CA3AF" }} />
-						<YAxis yAxisId='left' stroke='#9CA3AF' tick={{ fill: "#9CA3AF" }} />
-						<YAxis yAxisId='right' orientation='right' stroke='#9CA3AF' tick={{ fill: "#9CA3AF" }} />
+				<ResponsiveContainer
+					width='100%'
+					height='100%'
+				>
+					<LineChart
+						data={data[timeframe]}
+						margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+					>
+						<CartesianGrid
+							strokeDasharray='3 3'
+							stroke='#374151'
+						/>
+						<XAxis
+							dataKey='date'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
+						<YAxis
+							yAxisId='left'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
+						<YAxis
+							yAxisId='right'
+							orientation='right'
+							stroke='#9CA3AF'
+							tick={{ fill: "#9CA3AF" }}
+						/>
 						<Tooltip
 							contentStyle={{
 								backgroundColor: "#1F2937",
@@ -3951,8 +6165,24 @@ export default function InteractiveChartPost() {
 							}}
 						/>
 						<Legend />
-						<Line yAxisId='left' type='monotone' dataKey='users' stroke='#3B82F6' strokeWidth={2} dot={{ fill: "#3B82F6", strokeWidth: 2 }} activeDot={{ r: 8 }} />
-						<Line yAxisId='right' type='monotone' dataKey='revenue' stroke='#10B981' strokeWidth={2} dot={{ fill: "#10B981", strokeWidth: 2 }} activeDot={{ r: 8 }} />
+						<Line
+							yAxisId='left'
+							type='monotone'
+							dataKey='users'
+							stroke='#3B82F6'
+							strokeWidth={2}
+							dot={{ fill: "#3B82F6", strokeWidth: 2 }}
+							activeDot={{ r: 8 }}
+						/>
+						<Line
+							yAxisId='right'
+							type='monotone'
+							dataKey='revenue'
+							stroke='#10B981'
+							strokeWidth={2}
+							dot={{ fill: "#10B981", strokeWidth: 2 }}
+							activeDot={{ r: 8 }}
+						/>
 					</LineChart>
 				</ResponsiveContainer>
 			</div>
@@ -3968,6 +6198,7 @@ export default function InteractiveChartPost() {
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog-components/InteractiveCounterPost.tsx
@@ -4010,13 +6241,22 @@ export default function InteractiveCounterPost() {
 				<div className='flex flex-col items-center gap-4 py-8'>
 					<div className='text-6xl font-bold text-gray-900 dark:text-white'>{count}</div>
 					<div className='flex gap-2'>
-						<button onClick={() => setCount((c) => c - 1)} className={`px-4 py-2 rounded text-white ${colors[theme]}`}>
+						<button
+							onClick={() => setCount((c) => c - 1)}
+							className={`px-4 py-2 rounded text-white ${colors[theme]}`}
+						>
 							Decrease
 						</button>
-						<button onClick={() => setCount(0)} className='px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white'>
+						<button
+							onClick={() => setCount(0)}
+							className='px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white'
+						>
 							Reset
 						</button>
-						<button onClick={() => setCount((c) => c + 1)} className={`px-4 py-2 rounded text-white ${colors[theme]}`}>
+						<button
+							onClick={() => setCount((c) => c + 1)}
+							className={`px-4 py-2 rounded text-white ${colors[theme]}`}
+						>
 							Increase
 						</button>
 					</div>
@@ -4036,175 +6276,326 @@ export default function InteractiveCounterPost() {
 		</>
 	);
 }
+
 ```
 
 # src/components/blog-components/LazyImageLoader.tsx
 
 ```tsx
+/* src/components/blog-components/LazyImageLoader.tsx */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+
 
 const BubbleLoader = React.lazy(() => import("./BubbleLoader"));
 
 const LazyImageLoader: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
-	const [isVisible, setIsVisible] = useState(false);
-	const [isLoaded, setIsLoaded] = useState(false);
-	const loaderRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					setIsVisible(true);
-				}
-			},
-			{ threshold: 0.1 }
-		);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-		if (loaderRef.current) {
-			observer.observe(loaderRef.current);
-		}
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
 
-		return () => {
-			if (loaderRef.current) {
-				observer.unobserve(loaderRef.current);
-			}
-		};
-	}, []);
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, []);
 
-	const handleLoaderComplete = () => {
-		setIsLoaded(true);
-	};
+  const handleLoaderComplete = () => {
+    setIsLoaded(true);
+  };
 
-	return (
-		<div ref={loaderRef} style={{ position: "relative", minHeight: "300px" }}>
-			{!isLoaded && isVisible && (
-				<React.Suspense fallback={<div>Loading animation...</div>}>
-					<BubbleLoader duration={5000} onComplete={handleLoaderComplete} />
-				</React.Suspense>
-			)}
-			{isLoaded && <img src={src} alt={alt} style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }} />}
-		</div>
-	);
+  return (
+    <div ref={loaderRef} style={{ position: "relative", minHeight: "300px" }}>
+      {!isLoaded && isVisible && (
+        <React.Suspense fallback={<div>Loading animation...</div>}>
+          <BubbleLoader duration={5000} onComplete={handleLoaderComplete} />
+        </React.Suspense>
+      )}
+      {isLoaded && (
+        <img
+          src={src}
+          alt={alt}
+          style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }}
+        />
+      )}
+    </div>
+  );
 };
 
 export default LazyImageLoader;
 ```
 
+# src/components/blog-components/LazyLoader.tsx
+
+```tsx
+/*-= src/components/blog-components/LazyLoader.tsx =-*/
+/*-= Auto-playing Lazy Bubble Loader =-*/
+"use client";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { useInView } from "react-intersection-observer";
+
+const BubbleLoader = dynamic(() => import("./BubbleLoader"), {
+  loading: () => (
+    <div className="w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg animate-pulse" />
+  ),
+});
+
+interface LazyLoaderProps {
+  threshold?: number;
+  duration?: number;
+  onComplete?: () => void;
+}
+
+const LazyLoader: React.FC<LazyLoaderProps> = ({
+  threshold = 0.1,
+  duration = 5000,
+  onComplete
+}) => {
+  const [autoStart, setAutoStart] = useState(false);
+  const { ref, inView } = useInView({
+    threshold,
+    triggerOnce: true
+  });
+
+  useEffect(() => {
+    if (inView) {
+      setAutoStart(true);
+    }
+  }, [inView]);
+
+  return (
+    <div ref={ref}>
+      {inView && (
+        <BubbleLoader
+          duration={duration}
+          onComplete={onComplete}
+          autoStart={autoStart}
+        />
+      )}
+    </div>
+  );
+};
+
+export default LazyLoader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
 # src/components/blog-components/LoaderComponentPost.tsx
 
 ```tsx
+/* src/components/blog-components/LoaderComponentPost.tsx */
 "use client";
 import React, { Suspense } from "react";
 import Spinner from "./articles/Spinner";
-import ImageLoader from "./ImageLoader";
 
+import LazyLoader from "./LazyLoader";
 import dynamic from "next/dynamic";
+import LoaderModalApp from "../modal-components/CircularLoaderModalApp";
+
+import SkeletonLoaderAppApp from "./../skeleton-components/SkeletonLoaderApp";
+import UserProfile from "../skeleton-components/UserProfile";
+import DataListApp from "../data-list-components/DataListApp";
+import LazyLoadComponentApp from "../lazy-load-components/LazyLoadComponentApp";
+import LazyToggleComponentApp from "../lazy-load-components/LazyToggleComponentApp";
+import LazyLoaderApp from "../lazy-load-components/LazyLoaderApp";
 
 const PercentageSVG2 = React.lazy(() => import("./articles/PercentageSVG2"));
 
 const BubbleLoader = dynamic(() => import("./BubbleLoader"), {
-	ssr: false,
-	loading: () => <div className='w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg' />,
+   ssr: false,
+   loading: () => <div className='w-full max-w-2xl mx-auto aspect-[16/9] bg-gray-800 rounded-lg' />,
 });
 
 const LoaderComponentPost = () => {
-	return (
-		<div>
-			<div className=''>The concept of loaders on the web has come a long way, mirroring the evolution of user expectations and advancements in web technologies. Initially a functional necessity, loaders have transformed into a critical UX element designed to improve user engagement and reduce perceived wait times. Here’s a look at their progression:</div>
+   return (
+      <div>
+         <div className=''>The concept of loaders on the web has come a long way, mirroring the evolution of user expectations and advancements in web technologies. Initially a functional necessity, loaders have transformed into a critical UX element designed to improve user engagement and reduce perceived wait times. Here’s a look at their progression:</div>
 
-			{/*---= Simple Spinner =---*/}
-			<div>
-				<h3>Simple Spinner:</h3>
-				<div>Web Loaders In the early days of the web, spinner loaders were the norm. These were simple, often animated GIFs or CSS-based circular animations designed to inform users that the application was processing a request or loading content. While functional, spinners had several limitations:</div>
-				<ul>
-					<li>They provided no context or feedback about the progress or what was loading.</li>
-					<li>They increased perceived wait times due to their generic nature.</li>
-					<li>Users had no way of knowing how long they needed to wait. Despite these drawbacks, spinners were lightweight and easy to implement, making them a staple in early web applications.</li>
-				</ul>
+         {/*---= Simple Spinner =---*/}
+         <div>
+            <h3>Simple Spinner:</h3>
+            <div>Web Loaders In the early days of the web, spinner loaders were the norm. These were simple, often animated GIFs or CSS-based circular animations designed to inform users that the application was processing a request or loading content. While functional, spinners had several limitations:</div>
+            <ul>
+               <li>They provided no context or feedback about the progress or what was loading.</li>
+               <li>Users had no way of knowing how long they needed to wait. </li>
+            </ul>
+            <div> Despite these drawbacks, spinners were lightweight and easy to implement, making them a staple in early web applications.</div>
+            <div className='border border-gray-300 rounded-lg p-4 mt-8'>
+               <Spinner />
+            </div>
+         </div>
+         <div className='border border-gray-300 rounded-lg p-4 mt-8'>
+            <h4>Simpler Still:</h4>
+            <p>Loading...</p>
+         </div>
 
-				<Spinner />
-			</div>
-			<div>
-				<h4>Simpler Still:</h4>
-				<p>Loading...</p>
-			</div>
+         {/*---= Progress Indicator =---*/}
+         <div className='mt-20'>
+            <h3>Progress Indicators:</h3>
+            <div>A step toward transparency to address the shortcomings of spinners, progress indicators became more common. These loaders, often seen as progress bars, circular percentage counters, or circular progress bars, provided users with real-time feedback on the percentage of data loaded. </div>
+            <div>Examples included:</div>
+            <ul>
+               <li>Linear progress bars (e.g., the classic loading bar).</li>
+               <li>Circular progress indicators showing incremental loading. Progress indicators improved user satisfaction by setting clearer expectations about wait times but were limited to applications where precise loading percentages could be calculated.</li>
+               <li>Check out a sample usage and simulation: https:
+            </ul>
+         </div>
 
-			{/*---= Progress Indicator =---*/}
-			<div className='mt-20'>
-				<h3>Progress Indicators:</h3>
-				<div>A Step Toward Transparency To address the shortcomings of spinners, progress indicators became more common. These loaders, often seen as progress bars, provided users with real-time feedback on the percentage of data loaded. </div>
-				<div>Examples included:</div>
-				<ul>
-					<li>Linear progress bars (e.g., the classic loading bar).</li>
-					<li>Circular progress indicators showing incremental loading. Progress indicators improved user satisfaction by setting clearer expectations about wait times but were limited to applications where precise loading percentages could be calculated.</li>
-				</ul>
-			</div>
+         <div className="text-accent-700">Component for ref only!: LazyLoaderApp</div>
+         <div className='border border-gray-300 rounded-lg p-4 mt-8'>
+            {/* <Suspense fallback={<div>Loading...</div>}>
+               <PercentageSVG2 />
+            </Suspense> */}
+            <LazyLoaderApp />
+            {/*---= Modal for creating and animating circular svg =---*/}
+            {/* <div className="mt-10">
 
-			{/* <SpinningDots /> */}
-			{/* <CircularLoader timer={4} /> */}
-			{/* <ImageLoader /> */}
-			<Suspense fallback={<div>Loading...</div>}>
-				<PercentageSVG2 />
-			</Suspense>
+            </div> */}
 
-			<ImageLoader src='/assets/somethingBig.png' alt='Sample Image' />
+         </div>
 
-			{/*---= Skeleton Loader =---*/}
-			<div>
-				<h3>Content-Aware Loaders:</h3>
-				<div>Placeholder and Skeleton Loaders As web applications became more dynamic and content-rich, spinners and progress bars were deemed insufficient. Users expected faster and more intuitive interactions. This led to the rise of placeholder and skeleton loaders, which provided a more contextual loading experience. Placeholder Loaders Placeholder loaders temporarily replaced content with blank or generic shapes resembling the final layout. These loaders made pages feel faster by giving users a visual cue about what to expect. Skeleton Loaders A more advanced version of placeholder loaders, skeleton loaders show a framework of the content being loaded (e.g., grey boxes for images or text). These loaders:</div>
-				<ul>
-					<li>Mimic the structure of the actual content.</li>
-					<li>Create an illusion of faster loading by appearing closer to the final design.</li>
-					<li>Offer a smoother visual transition from “loading” to “loaded.” Skeleton loaders became popular with modern frameworks like React, Angular, and Vue, where tools like React Content Loader and NgxSkeletonLoader emerged.</li>
-				</ul>
-				<h3>Shimmer Effects:</h3>
-				<div>Adding Motion for Perceived Speed Skeleton loaders evolved further with the introduction of shimmer effects—animated gradients that sweep across the skeleton layout. Shimmer effects:</div>
-				<ul>
-					<li>Give users a sense of progress even when the loading time is static.</li>
-					<li>Add a modern, polished touch to loaders.</li>
-					<li>Are lightweight to implement using CSS or libraries. Apps like Facebook and LinkedIn popularized shimmer skeleton loaders, setting a new standard for modern web loaders.</li>
-				</ul>
-				<h3>Intelligent Loaders:</h3>
-				<div>AI and Predictive Loading Today, loaders are becoming smarter, leveraging AI and predictive techniques to optimize the loading experience. Examples include:</div>
-				<ul>
-					<li>Progressive Rendering: Content is rendered in chunks, with critical sections prioritized, reducing the need for noticeable loaders.</li>
-					<li>Lazy Loading: Loaders are triggered only when content comes into view, improving perceived performance.</li>
-					<li>Preemptive Loading: AI analyzes user behavior to predict what they might view next and preloads content, reducing the need for loaders altogether.</li>
-				</ul>
+         {/*---= Skeleton Loader =---*/}
+         <div>
+            <h3>Content-Aware Loaders:</h3>
+            <div>Placeholder and Skeleton Loaders As web applications became more dynamic and content-rich, spinners and progress bars were deemed insufficient. Users expected faster and more intuitive interactions. This led to the rise of placeholder and skeleton loaders, which provided a more contextual loading experience. Placeholder Loaders Placeholder loaders temporarily replaced content with blank or generic shapes resembling the final layout. These loaders made pages feel faster by giving users a visual cue about what to expect. Skeleton Loaders A more advanced version of placeholder loaders, skeleton loaders show a framework of the content being loaded (e.g., grey boxes for images or text). These loaders:</div>
+            <ul>
+               <li>Mimic the structure of the actual content.</li>
+               <li>Create an illusion of faster loading by appearing closer to the final design.</li>
+               <li>Offer a smoother visual transition from “loading” to “loaded.” Skeleton loaders became popular with modern frameworks like React, Angular, and Vue, where tools like React Content Loader and NgxSkeletonLoader emerged.</li>
+            </ul>
+            <h3>Shimmer Effects:</h3>
+            <div>Adding Motion for Perceived Speed Skeleton loaders evolved further with the introduction of shimmer effects—animated gradients that sweep across the skeleton layout. Shimmer effects:</div>
+            <ul>
+               <li>Give users a sense of progress even when the loading time is static.</li>
+               <li>Add a modern, polished touch to loaders.</li>
+               <li>Are lightweight to implement using CSS or libraries. Apps like Facebook and LinkedIn popularized shimmer skeleton loaders, setting a new standard for modern web loaders.</li>
+            </ul>
 
-				{/*---= Gamified Loader =---*/}
-				<h3>The Future of Loaders:</h3>
-				<div>Micro-Interactions and Beyond Modern loaders are shifting away from “waiting indicators” toward micro-interactions that subtly entertain or engage users. This includes:</div>
-				<ul>
-					<li>Gamified Loaders: Interactive loaders that turn waiting into a playful experience.</li>
-					<li>Personalized Loaders: Custom messages or visuals that align with user preferences.</li>
-					<li>Invisible Loaders: Innovations like instantaneous loading states (e.g., skeleton loaders seamlessly integrated into the DOM) make traditional loaders less noticeable. With the rise of WebAssembly and edge computing, loaders might one day become obsolete as websites achieve near-instantaneous load times. Conclusion The evolution of loaders reflects the changing landscape of web development and user expectations. From simple spinners to sophisticated skeleton loaders and intelligent predictive systems, loaders have transformed into a critical component of user experience. As web technologies continue to advance, the focus will increasingly shift toward making loaders seamless, invisible, or entirely unnecessary.</li>
-				</ul>
-				<div className='p-4'>
-					<BubbleLoader duration={5000} onComplete={() => console.log("Animation complete")} />
-				</div>
-				{/* <BubbleLoader
-               duration={5000}
-               bubbleCount={15}
-               minSize={15}
-               maxSize={35}
-               primaryColor="rgb(99, 102, 241)"
-               secondaryColor="rgb(67, 56, 202)"
-               onComplete={() => console.log('Loading complete')}
-            /> */}
-			</div>
-		</div>
-	);
+            <div className='border border-gray-300 rounded-lg p-4 mt-8'>
+               <UserProfile />
+            </div>
+
+            {/* <div className='border border-gray-300 rounded-lg p-4 mt-8'> */}
+               {/* <DataListApp /> */}
+               {/* <LazyLoadComponentApp /> */}
+               {/* <LazyToggleComponentApp /> */}
+               {/* <LazyLoaderApp /> */}
+            {/* </div> */}
+
+            {/*---= Intelligent Loader =---*/}
+            <h3>Intelligent Loaders:</h3>
+            <div>AI and Predictive Loading Today, loaders are becoming smarter, leveraging AI and predictive techniques to optimize the loading experience. Examples include:</div>
+            <ul>
+               <li>Progressive Rendering: Content is rendered in chunks, with critical sections prioritized, reducing the need for noticeable loaders.</li>
+               <li>Lazy Loading: With IntersectionObserver, loaders activate only when content enters the viewport, enhancing perceived performance. Refer to the UserProfile sample above for guidance.</li>
+               <li>Preemptive Loading: AI analyzes user behavior to predict what they might view next and preloads content, reducing the need for loaders altogether.</li>
+            </ul>
+
+            {/*---= Gamified Loader =---*/}
+            <h3>The Future of Loaders:</h3>
+            <div>Micro-Interactions and Beyond Modern loaders are shifting away from “waiting indicators” toward micro-interactions that subtly entertain or engage users. This includes:</div>
+            <ul>
+               <li>Gamified Loaders: Interactive loaders that turn waiting into a playful experience.</li>
+               <li>Personalized Loaders: Custom messages or visuals that align with user preferences.</li>
+               <li>Invisible Loaders: Innovations like instantaneous loading states (e.g., skeleton loaders seamlessly integrated into the DOM) make traditional loaders less noticeable. With the rise of WebAssembly and edge computing, loaders might one day become obsolete as websites achieve near-instantaneous load times. </li>
+            </ul>
+            <div className='border border-gray-300 rounded-lg p-4 mt-8'>
+               <LazyLoader
+                  duration={10000}
+                  threshold={0.1}
+                  onComplete={() => console.log("Animation complete")}
+               />
+            </div>
+
+            {/*---= Conclusion =---*/}
+            <h3>Conclusion:</h3>
+            <div>The evolution of loaders reflects the changing landscape of web development and user expectations. From simple spinners to sophisticated skeleton loaders and intelligent predictive systems, loaders have transformed into a critical component of user experience. As web technologies continue to advance, the focus will increasingly shift toward making loaders seamless, invisible, or entirely unnecessary.</div>
+
+
+         </div>
+      </div>
+   );
 };
 
 export default LoaderComponentPost;
+
 ```
 
 # src/components/blog/AuthorInfo.tsx
 
 ```tsx
+/* src/components/blog/AuthorInfo.tsx */
 import Image from "next/image";
 
 type AuthorInfoProps = {
@@ -4222,7 +6613,13 @@ export function AuthorInfo({ date }: AuthorInfoProps) {
 
 	return (
 		<div className='flex items-start gap-4 mb-8'>
-			<Image src='/assets/LittleLloyd-FB.jpg' alt='R.Lloyd Gonzales' width={56} height={56} className='border border-gray-500 rounded-full' />
+			<Image
+				src='/assets/LittleLloyd-FB.jpg'
+				alt='R.Lloyd Gonzales'
+				width={56}
+				height={56}
+				className='border border-gray-500 rounded-full'
+			/>
 			<div>
 				<h3 className='text-lg font-semibold text-gray-600 dark:text-gray-400 mb-0'>Lloyd</h3>
 				<p className='text-gray-600 dark:text-gray-400 text-sm mb-0 m-0'>Software Engineer</p>
@@ -4231,11 +6628,13 @@ export function AuthorInfo({ date }: AuthorInfoProps) {
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/CodeBlock.tsx
 
 ```tsx
+/* src/components/blog/CodeBlock.tsx */
 "use client";
 import { useState } from "react";
 import { Copy, CheckCircle } from "lucide-react";
@@ -4246,7 +6645,7 @@ type CodeBlockProps = {
 	showLineNumbers?: boolean;
 };
 
-export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockProps) {
+export function CodeBlockXXX({ code, language, showLineNumbers = true }: CodeBlockProps) {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = async () => {
@@ -4261,8 +6660,19 @@ export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockP
 			{language && <div className='absolute top-2 right-12 px-2 py-1 text-xs text-gray-400 bg-gray-800 rounded'>{language}</div>}
 
 			{/* Copy Button */}
-			<button onClick={handleCopy} className='absolute top-2 right-2 p-1 text-gray-400 hover:text-white transition-colors' aria-label='Copy code'>
-				{copied ? <CheckCircle size={16} className='text-green-500' /> : <Copy size={16} />}
+			<button
+				onClick={handleCopy}
+				className='absolute top-2 right-2 p-1 text-gray-400 hover:text-white transition-colors'
+				aria-label='Copy code'
+			>
+				{copied ? (
+					<CheckCircle
+						size={16}
+						className='text-green-500'
+					/>
+				) : (
+					<Copy size={16} />
+				)}
 			</button>
 
 			{/* Code Content */}
@@ -4271,7 +6681,10 @@ export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockP
 					{showLineNumbers && (
 						<div className='pr-4 text-gray-500 select-none text-right'>
 							{code.split("\n").map((_, i) => (
-								<span key={i} className='block'>
+								<span
+									key={i}
+									className='block'
+								>
 									{i + 1}
 								</span>
 							))}
@@ -4283,11 +6696,13 @@ export function CodeBlock({ code, language, showLineNumbers = true }: CodeBlockP
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/CoverImage.tsx
 
 ```tsx
+/* src/components/blog/CoverImage.tsx */
 import Image from "next/image";
 
 type CoverImageProps = {
@@ -4300,15 +6715,24 @@ export function CoverImage({ src, alt }: CoverImageProps) {
 
 	return (
 		<div className='relative aspect-[2/1] rounded-lg overflow-hidden mb-8'>
-			<Image src={src} alt={alt} fill className='object-cover' sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw' priority />
+			<Image
+				src={src}
+				alt={alt}
+				fill
+				className='object-cover'
+				sizes='(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw'
+				priority
+			/>
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/dashboard/CategoryButtons.tsx
 
 ```tsx
+/* src/components/blog/dashboard/CategoryButtons.tsx */
 import { categories, CategoryId } from "@/data/categories";
 
 type CategoryButtonsProps = {
@@ -4317,13 +6741,26 @@ type CategoryButtonsProps = {
 };
 
 export function CategoryButtons({ activeCategory, onCategoryChange }: CategoryButtonsProps) {
+
 	const getBackgroundColor = (isActive: boolean) => {
 		return isActive ? "bg-primary-600 hover:bg-primary-700" : "bg-gray-800 hover:bg-gray-700";
 	};
 
+
+
+
+
+
+
+
+
+
+
+
 	const getTextColor = (isActive: boolean) => {
 		return isActive ? "text-white" : "text-gray-300 hover:text-white";
 	};
+
 
 	const getIconColor = (isActive: boolean) => {
 		return isActive ? "text-white" : "text-primary-400 group-hover:text-primary-300";
@@ -4335,13 +6772,28 @@ export function CategoryButtons({ activeCategory, onCategoryChange }: CategoryBu
 				const Icon = category.icon;
 				const isActive = activeCategory === category.id;
 				return (
+
+
+
+
+
+
+
+
+
+
+
+
 					<button
 						key={category.id}
 						onClick={() => onCategoryChange(activeCategory === category.id ? null : category.id)}
 						className={`group p-3 sm:p-4 rounded-lg flex items-center justify-center sm:justify-start
               space-x-2 transition-all ${getBackgroundColor(isActive)}`}
 					>
-						<Icon size={20} className={getIconColor(isActive)} />
+						<Icon
+							size={20}
+							className={getIconColor(isActive)}
+						/>
 						<span className={`hidden sm:inline font-medium ${getTextColor(isActive)}`}>{category.name}</span>
 					</button>
 				);
@@ -4349,11 +6801,13 @@ export function CategoryButtons({ activeCategory, onCategoryChange }: CategoryBu
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/dashboard/DynamicComponentPreview.tsx
 
 ```tsx
+/* src/components/blog/dashboard/DynamicComponentPreview.tsx */
 import dynamic from "next/dynamic";
 
 type DynamicComponentPreviewProps = {
@@ -4373,11 +6827,13 @@ export function DynamicComponentPreview({ componentName, props = {} }: DynamicCo
 
 	return <Component {...props} />;
 }
+
 ```
 
 # src/components/blog/dashboard/FeaturedCard.tsx
 
 ```tsx
+/* src/components/blog/dashboard/FeaturedCard.tsx */
 import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/data/categories";
@@ -4398,26 +6854,180 @@ type FeaturedCardProps = {
 };
 
 function PostContent({ post, category }: { post: Post; category: Category }) {
+
 	if (post.cover_image) {
 		return (
 			<div className='absolute inset-0'>
-				<Image src={post.cover_image} alt={post.title} fill className='object-cover transition-transform duration-500 group-hover:scale-105' sizes='(max-width: 768px) 100vw, 50vw' priority />
+				<Image
+					src={post.cover_image}
+					alt={post.title}
+					fill
+					className='object-cover transition-transform duration-500 group-hover:scale-105'
+					sizes='(max-width: 768px) 100vw, 50vw'
+					priority
+				/>
 				<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
 			</div>
 		);
 	}
+
 
 	if (post.type === "component" && post.component_name) {
 		return (
 			<div className='absolute inset-0'>
-				<DynamicComponentPreview componentName={post.component_name} props={post.component_props} />
+				<DynamicComponentPreview
+					componentName={post.component_name}
+					props={post.component_props}
+				/>
 				<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
 			</div>
 		);
 	}
 
+
 	return <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export function FeaturedCard({ post, category, size = "medium", title, description }: FeaturedCardProps) {
 	const cardClasses = `relative overflow-hidden rounded-xl bg-primary-800
@@ -4440,8 +7050,14 @@ export function FeaturedCard({ post, category, size = "medium", title, descripti
 
 	return (
 		<div className={cardClasses}>
-			<Link href={`/blog/${post.slug}`} className='block h-64 sm:h-96 aspect-[16/9]'>
-				<PostContent post={post} category={category} />
+			<Link
+				href={`/blog/${post.slug}`}
+				className='block h-64 sm:h-96 aspect-[16/9]'
+			>
+				<PostContent
+					post={post}
+					category={category}
+				/>
 				<div className='absolute inset-0 p-4 sm:p-6 flex flex-col justify-end'>
 					<div
 						className='flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-6 sm:pr-10
@@ -4461,11 +7077,13 @@ export function FeaturedCard({ post, category, size = "medium", title, descripti
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/dashboard/index.tsx
 
 ```tsx
+/* src/components/dashboard/index.tsx */
 "use client";
 import { useState, useEffect } from "react";
 import { categories, CategoryId } from "@/data/categories";
@@ -4478,6 +7096,7 @@ type DashboardProps = {
 	posts: Post[];
 	featuredSetup: FeaturedSetup;
 };
+
 
 export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) {
 	const [mounted, setMounted] = useState(false);
@@ -4494,6 +7113,7 @@ export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) 
 		...setup,
 	}));
 
+
 	const featuredIds = featuredPosts.map((f) => f.post?.id).filter(Boolean) as string[];
 	const remainingPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredIds.includes(post.id));
 
@@ -4501,7 +7121,10 @@ export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) 
 
 	return (
 		<div className='max-w-page mx-auto px-4 py-8 space-y-8'>
-			<CategoryButtons activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+			<CategoryButtons
+				activeCategory={activeCategory}
+				onCategoryChange={setActiveCategory}
+			/>
 
 			{/* {!activeCategory && (
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
@@ -4524,7 +7147,16 @@ export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) 
 						const categoryData = categories.find((c): c is (typeof categories)[number] => c.id === category);
 						if (!categoryData) return null;
 
-						return <FeaturedCard key={post?.id ?? category} post={post} category={categoryData} size={size} title={title} description={description} />;
+						return (
+							<FeaturedCard
+								key={post?.id ?? category}
+								post={post}
+								category={categoryData}
+								size={size}
+								title={title}
+								description={description}
+							/>
+						);
 					})}
 				</div>
 			)}
@@ -4542,11 +7174,13 @@ export default function BlogDashboard({ posts, featuredSetup }: DashboardProps) 
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/dashboard/PostGrid.tsx
 
 ```tsx
+/* src/components/dashboard/PostGrid.tsx */
 "use client";
 import Link from "next/link";
 import Image from "next/image";
@@ -4555,21 +7189,46 @@ import { categories, CategoryId } from "@/data/categories";
 import type { Post } from "./types";
 
 function PostContent({ post }: { post: Post }) {
-	if (post.cover_image) {
-		return (
-			<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
-				<Image src={post.cover_image} alt={post.title} fill className='object-cover' sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' />
-			</div>
-		);
-	}
+
+
+
+
+
+
+
+
+
+
 
 	if (post.cover_image) {
 		return (
 			<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
-				<Image src={post.cover_image} alt={post.title} fill className='object-cover' sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' />
+				<Image
+					src={post.cover_image}
+					alt={post.title}
+					fill
+					className='object-cover'
+					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+				/>
 			</div>
 		);
 	}
+
+
+	if (post.cover_image) {
+		return (
+			<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>
+				<Image
+					src={post.cover_image}
+					alt={post.title}
+					fill
+					className='object-cover'
+					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+				/>
+			</div>
+		);
+	}
+
 
 	return <div className='aspect-[16/9] relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-md' />;
 }
@@ -4579,10 +7238,84 @@ function CategoryLabel({ categoryId }: { categoryId: CategoryId }) {
 	return <span className={`text-sm ${category?.textColor || "text-gray-400"}`}>{category?.name || "Uncategorized"}</span>;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export function PostGrid({ posts }: { posts: Post[] }) {
 	return (
 		<div className='allPostsGridContainer grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
 			{posts.map((post) => (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				<Link
 					key={post.id}
 					href={`/blog/${post.slug}`}
@@ -4608,45 +7341,49 @@ export function PostGrid({ posts }: { posts: Post[] }) {
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/dashboard/types.ts
 
 ```ts
+/* src/components/blog/dashboard/types.ts */
 import { CategoryId } from "@/data/categories";
 
 export type GridSize = "large" | "medium" | "full";
 
+
 export type ComponentProps = {
-	[key: string]: string | number | boolean | null | undefined | ComponentProps | Array<ComponentProps>;
+   [key: string]: string | number | boolean | null | undefined | ComponentProps | Array<ComponentProps>;
 };
 
 export type Post = {
-	id: string;
-	title: string;
-	content: string;
-	type: "markdown" | "component";
-	component_name?: string;
-	component_props?: ComponentProps;
-	excerpt: string;
-	category: CategoryId;
-	date: string;
-	slug: string;
-	cover_image?: string;
+   id: string;
+   title: string;
+   content: string;
+   type: 'markdown' | 'component';
+   component_name?: string;
+   component_props?: ComponentProps;
+   excerpt: string;
+   category: CategoryId;
+   date: string;
+   slug: string;
+   cover_image?: string;
 };
 
 export type FeaturedSetup = Array<{
-	category: CategoryId;
-	size: GridSize;
-	order: number;
-	title?: string;
-	description?: string;
+   category: CategoryId;
+   size: GridSize;
+   order: number;
+   title?: string;
+   description?: string;
 }>;
 ```
 
 # src/components/blog/EngagementBar.tsx
 
 ```tsx
+/* src/components/blog/EngagementBar.tsx */
 import { Reactions } from "@/components/Reactions";
 
 type EngagementBarProps = {
@@ -4660,11 +7397,13 @@ export function EngagementBar({ postId }: EngagementBarProps) {
 		</div>
 	);
 }
+
 ```
 
 # src/components/blog/MarkdownRenderer.tsx
 
 ```tsx
+/* src/components/blog/MarkdownRenderer.tsx */
 "use client";
 
 import ReactMarkdown from "react-markdown";
@@ -4699,7 +7438,10 @@ const CodeBlock = ({ code, language }: CodeBlockProps) => {
 		<div className='relative mt-4 mb-8'>
 			<div className='absolute top-0 right-0 left-0 flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700 rounded-t-lg z-10'>
 				<span className='text-sm text-gray-400'>{language || "text"}</span>
-				<button onClick={handleCopy} className='flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors'>
+				<button
+					onClick={handleCopy}
+					className='flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors'
+				>
 					{copied ? (
 						<>
 							<CheckCheck size={16} />
@@ -4717,7 +7459,10 @@ const CodeBlock = ({ code, language }: CodeBlockProps) => {
 			<pre className='overflow-x-auto bg-gray-900 rounded-lg pt-12 pb-4'>
 				<code className='block min-w-full'>
 					{lines.map((line, i) => (
-						<div key={i} className='table-row'>
+						<div
+							key={i}
+							className='table-row'
+						>
 							<span className='table-cell text-right pr-4 text-gray-500 select-none w-12'>{i + 1}</span>
 							<span className='table-cell pl-4 text-gray-200'>{line || "\n"}</span>
 						</div>
@@ -4753,19 +7498,37 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 						return <code className='px-1.5 py-0.5 bg-gray-800 text-gray-200 rounded'>{content}</code>;
 					}
 
-					return <CodeBlock code={content} language={language} />;
+					return (
+						<CodeBlock
+							code={content}
+							language={language}
+						/>
+					);
 				},
 				img: ({ src, alt, ...props }) => {
 					if (!src) return null;
 
 					if (src.startsWith("http")) {
-						return <img src={src} alt={alt || ""} className='rounded-lg max-w-full h-auto my-4' />;
+						return (
+							<img
+								src={src}
+								alt={alt || ""}
+								className='rounded-lg max-w-full h-auto my-4'
+							/>
+						);
 					}
 
 					const imageSrc = src.startsWith("/") ? src : `/${src}`;
 					return (
 						<div className='relative w-full aspect-[16/9] my-8'>
-							<Image src={imageSrc} alt={alt || ""} fill className='object-cover rounded-lg' sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px' loading='lazy' />
+							<Image
+								src={imageSrc}
+								alt={alt || ""}
+								fill
+								className='object-cover rounded-lg'
+								sizes='(max-width: 768px) 100vw, (max-width: 992px) 992px'
+								loading='lazy'
+							/>
 						</div>
 					);
 				},
@@ -4775,208 +7538,563 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 		</ReactMarkdown>
 	);
 }
-```
 
-# src/components/BlogDashboard-Old.tsx
 
-```tsx
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { categories, CategoryId } from "@/data/categories";
 
-export type GridSize = "large" | "medium" | "full";
 
-type Post = {
-	id: string;
-	title: string;
-	content: string;
-	type: "markdown" | "component";
-	component_name?: string;
-	excerpt: string;
-	category: CategoryId;
-	date: string;
-	slug: string;
-	cover_image?: string;
-};
 
-type FeaturedSetup = {
-	category: CategoryId;
-	size: GridSize;
-	order: number;
-	title?: string;
-	description?: string;
-}[];
 
-const FeaturedCard = ({ post, category, size = "medium", title, description }: { post?: Post; category: (typeof categories)[number]; size: GridSize; title?: string; description?: string }) => (
-	<div
-		className={`relative overflow-hidden rounded-xl bg-primary-800
-    ${size === "large" ? "row-span-2 col-span-2" : size === "full" ? "col-span-full" : "col-span-1"}
-    transition-transform duration-300 hover:scale-[1.02]`}
-	>
-		{post ? (
-			<Link href={`/blog/${post.slug}`} className='block h-64 sm:h-96 aspect-[16/9]'>
-				{post.cover_image ? (
-					<div className='absolute inset-0'>
-						<Image src={post.cover_image} alt={post.title} fill className='object-cover transition-transform duration-500 group-hover:scale-105' sizes={size === "full" ? "100vw" : "(max-width: 768px) 100vw, 50vw"} priority={size === "large"} />
-						<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-primary-800/60 to-transparent' />
-					</div>
-				) : (
-					<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
-				)}
-				<div className='absolute inset-0 p-4 sm:p-6 flex flex-col justify-end'>
-					<div
-						className='flex flex-col gap-2 self-start border border-primary-200/20 rounded-lg p-3 pr-6 sm:pr-10
-            bg-gradient-to-t from-primary-900/70 via-primary-800/70 to-primary-600/70'
-					>
-						<div className='text-sm font-medium text-primary-300'>{title || category.name}</div>
-						<h3
-							className='text-lg sm:text-2xl font-bold text-white group-hover:text-brand-primary-200
-              transition-colors line-clamp-2'
-						>
-							{post.title}
-						</h3>
-						<p className='text-gray-300 line-clamp-2 text-sm sm:text-base'>{description || post.excerpt}</p>
-					</div>
-				</div>
-			</Link>
-		) : (
-			<div className='aspect-[16/9] relative'>
-				<div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-50`}>
-					<div className='absolute inset-0 p-6 flex items-center justify-center'>
-						<p className='text-xl text-white/70'>No {category.name} posts yet</p>
-					</div>
-				</div>
-			</div>
-		)}
-	</div>
-);
 
-export default function BlogDashboard({ posts, featuredSetup }: { posts: Post[]; featuredSetup: FeaturedSetup }) {
-	const [mounted, setMounted] = useState(false);
-	const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
 
-	useEffect(() => {
-		setMounted(true);
-	}, []);
 
-	if (!mounted) return null;
 
-	const getCategoryColor = (categoryId: CategoryId, isActive: boolean) => {
-		const category = categories.find((c) => c.id === categoryId);
-		return isActive ? `bg-${category?.id}-600` : `bg-primary-800 hover:bg-gray-700`;
-	};
 
-	const getTextColor = (categoryId: CategoryId, isActive: boolean) => {
-		if (isActive) return "text-white";
-		const category = categories.find((c) => c.id === categoryId);
-		return `text-${category?.id}-300`;
-	};
 
-	const featuredPosts = featuredSetup.map((setup) => ({
-		post: posts.find((p) => p.category === setup.category),
-		...setup,
-	}));
 
-	const featuredIds = featuredPosts.map((f) => f.post?.id).filter(Boolean);
-	const remainingPosts = activeCategory ? posts.filter((post) => post.category === activeCategory) : posts.filter((post) => !featuredIds.includes(post.id));
 
-	return (
-		<div className='max-w-page mx-auto px-4 py-8 space-y-8'>
-			{/* Category buttons */}
-			<div className='categoryButtonsContainer grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4'>
-				{categories.map((category) => {
-					const Icon = category.icon;
-					const isActive = activeCategory === category.id;
-					return (
-						<button
-							key={category.id}
-							onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-							className={`p-3 sm:p-4 rounded-lg flex items-center justify-center sm:justify-start
-                space-x-2 transition-all ${getCategoryColor(category.id, isActive)}`}
-						>
-							<Icon size={20} className={getTextColor(category.id, isActive)} />
-							<span className={`hidden sm:inline font-medium ${isActive ? "text-white" : getTextColor(category.id, false)}`}>{category.name}</span>
-						</button>
-					);
-				})}
-			</div>
 
-			{/* Featured Posts Grid */}
-			{!activeCategory && <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>{featuredPosts.map(({ post, category, size, title, description }) => post && <FeaturedCard key={post.id} post={post} category={categories.find((c) => c.id === category)!} size={size} title={title} description={description} />)}</div>}
 
-			{/* Regular Posts Grid */}
-			<div>
-				<h2 className='text-2xl font-bold mb-2'>{activeCategory ? categories.find((c) => c.id === activeCategory)?.name : "All Posts"}</h2>
-				{activeCategory && <p className='text-gray-400 text-lg mt-0 mb-6'>{categories.find((c) => c.id === activeCategory)?.description}</p>}
-				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
-					{remainingPosts.map((post) => (
-						<Link
-							key={post.id}
-							href={`/blog/${post.slug}`}
-							className='group bg-white dark:bg-primary-800 p-2 rounded-lg overflow-hidden
-                shadow-lg hover:shadow-xl transition-shadow border border-primary-900/10'
-						>
-							<div className='aspect-[16/9] relative bg-gray-900 rounded-md overflow-hidden'>{post.cover_image && <Image src={post.cover_image} alt={post.title} fill className='object-cover' sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' />}</div>
-							<div className='p-4'>
-								<div className='flex justify-between items-center mb-2'>
-									<span className={`text-sm ${categories.find((c) => c.id === post.category)?.textColor}`}>{categories.find((c) => c.id === post.category)?.name}</span>
-									<span className='text-sm text-gray-400'>{post.date}</span>
-								</div>
-								<h3
-									className='text-lg font-semibold mb-2 group-hover:text-blue-400
-                  transition-colors line-clamp-2'
-								>
-									{post.title}
-								</h3>
-								<p className='text-gray-300 text-sm line-clamp-2'>{post.excerpt}</p>
-							</div>
-						</Link>
-					))}
-				</div>
-			</div>
-		</div>
-	);
-}
-```
 
-# src/components/BlogPostContent-Old.tsx
 
-```tsx
-import dynamic from "next/dynamic";
-import { MarkdownRenderer } from "./blog/MarkdownRenderer";
-import type { Post } from "@/types/blog";
 
-export default function BlogPostContent({ post }: { post: Post }) {
-	const { title, category, cover_image, excerpt, created_at } = post;
 
-	return (
-		<div className='max-w-page mx-auto px-4'>
-			{/* Common header section */}
-			<header>
-				<h1>{title}</h1>
-				<div className='meta'>{/* ... meta info ... */}</div>
-			</header>
 
-			{/* Conditional content rendering */}
-			{post.type === "markdown" ? <MarkdownRenderer content={post.content} /> : <DynamicComponentRenderer componentName={post.component_name} props={post.props} />}
-		</div>
-	);
-}
 
-function DynamicComponentRenderer({ componentName, props = {} }: { componentName: string; props?: Record<string, unknown> }) {
-	const Component = dynamic(() => import(`@/components/blog-components/${componentName}`), {
-		loading: () => <div>Loading component...</div>,
-	});
 
-	return <Component {...props} />;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/BlogPostContent.tsx
 
 ```tsx
+/* src/components/BlogPostContent.tsx */
 import Link from "next/link";
 import { Comments } from "@/components/Comments";
 import { AuthorInfo } from "./blog/AuthorInfo";
@@ -5000,6 +8118,7 @@ type Post = {
 		username?: string;
 	};
 };
+
 
 const DynamicComponent = ({ componentName, props = {} }) => {
 	const Component = dynamic(() => import(`@/components/blog-components/${componentName}`), {
@@ -5028,7 +8147,10 @@ export default function BlogPostContent({ post }: { post: Post }) {
 			<div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
 				<article className='relative'>
 					{/* Cover Image */}
-					<CoverImage src={post.cover_image} alt={post.title} />
+					<CoverImage
+						src={post.cover_image}
+						alt={post.title}
+					/>
 
 					{/* Main Content Area */}
 					<div className='prose prose-lg dark:prose-invert max-w-none'>
@@ -5045,7 +8167,10 @@ export default function BlogPostContent({ post }: { post: Post }) {
 								<MarkdownRenderer content={post.content} />
 							) : (
 								<div className='bg-white dark:bg-gray-800 rounded-lg overflow-hidden'>
-									<DynamicComponent componentName={post.component_name} props={post.component_props} />
+									<DynamicComponent
+										componentName={post.component_name}
+										props={post.component_props}
+									/>
 								</div>
 							)}
 						</div>
@@ -5063,32 +8188,187 @@ export default function BlogPostContent({ post }: { post: Post }) {
 		</div>
 	);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/ClientOnly.tsx
 
 ```tsx
-"use client";
-import { useEffect, useState } from "react";
+/* src/components/ClientOnly.tsx - New component for client-only rendering */
+'use client'
+import { useEffect, useState } from 'react'
 
 export function ClientOnly({ children }: { children: React.ReactNode }) {
-	const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false)
 
-	useEffect(() => {
-		setMounted(true);
-	}, []);
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-	if (!mounted) {
-		return null;
-	}
+  if (!mounted) {
+    return null
+  }
 
-	return <>{children}</>;
+  return <>{children}</>
 }
+
+
 ```
 
 # src/components/Comments.tsx
 
 ```tsx
+/* src/components/Comments.tsx */
 "use client";
 import { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";
@@ -5155,16 +8435,37 @@ export function Comments({ postId }: { postId: string }) {
 		<div className='mt-12'>
 			<h2 className='text-2xl font-bold mb-6 text-gray-500'>Comments</h2>
 			{error && <div className='mb-4 p-3 bg-red-500/10 text-red-500 rounded'>{error}</div>}
-			<form onSubmit={handleSubmit} className='mb-8 space-y-4'>
+			<form
+				onSubmit={handleSubmit}
+				className='mb-8 space-y-4'
+			>
 				<div>
 					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Name</label>
-					<input type='text' value={authorName} onChange={(e) => setAuthorName(e.target.value)} className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400' required placeholder='Your name' />
+					<input
+						type='text'
+						value={authorName}
+						onChange={(e) => setAuthorName(e.target.value)}
+						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+						required
+						placeholder='Your name'
+					/>
 				</div>
 				<div>
 					<label className='block text-sm font-medium mb-2 text-gray-500 dark:text-gray-400'>Comment</label>
-					<textarea value={content} onChange={(e) => setContent(e.target.value)} className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400' rows={3} required placeholder='Write a comment...' />
+					<textarea
+						value={content}
+						onChange={(e) => setContent(e.target.value)}
+						className='w-full p-2 border rounded bg-gray-100 text-gray-800 border-gray-400'
+						rows={3}
+						required
+						placeholder='Write a comment...'
+					/>
 				</div>
-				<button type='submit' disabled={isSubmitting} className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'>
+				<button
+					type='submit'
+					disabled={isSubmitting}
+					className='bg-primary-500 text-gray-100 px-4 py-2 rounded hover:bg-primary-600 disabled:opacity-50'
+				>
 					{isSubmitting ? "Posting..." : "Post Comment"}
 				</button>
 			</form>
@@ -5187,12 +8488,21 @@ export function Comments({ postId }: { postId: string }) {
 			<div className='space-y-4'>
 				{comments.length === 0 ? (
 					<div className='text-center'>
-						<Image src='/assets/Be-the-first.png' alt='Be the first to comment' width={200} height={150} className='mx-auto mb-4' />
+						<Image
+							src='/assets/Be-the-first.png'
+							alt='Be the first to comment'
+							width={200}
+							height={150}
+							className='mx-auto mb-4'
+						/>
 						<p className='text-gray-400'>No comments yet</p>
 					</div>
 				) : (
 					comments.map((comment) => (
-						<div key={comment.id} className='border border-gray-700 rounded p-4 bg-gray-800'>
+						<div
+							key={comment.id}
+							className='border border-gray-700 rounded p-4 bg-gray-800'
+						>
 							<div className='text-sm text-gray-400 mb-2'>
 								{comment.author_name || "Anonymous"} • {new Date(comment.created_at).toLocaleDateString()}
 							</div>
@@ -5204,11 +8514,84 @@ export function Comments({ postId }: { postId: string }) {
 		</div>
 	);
 }
+
+```
+
+# src/components/data-list-components/DataList.tsx
+
+```tsx
+import { useFetchData } from '@/hooks/useFetchData';
+import React from 'react';
+
+
+type DataListProps<T> = {
+   fetchData: () => Promise<T[]>;
+   renderItem: (item: T) => React.ReactNode;
+   onIntersect?: boolean;
+};
+
+const DataList = <T,>({ fetchData, renderItem, onIntersect = true }: DataListProps<T>) => {
+   const { data, loading, ref } = useFetchData({
+      fetchData,
+      onIntersect,
+   });
+
+   return (
+      <div ref={ref}>
+         {loading && <p>Loading...</p>}
+         {data && data.length > 0 ? (
+            <ul>
+               {data.map((item, index) => (
+                  <li key={index}>{renderItem(item)}</li>
+               ))}
+            </ul>
+         ) : (
+            !loading && <p>No data available.</p>
+         )}
+      </div>
+   );
+};
+
+export default DataList;
+```
+
+# src/components/data-list-components/DataListApp.tsx
+
+```tsx
+import DataList from "./DataList";
+
+const fetchUsers = async () => {
+   return new Promise<{ name: string; email: string; bio: string }[]>((resolve) =>
+      setTimeout(() => {
+         resolve([
+            { name: 'John Doe', email: 'john.doe@example.com', bio: 'Web developer' },
+            { name: 'Jane Smith', email: 'jane.smith@example.com', bio: 'Designer' },
+         ]);
+      }, 3000)
+   );
+};
+
+const DataListApp = () => {
+   return (
+      <DataList
+         fetchData={fetchUsers}
+         renderItem={(user) => (
+            <>
+               <h3>{user.name}</h3>
+               <p>{user.email}</p>
+               <p>{user.bio}</p>
+            </>
+         )}
+      />
+   );
+};
+export default DataListApp;
 ```
 
 # src/components/DeletePost.tsx
 
 ```tsx
+/* src/components/DeletePost.tsx */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -5226,9 +8609,11 @@ export function DeletePost({ postId }: { postId: string }) {
 		setIsDeleting(true);
 
 		try {
+
 			const { data: post, error: fetchError } = await supabaseClient.from("posts").select("id, author_id").eq("id", postId).single();
 
 			if (fetchError) throw fetchError;
+
 
 			const {
 				data: { user },
@@ -5240,13 +8625,16 @@ export function DeletePost({ postId }: { postId: string }) {
 				throw new Error("Not authenticated");
 			}
 
+
 			if (post.author_id !== user.id) {
 				throw new Error("Not authorized to delete this post");
 			}
 
+
 			const { error: deleteError } = await supabaseClient.from("posts").delete().eq("id", postId).eq("author_id", user.id);
 
 			if (deleteError) throw deleteError;
+
 
 			await router.push("/blog");
 			await fetch("/api/revalidate", { method: "POST" });
@@ -5260,17 +8648,28 @@ export function DeletePost({ postId }: { postId: string }) {
 	};
 
 	return (
-		<button onClick={handleDelete} disabled={isDeleting} className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'>
-			{isDeleting && <Loader2 className='animate-spin' size={16} />}
+		<button
+			onClick={handleDelete}
+			disabled={isDeleting}
+			className='bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 flex items-center gap-2'
+		>
+			{isDeleting && (
+				<Loader2
+					className='animate-spin'
+					size={16}
+				/>
+			)}
 			{isDeleting ? "Deleting..." : "Delete Post"}
 		</button>
 	);
 }
+
 ```
 
 # src/components/EditForm.tsx
 
 ```tsx
+/* src/components/EditForm.tsx */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -5335,15 +8734,24 @@ export function EditForm({ post }: { post: Post }) {
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className='space-y-6 max-w-4xl mx-auto px-4'>
+		<form
+			onSubmit={handleSubmit}
+			className='space-y-6 max-w-4xl mx-auto px-4'
+		>
 			{error && (
-				<div className='bg-red-500/10 text-red-500 p-4 rounded' role='alert'>
+				<div
+					className='bg-red-500/10 text-red-500 p-4 rounded'
+					role='alert'
+				>
 					{error}
 				</div>
 			)}
 
 			<div>
-				<label htmlFor='post-type' className='block text-sm font-medium mb-2'>
+				<label
+					htmlFor='post-type'
+					className='block text-sm font-medium mb-2'
+				>
 					Post Type
 				</label>
 				<select
@@ -5364,7 +8772,10 @@ export function EditForm({ post }: { post: Post }) {
 			</div>
 
 			<div>
-				<label htmlFor='title' className='block text-sm font-medium mb-2'>
+				<label
+					htmlFor='title'
+					className='block text-sm font-medium mb-2'
+				>
 					Title
 				</label>
 				<input
@@ -5385,7 +8796,10 @@ export function EditForm({ post }: { post: Post }) {
 			</div>
 
 			<div>
-				<label htmlFor='category' className='block text-sm font-medium mb-2'>
+				<label
+					htmlFor='category'
+					className='block text-sm font-medium mb-2'
+				>
 					Category
 				</label>
 				<select
@@ -5402,7 +8816,10 @@ export function EditForm({ post }: { post: Post }) {
 					aria-label='Select post category'
 				>
 					{categories.map((category) => (
-						<option key={category.id} value={category.id}>
+						<option
+							key={category.id}
+							value={category.id}
+						>
 							{category.name}
 						</option>
 					))}
@@ -5410,7 +8827,10 @@ export function EditForm({ post }: { post: Post }) {
 			</div>
 
 			<div>
-				<label htmlFor='excerpt' className='block text-sm font-medium mb-2'>
+				<label
+					htmlFor='excerpt'
+					className='block text-sm font-medium mb-2'
+				>
 					Excerpt
 				</label>
 				<textarea
@@ -5459,7 +8879,10 @@ export function EditForm({ post }: { post: Post }) {
 			) : (
 				<div className='space-y-4'>
 					<div>
-						<label htmlFor='component-name' className='block text-sm font-medium mb-2'>
+						<label
+							htmlFor='component-name'
+							className='block text-sm font-medium mb-2'
+						>
 							Component Name
 						</label>
 						<input
@@ -5479,7 +8902,10 @@ export function EditForm({ post }: { post: Post }) {
 					</div>
 
 					<div>
-						<label htmlFor='component-props' className='block text-sm font-medium mb-2'>
+						<label
+							htmlFor='component-props'
+							className='block text-sm font-medium mb-2'
+						>
 							Component Props (JSON)
 						</label>
 						<textarea
@@ -5503,469 +8929,3856 @@ export function EditForm({ post }: { post: Post }) {
 			)}
 
 			<div className='flex gap-4'>
-				<button type='submit' disabled={isSubmitting} className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2' aria-label={isSubmitting ? "Saving changes..." : "Save changes"}>
-					{isSubmitting && <Loader2 className='animate-spin' size={16} />}
+				<button
+					type='submit'
+					disabled={isSubmitting}
+					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+					aria-label={isSubmitting ? "Saving changes..." : "Save changes"}
+				>
+					{isSubmitting && (
+						<Loader2
+							className='animate-spin'
+							size={16}
+						/>
+					)}
 					{isSubmitting ? "Saving..." : "Save Changes"}
 				</button>
-				<button type='button' onClick={() => router.back()} className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600' aria-label='Cancel editing'>
+				<button
+					type='button'
+					onClick={() => router.back()}
+					className='bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600'
+					aria-label='Cancel editing'
+				>
 					Cancel
 				</button>
 			</div>
 		</form>
 	);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/ImageUpload.tsx
 
 ```tsx
-"use client";
-import { useState } from "react";
-import { supabaseClient } from "@/lib/auth";
-import { Upload, Loader2 } from "lucide-react";
-import Image from "next/image";
+/* src/components/ImageUpload.tsx */
+'use client'
+import { useState } from 'react'
+import { supabaseClient } from '@/lib/auth'
+import { Upload, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 type ImageUploadProps = {
-	onUploadComplete: (url: string) => void;
-	existingUrl?: string;
-};
+  onUploadComplete: (url: string) => void
+  existingUrl?: string
+}
 
 export function ImageUpload({ onUploadComplete, existingUrl }: ImageUploadProps) {
-	const [isUploading, setIsUploading] = useState(false);
-	const [preview, setPreview] = useState<string | null>(existingUrl || null);
-	const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false)
+  const [preview, setPreview] = useState<string | null>(existingUrl || null)
+  const [error, setError] = useState<string | null>(null)
 
-	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (!file) return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-		if (!file.type.startsWith("image/")) {
-			setError("Please select an image file");
-			return;
-		}
 
-		if (file.size > 5 * 1024 * 1024) {
-			setError("Image must be less than 5MB");
-			return;
-		}
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file')
+      return
+    }
 
-		setIsUploading(true);
-		setError(null);
 
-		try {
-			const fileExt = file.name.split(".").pop();
-			const fileName = `${Date.now()}.${fileExt}`;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be less than 5MB')
+      return
+    }
 
-			const { error: uploadError, data } = await supabaseClient.storage.from("images").upload(fileName, file, {
-				cacheControl: "3600",
-				upsert: false,
-			});
+    setIsUploading(true)
+    setError(null)
 
-			if (uploadError) {
-				throw new Error(uploadError.message);
-			}
+    try {
 
-			const {
-				data: { publicUrl },
-			} = supabaseClient.storage.from("images").getPublicUrl(fileName);
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}.${fileExt}`
 
-			setPreview(publicUrl);
-			onUploadComplete(publicUrl);
-		} catch (err) {
-			console.error("Upload error:", err);
-			setError(err instanceof Error ? err.message : "Failed to upload image");
-		} finally {
-			setIsUploading(false);
-		}
-	};
 
-	return (
-		<div className='space-y-4'>
-			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
+      const { error: uploadError, data } = await supabaseClient
+        .storage
+        .from('images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
 
-			<label className='block'>
-				<div className='flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-500 cursor-pointer bg-gray-800'>
-					<div className='space-y-2 text-center'>
-						{isUploading ? (
-							<div className='flex items-center gap-2 text-gray-300'>
-								<Loader2 className='animate-spin' />
-								<span>Uploading...</span>
-							</div>
-						) : (
-							<>
-								<Upload className='mx-auto text-gray-400' />
-								<div className='text-gray-400'>Click to upload image</div>
-								<div className='text-gray-500 text-sm'>Max size: 5MB</div>
-							</>
-						)}
-					</div>
-				</div>
-				<input type='file' className='hidden' accept='image/*' onChange={handleFileChange} disabled={isUploading} />
-			</label>
+      if (uploadError) {
+        throw new Error(uploadError.message)
+      }
 
-			{preview && (
-				<div className='mt-4 relative aspect-video w-full max-w-sm'>
-					<Image src={preview} alt='Upload preview' fill className='rounded border border-gray-700 object-cover' sizes='(max-width: 640px) 100vw, 384px' />
-				</div>
-			)}
-		</div>
-	);
+
+      const { data: { publicUrl } } = supabaseClient
+        .storage
+        .from('images')
+        .getPublicUrl(fileName)
+
+      setPreview(publicUrl)
+      onUploadComplete(publicUrl)
+    } catch (err) {
+      console.error('Upload error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to upload image')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {error && (
+        <div className="bg-red-500/10 text-red-500 p-4 rounded">
+          {error}
+        </div>
+      )}
+
+      <label className="block">
+        <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg hover:border-gray-500 cursor-pointer bg-gray-800">
+          <div className="space-y-2 text-center">
+            {isUploading ? (
+              <div className="flex items-center gap-2 text-gray-300">
+                <Loader2 className="animate-spin" />
+                <span>Uploading...</span>
+              </div>
+            ) : (
+              <>
+                <Upload className="mx-auto text-gray-400" />
+                <div className="text-gray-400">Click to upload image</div>
+                <div className="text-gray-500 text-sm">Max size: 5MB</div>
+              </>
+            )}
+          </div>
+        </div>
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={handleFileChange}
+          disabled={isUploading}
+        />
+      </label>
+
+      {preview && (
+        <div className="mt-4 relative aspect-video w-full max-w-sm">
+          <Image
+            src={preview}
+            alt="Upload preview"
+            fill
+            className="rounded border border-gray-700 object-cover"
+            sizes="(max-width: 640px) 100vw, 384px"
+          />
+        </div>
+      )}
+    </div>
+  )
 }
+
 ```
 
 # src/components/ImageWithFallback.tsx
 
 ```tsx
-"use client";
-import { useState } from "react";
-import Image from "next/image";
-import { ImageOff } from "lucide-react";
+/* src/components/ImageWithFallback.tsx */
+'use client'
+import { useState } from 'react'
+import Image from 'next/image'
+import { ImageOff } from 'lucide-react'
 
 interface ImageWithFallbackProps {
-	src: string;
-	alt: string;
-	className?: string;
-	priority?: boolean;
+  src: string
+  alt: string
+  className?: string
+  priority?: boolean
 }
 
-export function ImageWithFallback({ src, alt, className = "", priority = false }: ImageWithFallbackProps) {
-	const [error, setError] = useState(false);
+export function ImageWithFallback({
+  src,
+  alt,
+  className = '',
+  priority = false
+}: ImageWithFallbackProps) {
+  const [error, setError] = useState(false)
 
-	if (error) {
-		return (
-			<div className={`flex items-center justify-center bg-gray-900 ${className}`}>
-				<ImageOff className='text-gray-600' size={48} />
-			</div>
-		);
-	}
+  if (error) {
+    return (
+      <div className={`flex items-center justify-center bg-gray-900 ${className}`}>
+        <ImageOff className="text-gray-600" size={48} />
+      </div>
+    )
+  }
 
-	return (
-		<div className={`relative ${className}`}>
-			<Image src={src} alt={alt} fill className='object-cover' onError={() => setError(true)} priority={priority} sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' />
-		</div>
-	);
+  return (
+    <div className={`relative ${className}`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        onError={() => setError(true)}
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
+  )
 }
+```
+
+# src/components/lazy-load-components/LazyLoadComponent.tsx
+
+```tsx
+/*-= src/components/lazy-load-components/LazyLoadComponent.tsx =-*/
+import { useLazyLoadComponent } from '@/hooks/useLazyLoadComponent';
+import React from 'react';
+
+type LazyLoadComponentProps = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   fallback?: React.ReactNode;
+   onIntersect?: boolean;
+};
+
+const LazyLoadComponent: React.FC<LazyLoadComponentProps> = ({
+   importComponent,
+   fallback = <p>Loading component...</p>,
+   onIntersect = true,
+}) => {
+   const { Component, loading, ref } = useLazyLoadComponent({
+      importComponent,
+      onIntersect,
+   });
+
+   return (
+      <div ref={ref}>
+         {loading && fallback}
+         {Component && <Component />}
+      </div>
+   );
+};
+
+export default LazyLoadComponent;
+```
+
+# src/components/lazy-load-components/LazyLoadComponentApp.tsx
+
+```tsx
+import React from 'react';
+import LazyLoadComponent from './LazyLoadComponent';
+
+const LazyLoadComponentApp = () => {
+   return (
+      <div>
+         <h1>Lazy Load Example</h1>
+         <p>Scroll down to lazy-load the component:</p>
+         {/* <div style={{ height: '100vh' }}></div> Spacer to demonstrate scrolling */}
+         <LazyLoadComponent
+            importComponent={() => import('./../blog-components/articles/PercentageSVG2')}
+            fallback={<p>Loading MyComponent...</p>}
+         />
+         {/* <div style={{ height: '100vh' }}></div> Spacer */}
+      </div>
+   );
+};
+
+export default LazyLoadComponentApp;
+```
+
+# src/components/lazy-load-components/LazyLoader.tsx
+
+```tsx
+/*-= src/components/lazy-load-components/LazyLoader.tsx =-*/
+"use client";
+import React, { useEffect, useRef, useState } from 'react';
+import { useLazyLoadComponentWithVisibility } from '@/hooks/useLazyLoadComponentWithVisibility';
+
+type LazyLoaderProps = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   skeleton: React.ReactNode;
+};
+
+const LazyLoader: React.FC<LazyLoaderProps> = ({ importComponent, skeleton }) => {
+   const { Component, loading, isVisible, ref } = useLazyLoadComponentWithVisibility({
+      importComponent,
+   });
+
+
+
+
+
+
+
+   const [height, setHeight] = useState<number | null>(null);
+   const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+   useEffect(() => {
+
+      if (wrapperRef.current) {
+         setHeight(wrapperRef.current.offsetHeight);
+      }
+   }, [loading, Component]);
+
+   return (
+      <div ref={ref} style={{ minHeight: height || 'auto' }}>
+         <div ref={wrapperRef}>
+            {loading || !isVisible ? skeleton : Component && <Component />}
+         </div>
+      </div>
+   );
+};
+
+export default LazyLoader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/lazy-load-components/LazyLoaderApp.tsx
+
+```tsx
+/*-= src/components/lazy-load-components/LazyLoaderApp.tsx =-*/
+import React from 'react';
+import LazyLoader from './LazyLoader';
+import SkeletonLoader from './SkeletonLoader';
+import CircularLoaderModalApp from "../modal-components/CircularLoaderModalApp";
+
+const LazyLoaderApp = () => {
+   return (
+      <div className="space-y-12">
+         {/* <h1 className="text-2xl font-bold">Lazy Loading with Reset and Skeleton</h1>
+         <p>Scroll down to see the dynamically loaded component with a skeleton placeholder:</p> */}
+
+         {/* <div style={{ height: '100vh', backgroundColor: '#f4f4f4' }}></div> */}
+
+         <LazyLoader
+            importComponent={() => import('./../blog-components/articles/PercentageSVG2')}
+
+
+
+
+
+
+
+            skeleton={
+               <div className="space-y-4 p-4 bg-gray-100 rounded shadow grid place-items-center min-h-[900px]"> {/* you can find this min-h in Inspect/computed/height */}
+                  <SkeletonLoader
+                     height="h-80"
+                     width={{
+                        mobile: 'w-full',
+                        tablet: 'md:w-1/2',
+                        desktop: 'lg:w-1/2'
+                     }}
+
+                     rounded="rounded-lg"/>
+                  <SkeletonLoader height="h-80" width="w-full" rounded="rounded-lg" />
+                  <SkeletonLoader height="h-80" width="w-full" rounded="rounded-lg" />
+                  <SkeletonLoader height="h-100" width="w-full" rounded="rounded-lg" />
+                  <SkeletonLoader height="h-80" width="w-full" rounded="rounded-lg" />
+                  {/* <SkeletonLoader height="h-70" width="w-full" rounded="rounded-lg" /> */}
+               </div>
+            }
+         />
+
+         <div className="mt-10">
+            <CircularLoaderModalApp />
+         </div>
+
+         {/* <div style={{ height: '100vh', backgroundColor: '#f4f4f4' }}></div> */}
+      </div>
+   );
+};
+
+export default LazyLoaderApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/lazy-load-components/LazyToggleComponent.tsx
+
+```tsx
+import { useVisibilityToggleComponent } from '@/hooks/useVisibilityToggleComponent';
+import React from 'react';
+
+
+type LazyToggleComponentProps = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   fallback?: React.ReactNode;
+};
+
+const LazyToggleComponent: React.FC<LazyToggleComponentProps> = ({
+   importComponent,
+   fallback = <p>Loading...</p>,
+}) => {
+   const { Component, loading, ref } = useVisibilityToggleComponent({
+      importComponent,
+   });
+
+   return (
+      <div ref={ref}>
+         {loading && fallback}
+         {Component && <Component />}
+      </div>
+   );
+};
+
+export default LazyToggleComponent;
+```
+
+# src/components/lazy-load-components/LazyToggleComponentApp.tsx
+
+```tsx
+import React from 'react';
+import LazyToggleComponent from './LazyToggleComponent';
+
+const LazyToggleComponentApp = () => {
+   return (
+      <div>
+         <h1>Lazy Loading with Visibility Reset</h1>
+         <p>Scroll down to load and unmount the component:</p>
+         {/* <div style={{ height: '100vh', backgroundColor: '#f4f4f4' }}></div> Spacer */}
+         <LazyToggleComponent
+            importComponent={() => import('./../blog-components/articles/PercentageSVG2')}
+            fallback={<p>Loading DynamicComponent...</p>}
+         />
+         {/* <div style={{ height: '100vh', backgroundColor: '#f4f4f4' }}></div> Spacer */}
+      </div>
+   );
+};
+
+export default LazyToggleComponentApp;
+```
+
+# src/components/lazy-load-components/SkeletonLoader.tsx
+
+```tsx
+/*-= src/components/lazy-load-components/SkeletonLoader.tsx =-*/
+
+
+
+import React from 'react';
+
+type SkeletonLoaderProps = {
+   height?: string;
+   width?: {
+      mobile?: string;
+      tablet?: string;
+      desktop?: string;
+   } | string;
+   rounded?: string;
+   className?: string;
+};
+
+const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ height, width, rounded = 'rounded', className }) => {
+   const getWidthClasses = () => {
+      if (typeof width === 'string') {
+         return width;
+      }
+
+      return `
+        ${width.mobile || 'w-full'}
+        ${width.tablet || ''}
+        ${width.desktop || ''}
+      `.trim();
+   };
+
+   return (
+
+
+
+
+      <div
+         className={`
+        bg-gray-300 dark:bg-gray-700
+        ${height}
+        ${getWidthClasses()}
+        ${rounded}
+        animate-pulse
+        ${className}
+      `}
+      />
+   );
+};
+
+export default SkeletonLoader;
 ```
 
 # src/components/MobileNavbar.tsx
 
 ```tsx
+/* src/components/MobileNavbar.tsx */
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Menu, X, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabaseClient } from "@/lib/auth";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { navLinks } from "@/data/navbarConfig";
-import { usePathname, useRouter } from "next/navigation";
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabaseClient } from '@/lib/auth';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { navLinks } from '@/data/navbarConfig';
+import { usePathname, useRouter } from 'next/navigation';
 
 export function Navbar() {
-	const [isOpen, setIsOpen] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const { isAuthenticated } = useAuth();
-	const pathname = usePathname();
-	const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
 
-	const getBlogPostInfo = () => {
-		const pathParts = pathname.split("/");
-		if (pathParts[1] === "blog" && pathParts.length === 3) {
-			const isNewPost = pathParts[2] === "new";
-			const isDrafts = pathParts[2] === "drafts";
-			const isEditPath = pathname.includes("/edit/");
-			if (!isNewPost && !isDrafts && !isEditPath) {
-				return { isPost: true, slug: pathParts[2] };
-			}
-		}
-		return { isPost: false, slug: null };
-	};
+  const getBlogPostInfo = () => {
+    const pathParts = pathname.split("/");
+    if (pathParts[1] === "blog" && pathParts.length === 3) {
+      const isNewPost = pathParts[2] === "new";
+      const isDrafts = pathParts[2] === "drafts";
+      const isEditPath = pathname.includes("/edit/");
+      if (!isNewPost && !isDrafts && !isEditPath) {
+        return { isPost: true, slug: pathParts[2] };
+      }
+    }
+    return { isPost: false, slug: null };
+  };
 
-	const { isPost, slug } = getBlogPostInfo();
+  const { isPost, slug } = getBlogPostInfo();
 
-	const handleDelete = async () => {
-		if (!slug || !isAuthenticated) return;
-		if (!confirm("Are you sure you want to delete this post?")) return;
+  const handleDelete = async () => {
+    if (!slug || !isAuthenticated) return;
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
-		setIsDeleting(true);
-		try {
-			const { error: deleteError } = await supabaseClient.from("posts").delete().eq("slug", slug);
-			if (deleteError) throw deleteError;
+    setIsDeleting(true);
+    try {
+      const { error: deleteError } = await supabaseClient.from("posts").delete().eq("slug", slug);
+      if (deleteError) throw deleteError;
 
-			await router.push("/blog");
-			router.refresh();
-			await fetch("/api/revalidate", { method: "POST" });
-		} catch (err) {
-			console.error("Failed to delete post:", err);
-			alert("Failed to delete post");
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+      await router.push("/blog");
+      router.refresh();
+      await fetch("/api/revalidate", { method: "POST" });
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+      alert("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-	return (
-		<>
-			<nav className='fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all z-50'>
-				<div className='max-w-page mx-auto px-4'>
-					<div className='flex justify-between items-center h-16'>
-						<Link href={navLinks.brand.href} className='flex items-center'>
-							<Image src={navLinks.brand.logo} alt={navLinks.brand.label} width={90} height={90} priority className='w-auto h-12' />
-						</Link>
+  return (
+    <>
+      <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-lg transition-all z-50">
+        <div className="max-w-page mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <Link href={navLinks.brand.href} className="flex items-center">
+              <Image
+                src={navLinks.brand.logo}
+                alt={navLinks.brand.label}
+                width={90}
+                height={90}
+                priority
+                className="w-auto h-12"
+              />
+            </Link>
 
-						{/* Desktop Navigation */}
-						<div className='hidden md:flex items-center gap-6'>
-							{navLinks.mainLinks.map((link) => {
-								if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
-								return (
-									<Link key={link.href} href={link.href} className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'>
-										{link.label}
-									</Link>
-								);
-							})}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              {navLinks.mainLinks.map((link) => {
+                if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
 
-							{isAuthenticated && isPost && (
-								<>
-									<Link href={`/blog/edit/${slug}`} className='px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors'>
-										Edit Post
-									</Link>
-									<button onClick={handleDelete} disabled={isDeleting} className='px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2'>
-										{isDeleting && <Loader2 className='animate-spin' size={16} />}
-										{isDeleting ? "Deleting..." : "Delete Post"}
-									</button>
-								</>
-							)}
+              {isAuthenticated && isPost && (
+                <>
+                  <Link
+                    href={`/blog/edit/${slug}`}
+                    className="px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors"
+                  >
+                    Edit Post
+                  </Link>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  >
+                    {isDeleting && <Loader2 className="animate-spin" size={16} />}
+                    {isDeleting ? "Deleting..." : "Delete Post"}
+                  </button>
+                </>
+              )}
 
-							<ThemeToggle />
+              <ThemeToggle />
 
-							{isAuthenticated ? (
-								<button onClick={() => supabaseClient.auth.signOut()} className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'>
-									{navLinks.authLinks.signOut.label}
-								</button>
-							) : (
-								<button
-									onClick={() =>
-										supabaseClient.auth.signInWithOAuth({
-											provider: "github",
-											options: { redirectTo: `${window.location.origin}/auth/callback` },
-										})
-									}
-									className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
-								>
-									{navLinks.authLinks.signIn.label}
-								</button>
-							)}
-						</div>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => supabaseClient.auth.signOut()}
+                  className="px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {navLinks.authLinks.signOut.label}
+                </button>
+              ) : (
+                <button
+                  onClick={() => supabaseClient.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: { redirectTo: `${window.location.origin}/auth/callback` }
+                  })}
+                  className="px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {navLinks.authLinks.signIn.label}
+                </button>
+              )}
+            </div>
 
-						{/* Mobile Menu Button */}
-						<div className='md:hidden flex items-center gap-4'>
-							<ThemeToggle />
-							<button onClick={() => setIsOpen(!isOpen)} className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800'>
-								{isOpen ? <X size={24} /> : <Menu size={24} />}
-							</button>
-						</div>
-					</div>
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center gap-4">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
 
-					{/* Mobile Menu */}
-					{isOpen && (
-						<div className='md:hidden border-t dark:border-gray-800'>
-							<div className='flex flex-col space-y-4 p-4'>
-								{navLinks.mainLinks.map((link) => {
-									if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
-									return (
-										<Link key={link.href} href={link.href} className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2' onClick={() => setIsOpen(false)}>
-											{link.label}
-										</Link>
-									);
-								})}
+          {/* Mobile Menu */}
+          {isOpen && (
+            <div className="md:hidden border-t dark:border-gray-800">
+              <div className="flex flex-col space-y-4 p-4">
+                {navLinks.mainLinks.map((link) => {
+                  if ("authRequired" in link && link.authRequired && !isAuthenticated) return null;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
 
-								{isAuthenticated && isPost && (
-									<>
-										<Link href={`/blog/edit/${slug}`} className='text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded transition-colors' onClick={() => setIsOpen(false)}>
-											Edit Post
-										</Link>
-										<button
-											onClick={() => {
-												handleDelete();
-												setIsOpen(false);
-											}}
-											disabled={isDeleting}
-											className='w-full text-left text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 px-4 py-2 rounded transition-colors flex items-center gap-2'
-										>
-											{isDeleting && <Loader2 className='animate-spin' size={16} />}
-											{isDeleting ? "Deleting..." : "Delete Post"}
-										</button>
-									</>
-								)}
+                {isAuthenticated && isPost && (
+                  <>
+                    <Link
+                      href={`/blog/edit/${slug}`}
+                      className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Edit Post
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleDelete();
+                        setIsOpen(false);
+                      }}
+                      disabled={isDeleting}
+                      className="w-full text-left text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 px-4 py-2 rounded transition-colors flex items-center gap-2"
+                    >
+                      {isDeleting && <Loader2 className="animate-spin" size={16} />}
+                      {isDeleting ? "Deleting..." : "Delete Post"}
+                    </button>
+                  </>
+                )}
 
-								{isAuthenticated ? (
-									<button
-										onClick={() => {
-											supabaseClient.auth.signOut();
-											setIsOpen(false);
-										}}
-										className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
-									>
-										{navLinks.authLinks.signOut.label}
-									</button>
-								) : (
-									<button
-										onClick={() => {
-											supabaseClient.auth.signInWithOAuth({
-												provider: "github",
-												options: { redirectTo: `${window.location.origin}/auth/callback` },
-											});
-											setIsOpen(false);
-										}}
-										className='w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
-									>
-										{navLinks.authLinks.signIn.label}
-									</button>
-								)}
-							</div>
-						</div>
-					)}
-				</div>
-			</nav>
-			<div className='h-16' />
-		</>
-	);
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      supabaseClient.auth.signOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {navLinks.authLinks.signOut.label}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      supabaseClient.auth.signInWithOAuth({
+                        provider: 'github',
+                        options: { redirectTo: `${window.location.origin}/auth/callback` }
+                      });
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {navLinks.authLinks.signIn.label}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+      <div className="h-16" />
+    </>
+  );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
-# src/components/Navbar-Old.tsx
+# src/components/modal-components/CircularLoaderModalApp.tsx
 
 ```tsx
 "use client";
-import Link from "next/link";
-import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
-import { supabaseClient } from "@/lib/auth";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { navLinks, navStyles } from "@/data/navbarConfig";
-import { usePathname, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from 'react';
+import MultiStepModal from './MultiStepModal';
 
-export function Navbar() {
-	const { isAuthenticated } = useAuth();
-	const pathname = usePathname();
-	const router = useRouter();
-	const [isDeleting, setIsDeleting] = useState(false);
+const steps = [
+   {
+      title: 'Step 1: Create an SVG',
+      subtitle: 'Using Figma or any vector-based tools',
+      description: 'Select and right click, copy an illustration as SVG from Figma or another tool.',
+      isCode: false,
+      imageUrl: '/assets/Screenshot-CircularLoader-SaveSVG.png',
+      altText: 'SVG creation screenshot',
+   },
+   {
+      title: 'Step 2: Add Code',
+      subtitle: 'On your IDE',
+      description: 'Paste the copied SVG code into your component',
+      isCode: true,
+      code: `
+      <svg width="3082" height="3082" viewBox="0 0 3082 3082" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M2464.25 2774.81C2786.8 2533.45 3002.01 2175.37 3063.78 1777.28C3125.55 1379.18 3028.97 972.724 2794.72 644.968C2560.47 317.211 2207.19 94.2194 1810.54 23.7553C1413.89 -46.7088 1005.41 40.9585 672.611 267.979C339.808 495 109.14 843.322 30.0153 1238.33C-49.1098 1633.35 29.6001 2043.64 249.286 2381.33C468.971 2719.02 812.163 2957.25 1205.35 3045C1598.54 3132.75 2010.45 3063.03 2352.87 2850.79L2064.99 2386.35C1843.99 2523.33 1578.14 2568.33 1324.37 2511.69C1070.6 2455.06 849.106 2301.3 707.32 2083.35C565.533 1865.41 514.733 1600.6 565.801 1345.66C616.869 1090.71 765.743 865.905 980.536 719.385C1195.33 572.864 1458.96 516.283 1714.96 561.761C1970.96 607.239 2198.97 751.159 2350.16 962.695C2501.34 1174.23 2563.68 1436.56 2523.81 1693.49C2483.94 1950.43 2345.05 2181.53 2136.87 2337.31L2464.25 2774.81Z" fill="#3C493D"/>
+         <path d="M106.965 1774.99C154.874 2068.61 291.756 2340.44 499.115 2553.76C706.475 2767.08 974.318 2911.61 1266.46 2967.83L1329.8 2638.64C1105.06 2595.4 899.008 2484.21 739.488 2320.11C579.968 2156 474.667 1946.88 437.811 1721.01L106.965 1774.99Z" fill="#BE2809"/>
+         <path d="M2847.83 2267.11C2949.11 2084.83 3011.13 1883.38 3029.92 1675.7C3048.71 1468.02 3023.84 1258.71 2956.92 1061.21C2890 863.712 2782.5 682.4 2641.33 528.923C2500.16 375.446 2328.45 253.199 2137.22 170.036C1946 86.8727 1739.49 44.6341 1530.97 46.0337C1322.44 47.4333 1116.52 92.4402 926.428 178.163C736.335 263.885 566.278 388.426 427.184 543.785C288.089 699.143 183.034 881.882 118.768 1080.26L446.891 1186.56C496.33 1033.95 577.148 893.368 684.152 773.852C791.156 654.336 921.979 558.528 1068.22 492.582C1214.45 426.637 1372.87 392.013 1533.28 390.937C1693.69 389.86 1852.56 422.354 1999.67 486.33C2146.78 550.307 2278.87 644.351 2387.47 762.419C2496.07 880.488 2578.77 1019.97 2630.25 1171.9C2681.74 1323.83 2700.86 1484.86 2686.41 1644.62C2671.96 1804.39 2624.24 1959.36 2546.33 2099.59L2847.83 2267.11Z" fill="#FF8000"/>
+         <path d="M2443.14 2607.8C2662.4 2422.36 2819.18 2173.82 2892.15 1896.03C2965.12 1618.23 2950.72 1324.69 2850.91 1055.38C2751.1 786.072 2570.74 554.081 2334.39 391.005C2098.03 227.93 1817.18 141.695 1530.07 144.047L1531.69 342.385C1778.04 340.367 2019.02 414.358 2221.81 554.28C2424.61 694.203 2579.37 893.256 2665 1124.33C2750.64 1355.4 2762.99 1607.27 2700.39 1845.62C2637.78 2083.97 2503.25 2297.23 2315.13 2456.34L2443.14 2607.8Z" fill="#0E9DBA"/>
+         <circle cx="1541" cy="1523" r="1271" stroke="#1EBCDC" stroke-width="250" stroke-dasharray="100 100"/>
+         <path d="M301.123 899.502C186.139 1121.74 133.002 1370.8 147.272 1620.61C161.542 1870.43 242.695 2111.82 382.238 2319.52C521.781 2527.22 714.585 2693.59 940.471 2801.23C1166.36 2908.87 1417.02 2953.82 1666.24 2931.37L1643.64 2680.55C1439.39 2698.95 1233.94 2662.11 1048.8 2573.89C863.667 2485.67 705.645 2349.3 591.276 2179.07C476.906 2008.84 410.392 1811 398.697 1606.25C387.001 1401.5 430.552 1197.37 524.793 1015.23L301.123 899.502Z" fill="#88A751"/>
+         <path d="M1935.7 142.637C1719.73 81.6756 1492.57 71.5699 1272.03 113.112C1051.49 154.654 843.578 246.715 664.584 382.076L786.248 542.958C940.394 426.387 1119.45 347.107 1309.37 311.331C1499.29 275.556 1694.92 284.259 1880.91 336.758L1935.7 142.637Z" fill="#F1D5AE"/>
+         <path d="M546.095 482.051C407.032 612.703 295.065 769.467 216.586 943.392C138.107 1117.32 94.653 1305 88.7059 1495.71L423.764 1506.16C428.339 1359.44 461.767 1215.06 522.141 1081.27C582.514 947.467 668.649 826.87 775.629 726.36L546.095 482.051Z" fill="#D8FE93"/>
+         <path d="M2123.2 2724.55C2351.06 2612.47 2541.72 2436.99 2672.28 2219.2C2802.85 2001.41 2867.77 1750.56 2859.26 1496.77L2625.11 1504.62C2632.12 1713.33 2578.73 1919.63 2471.35 2098.74C2363.97 2277.85 2207.18 2422.16 2019.79 2514.34L2123.2 2724.55Z" fill="#E45C04"/>
+         <path d="M606.559 503.872C466.976 629.634 354.216 782.277 275.034 952.658C195.852 1123.04 151.877 1307.65 145.744 1495.43L359.248 1502.4C364.443 1343.36 401.688 1187 468.754 1042.69C535.82 898.378 631.325 769.092 749.548 662.574L606.559 503.872Z" fill="#184D5D"/>
+         <path d="M2676.89 1286.74C2620.31 1033.96 2481.03 807.278 2281.09 642.579C2081.16 477.88 1832 384.577 1573.06 377.442L1570.04 487.216C1804.54 493.677 2030.2 578.178 2211.27 727.339C2392.34 876.5 2518.48 1081.8 2569.73 1310.73L2676.89 1286.74Z" fill="#32DCFE"/>
+         <path d="M384.541 1408.72C366.746 1564.29 380.522 1721.85 425.044 1871.97C469.567 2022.09 543.92 2161.68 643.654 2282.39C743.388 2403.11 866.452 2502.46 1005.48 2574.5C1144.51 2646.54 1296.64 2689.78 1452.77 2701.65L1461.1 2592.15C1319.69 2581.4 1181.91 2542.24 1056 2476.99C930.091 2411.75 818.637 2321.77 728.312 2212.45C637.988 2103.12 570.649 1976.7 530.327 1840.74C490.005 1704.78 477.529 1562.09 493.645 1421.2L384.541 1408.72Z" fill="#D8FE93"/>
+         <path d="M2218.76 2591.31C2013.72 2723.62 1774.44 2793.02 1530.43 2790.96L1531.37 2679.21C1753.57 2681.09 1971.46 2617.89 2158.16 2497.41L2218.76 2591.31Z" fill="#F7D3B9"/>
+         <path d="M391.874 1923.14C460.675 2130.03 584.054 2314.51 748.989 2457.1L805.507 2391.73C652.342 2259.31 537.768 2088 473.877 1895.87L391.874 1923.14Z" fill="#0E9DBA"/>
+      </svg>
+    `,
+      language: 'typescript',
+   },
+   {
+      title: 'Step 3: Adding animation',
+      subtitle: 'Using framer-motion',
+      description: 'Add the motion component from Framer Motion as shown in the example below. Apply it to each path, assigning unique rotation and transition values to create a more dynamic and engaging effect. You can use the sample code from ImageLoaderSVG.tsx as a reference for this step.',
+      isCode: true,
+      code: `
+      import { motion } from 'framer-motion';
 
-	const getBlogPostInfo = () => {
-		const pathParts = pathname.split("/");
+      const CircularSVG2 = () => {
+      return (
+         <svg width="3082" height="3082" viewBox="0 0 3082 3082" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <motion.path
 
-		if (pathParts[1] === "blog" && pathParts.length === 3) {
-			const isNewPost = pathParts[2] === "new";
-			const isDrafts = pathParts[2] === "drafts";
-			const isEditPath = pathname.includes("/edit/");
+               initial={{ rotate: 0 }}
 
-			if (!isNewPost && !isDrafts && !isEditPath) {
-				return { isPost: true, slug: pathParts[2] };
-			}
-		}
+               animate={{ rotate: 360 }}
 
-		return { isPost: false, slug: null };
-	};
+               transition={{ duration: 4, ease: "linear", repeat: Infinity }}
 
-	const { isPost, slug } = getBlogPostInfo();
+               style={{ originX: "50%", originY: "50%" }}
 
-	const handleDelete = async () => {
-		if (!slug || !isAuthenticated) return;
+               d="M2464.25 2774.81C2786.8 2533.45 3002.01 2175.37 3063.78 1777.28C3125.55 1379.18 3028.97 972.724 2794.72 644.968C2560.47 317.211 2207.19 94.2194 1810.54 23.7553C1413.89 -46.7088 1005.41 40.9585 672.611 267.979C339.808 495 109.14 843.322 30.0153 1238.33C-49.1098 1633.35 29.6001 2043.64 249.286 2381.33C468.971 2719.02 812.163 2957.25 1205.35 3045C1598.54 3132.75 2010.45 3063.03 2352.87 2850.79L2064.99 2386.35C1843.99 2523.33 1578.14 2568.33 1324.37 2511.69C1070.6 2455.06 849.106 2301.3 707.32 2083.35C565.533 1865.41 514.733 1600.6 565.801 1345.66C616.869 1090.71 765.743 865.905 980.536 719.385C1195.33 572.864 1458.96 516.283 1714.96 561.761C1970.96 607.239 2198.97 751.159 2350.16 962.695C2501.34 1174.23 2563.68 1436.56 2523.81 1693.49C2483.94 1950.43 2345.05 2181.53 2136.87 2337.31L2464.25 2774.81Z" fill="#3C493D"/>
 
-		if (!confirm("Are you sure you want to delete this post?")) return;
+         </svg>
+      `,
+      language: 'typescript',
+   },
+];
 
-		setIsDeleting(true);
+const CircularLoaderModalApp: React.FC = () => {
+   const [showModal, setShowModal] = useState(false);
 
-		try {
-			const { error: deleteError } = await supabaseClient.from("posts").delete().eq("slug", slug);
+   return (
+      <div>
+         <p className='mb-1'>How to create...</p>
+         <button
+            onClick={() => setShowModal(true)}
+            className='py-2 px-4 bg-accent-500 text-white rounded hover:bg-accent-600'
 
-			if (deleteError) throw deleteError;
 
-			await router.push("/blog");
-			router.refresh();
-			await fetch("/api/revalidate", { method: "POST" });
-		} catch (err) {
-			console.error("Failed to delete post:", err);
-			alert("Failed to delete post");
-		} finally {
-			setIsDeleting(false);
-		}
-	};
 
-	return (
-		<nav className='bg-white dark:bg-gray-900 shadow-lg transition-all'>
-			{/* <div className={navStyles.container}> */}
-			<div className='max-w-page mx-auto px-4'>
-				<div className='flex justify-between items-center h-16'>
-					{/* Left section with brand and main links */}
-					<div className='flex items-center gap-8'>
-						<Link href={navLinks.brand.href} className='flex items-center'>
-							<Image src={navLinks.brand.logo} alt={navLinks.brand.label} width={90} height={90} priority />
-							<span className='sr-only'>{navLinks.brand.label}</span>
-						</Link>
 
-						{/* Main navigation links */}
-						<div className='hidden md:flex items-center gap-6'>
-							{navLinks.mainLinks.map((link) => {
-								if ("authRequired" in link && link.authRequired && !isAuthenticated) {
-									return null;
-								}
-								return (
-									<Link key={link.href} href={link.href} className='text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors'>
-										{link.label}
-									</Link>
-								);
-							})}
-						</div>
-					</div>
 
-					{/* Right section with post actions and auth */}
-					<div className='flex items-center gap-4'>
-						{/* Post management buttons - only show on blog post pages */}
-						{isAuthenticated && isPost && (
-							<div className='hidden md:flex items-center gap-3'>
-								<Link href={`/blog/edit/${slug}`} className='px-3 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors'>
-									Edit Post
-								</Link>
-								<button onClick={handleDelete} disabled={isDeleting} className='px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2'>
-									{isDeleting && <Loader2 className='animate-spin' size={16} />}
-									{isDeleting ? "Deleting..." : "Delete Post"}
-								</button>
-							</div>
-						)}
 
-						<ThemeToggle />
 
-						{/* Auth button */}
-						{isAuthenticated ? (
-							<button onClick={() => supabaseClient.auth.signOut()} className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'>
-								{navLinks.authLinks.signOut.label}
-							</button>
-						) : (
-							<button
-								onClick={() =>
-									supabaseClient.auth.signInWithOAuth({
-										provider: "github",
-										options: { redirectTo: `${window.location.origin}/auth/callback` },
-									})
-								}
-								className='px-4 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors'
-							>
-								{navLinks.authLinks.signIn.label}
-							</button>
-						)}
-					</div>
-				</div>
-			</div>
-		</nav>
-	);
+
+         >
+            Circular SVG Animation
+         </button>
+         {showModal && <MultiStepModal steps={steps} onClose={() => setShowModal(false)} />}
+      </div>
+   );
+};
+
+export default CircularLoaderModalApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/modal-components/LoaderModal.tsx
+
+```tsx
+/*---= src/components/modal-components/LoaderModal.tsx =---*/
+/*-= Loader Illustration Modal Component • Typed Loader Modal Component =-*/
+"use client";
+import React from 'react';
+import Image from 'next/image';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+
+export interface LoaderDetails {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  isCode: boolean;
+  code?: string;
+  language?: string;
+  imageUrl?: string;
+  altText?: string;
 }
+
+interface Props {
+  loaderDetail: LoaderDetails;
+  onClose: () => void;
+}
+
+const LoaderModal: React.FC<Props> = ({ loaderDetail, onClose }) => {
+  const {
+    title,
+    subtitle,
+    description,
+    isCode,
+    code,
+    language = 'typescript',
+    imageUrl,
+    altText = 'Image preview',
+  } = loaderDetail;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundColor: '#fff',
+          borderRadius: '8px',
+          padding: '2rem',
+          width: '90%',
+          maxWidth: '600px',
+          overflowY: 'auto',
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            border: 'none',
+            background: 'transparent',
+            fontSize: '1.5rem',
+            cursor: 'pointer',
+          }}
+        >
+          &times;
+        </button>
+        <h1>{title}</h1>
+        {subtitle && <h2 style={{ color: '#555' }}>{subtitle}</h2>}
+        {description && <p style={{ margin: '1rem 0' }}>{description}</p>}
+        {isCode ? (
+          code ? (
+            <SyntaxHighlighter language={language} style={vscDarkPlus}>
+              {code}
+            </SyntaxHighlighter>
+          ) : (
+            <p>No code provided.</p>
+          )
+        ) : imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={altText}
+            width={500}
+            height={300}
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+          />
+        ) : (
+          <p>No image provided.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LoaderModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/modal-components/ModalContentTemplate.tsx
+
+```tsx
+import React from 'react';
+import Image from 'next/image';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  altText: string;
+}
+
+const ModalContentTemplate: React.FC<Props> = ({ title, subtitle, imageUrl, altText }) => {
+  return (
+    <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px', textAlign: 'left' }}>
+
+      <h1>{title}</h1>
+      {subtitle && <h4 style={{ color: '#666' }}>{subtitle}</h4>}
+      {altText && <p style={{ color: '#666' }}>{altText}</p>}
+
+      <Image
+         src={imageUrl}
+         alt={altText}
+         width={600}
+         height={200}
+         style={{ borderRadius: '8px' }}
+         />
+    </div>
+  );
+};
+
+export default ModalContentTemplate;
+```
+
+# src/components/modal-components/MultiStepModal.tsx
+
+```tsx
+/*---= src/components/modal-components/MultiStepModal.tsx =---*/
+/*-= Loader Illustration Modal Component • Typed Loader Modal Component =-*/
+"use client";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+
+interface LoaderDetails {
+   title: string;
+   subtitle?: string;
+   description?: string;
+   isCode: boolean;
+   code?: string;
+   language?: string;
+   imageUrl?: string;
+   altText?: string;
+}
+
+interface Props {
+   steps: LoaderDetails[];
+   onClose: () => void;
+}
+
+const MultiStepModal: React.FC<Props> = ({ steps, onClose }) => {
+   const [currentStep, setCurrentStep] = useState(0);
+   const [copied, setCopied] = useState(false);
+
+   const handleNext = () => {
+      if (currentStep < steps.length - 1) {
+         setCurrentStep(currentStep + 1);
+         setCopied(false);
+      }
+   };
+
+   const handlePrevious = () => {
+      if (currentStep > 0) {
+         setCurrentStep(currentStep - 1);
+         setCopied(false);
+      }
+   };
+
+   const handleCopy = (code: string | undefined) => {
+      if (code) {
+         navigator.clipboard.writeText(code);
+         setCopied(true);
+         setTimeout(() => setCopied(false), 2000);
+      }
+   };
+
+   const currentDetail = steps[currentStep];
+
+   return (
+      <div
+         style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000,
+         }}
+         onClick={onClose}
+      >
+         <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+               backgroundColor: '#fff',
+               borderRadius: '8px',
+               padding: '2rem',
+               width: '90%',
+               maxWidth: '600px',
+               overflowY: 'auto',
+               position: 'relative',
+            }}
+         >
+            <button
+               onClick={onClose}
+               style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  border: 'none',
+                  background: 'transparent',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+               }}
+            >
+               &times;
+            </button>
+
+            <h1 className="text-5xl font-semibold text-primary-800 dark:text-white mb-0">{currentDetail.title}</h1>
+            {/* <h1 id="modal-title" className="text-4xl font-semibold text-gray-900 dark:text-white mb-0"></h1> */}
+            {/* {currentDetail.subtitle &&  */}
+            <h2 className="text-2xl font-normal text-accent-600 dark:text-white mt-3 mb-0">{currentDetail.subtitle}</h2>
+            {/* <h3 style={{ color: 'text-primary-500' }}>{currentDetail.subtitle}</h3>} */}
+            {currentDetail.description && <p style={{ margin: '1rem 0' }}>{currentDetail.description}</p>}
+
+            {currentDetail.isCode ? (
+               currentDetail.code ? (
+                  <div style={{ marginTop: '1rem', position: 'relative' }}>
+                     {currentDetail.language && (
+                        <p className='text-base font-normal text-gray-600 dark:text-white mt-5 mb-0'>
+                           Language: {currentDetail.language}
+                           {/* Language: {currentDetail.language.toUpperCase()} */}
+                        </p>
+                     )}
+                     <div style={{ position: 'relative' }}>
+                        <SyntaxHighlighter language={currentDetail.language} style={vscDarkPlus}>
+                           {currentDetail.code}
+                        </SyntaxHighlighter>
+                        <button
+                           onClick={() => handleCopy(currentDetail.code)}
+                           className='
+                              absolute
+                              top-2 right-2 py-2 px-4
+                              bg-accent-700
+                              text-sm
+                              text-white font-semibold
+                              rounded-lg shadow-md
+                              hover:bg-accent-800
+                              focus:outline-none
+                              focus:ring-2
+                              focus:ring-primary-400
+                              focus:ring-opacity-75
+                              '
+
+
+
+
+
+
+
+
+
+
+
+
+                        >
+                           {copied ? 'Copied!' : 'Copy'}
+                        </button>
+                     </div>
+                  </div>
+               ) : (
+                  <p>No code provided.</p>
+               )
+            ) : currentDetail.imageUrl ? (
+               <Image
+                  src={currentDetail.imageUrl}
+                  alt={currentDetail.altText || 'Image preview'}
+                  width={500}
+                  height={300}
+                  style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+               />
+            ) : (
+               <p>No content provided.</p>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
+               <button
+                  onClick={handlePrevious}
+                  disabled={currentStep === 0}
+                  className='py-4 px-8
+                     bg-primary-600 text-white
+                     font-semibold rounded-lg shadow-md
+                     hover:bg-primary-700
+                     focus:outline-none
+                     focus:ring-2 focus:ring-primary-400 focus:ring-opacity-75
+                     disabled:bg-gray-300
+                     disabled:cursor-not-allowed
+                     '
+                  >
+                  Previous
+               </button>
+               <button
+                  onClick={handleNext}
+                  disabled={currentStep === steps.length - 1}
+                  className='py-4 px-8
+                     bg-primary-600 text-white
+                     font-semibold rounded-lg shadow-md
+                     hover:bg-primary-700
+                     focus:outline-none
+                     focus:ring-2 focus:ring-primary-400 focus:ring-opacity-75
+                     disabled:bg-gray-300
+                     disabled:cursor-not-allowed
+                     '
+                  >
+                  Next
+               </button>
+            </div>
+         </div>
+      </div>
+   );
+};
+
+export default MultiStepModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/modal-components/ProgressRing.tsx
+
+```tsx
+import React from 'react'
+import Image from 'next/image'
+import ModalContentTemplate from "./ModalContentTemplate"
+
+const ProgressRing = () => {
+  return (
+   <ModalContentTemplate
+      title="Creating the circular SVG"
+      subtitle="Using Figma or other vector based apps"
+      imageUrl="/assets/Screenshot-CircularLoader-SaveSVG.png"
+      altText="Select the illustration, right click on it, Copy/Paste as, Copy as SVG"
+   />
+
+  )
+}
+
+export default ProgressRing
+```
+
+# src/components/modal-components/Spinner.js
+
+```js
+"use client";
+
+const Spinner = () => {
+
+
+  return (
+    <>
+  <h1>Spinner</h1>
+    </>
+  );
+};
+
+export default Spinner;
 ```
 
 # src/components/PostCard.tsx
 
 ```tsx
+/* src/components/PostCard.tsx */
 import Link from "next/link";
 import Image from "next/image";
 import { getCategoryName, getCategoryTextColor, CategoryId } from "@/data/categories";
@@ -5986,8 +12799,23 @@ export function PostCard({ post }: PostCardProps) {
 	const categoryTextColor = getCategoryTextColor(post.category);
 
 	return (
-		<Link href={`/blog/${post.slug}`} className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'>
-			<div className='aspect-[16/9] relative bg-gray-900'>{post.cover_image ? <Image src={post.cover_image} alt={post.title} fill className='object-cover' sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw' /> : <div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />}</div>
+		<Link
+			href={`/blog/${post.slug}`}
+			className='group bg-gray-800 rounded-lg overflow-hidden hover:shadow-lg transition-shadow'
+		>
+			<div className='aspect-[16/9] relative bg-gray-900'>
+				{post.cover_image ? (
+					<Image
+						src={post.cover_image}
+						alt={post.title}
+						fill
+						className='object-cover'
+						sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+					/>
+				) : (
+					<div className='absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800' />
+				)}
+			</div>
 			<div className='p-4'>
 				<div className='flex justify-between items-center mb-2'>
 					<span className={`text-sm ${categoryTextColor}`}>{getCategoryName(post.category)}</span>
@@ -5999,11 +12827,13 @@ export function PostCard({ post }: PostCardProps) {
 		</Link>
 	);
 }
+
 ```
 
 # src/components/PostForm.tsx
 
 ```tsx
+/* src/components/PostForm.tsx */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -6059,6 +12889,7 @@ export function PostForm() {
 				.replace(/[^a-z0-9]+/g, "-")
 				.replace(/(^-|-$)+/g, "");
 
+
 			const basePostData = {
 				title: formData.title,
 				slug,
@@ -6068,6 +12899,7 @@ export function PostForm() {
 				published: !saveAsDraft,
 				author_id: user.id,
 			};
+
 
 			const postData =
 				formData.type === "markdown"
@@ -6084,7 +12916,9 @@ export function PostForm() {
 							component_props: formData.props ? JSON.stringify(formData.props) : "{}",
 					  };
 
+
 			console.log("Sending post data:", postData);
+
 
 			const { data, error: postError } = await supabaseClient.from("posts").insert([postData]).select().single();
 
@@ -6098,6 +12932,7 @@ export function PostForm() {
 			}
 
 			console.log("Post created successfully:", data);
+
 
 			router.push(saveAsDraft ? "/blog/drafts" : "/blog");
 			router.refresh();
@@ -6119,12 +12954,84 @@ export function PostForm() {
 		}
 	};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	return (
-		<form onSubmit={handleSubmit} className='space-y-6' aria-label='Create new post'>
+		<form
+			onSubmit={handleSubmit}
+			className='space-y-6'
+			aria-label='Create new post'
+		>
 			{error && <div className='bg-red-500/10 text-red-500 p-4 rounded'>{error}</div>}
 			<div>
 				<label className='block text-sm font-medium mb-2'>Post Type</label>
-				<select id='post-category' value={formData.type} onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value as PostType }))} className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100' aria-label='Select post category' title='Select post category'>
+				<select
+					id='post-category'
+					value={formData.type}
+					onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value as PostType }))}
+					className='w-full p-2 border rounded bg-gray-800 border-gray-700 text-gray-100'
+					aria-label='Select post category'
+					title='Select post category'
+				>
 					<option value='markdown'>Markdown</option>
 					<option value='component'>React Component</option>
 				</select>
@@ -6167,7 +13074,10 @@ export function PostForm() {
 					required
 				>
 					{categories.map((category) => (
-						<option key={category.id} value={category.id}>
+						<option
+							key={category.id}
+							value={category.id}
+						>
 							{category.name}
 						</option>
 					))}
@@ -6222,7 +13132,10 @@ export function PostForm() {
 			) : (
 				<>
 					<div>
-						<label htmlFor='component-name' className='block text-sm font-medium mb-2'>
+						<label
+							htmlFor='component-name'
+							className='block text-sm font-medium mb-2'
+						>
 							Component Name
 						</label>
 						<input
@@ -6252,6 +13165,7 @@ export function PostForm() {
 								}))
 							}
 							className='w-full p-2 border rounded h-24 bg-gray-800 border-gray-700 text-gray-100'
+
 							placeholder='Enter component props in JSON format'
 							title='Component props in JSON format'
 							aria-label='Component props in JSON format'
@@ -6261,86 +13175,425 @@ export function PostForm() {
 			)}
 
 			<div className='flex items-center gap-4'>
-				<button type='submit' disabled={isSubmitting} className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'>
-					{isSubmitting && <Loader2 className='animate-spin' size={16} />}
+				<button
+					type='submit'
+					disabled={isSubmitting}
+					className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2'
+				>
+					{isSubmitting && (
+						<Loader2
+							className='animate-spin'
+							size={16}
+						/>
+					)}
 					{isSubmitting ? "Saving..." : saveAsDraft ? "Save Draft" : "Publish"}
 				</button>
 
 				<label className='flex items-center gap-2'>
-					<input type='checkbox' checked={saveAsDraft} onChange={(e) => setSaveAsDraft(e.target.checked)} className='rounded border-gray-300' />
+					<input
+						type='checkbox'
+						checked={saveAsDraft}
+						onChange={(e) => setSaveAsDraft(e.target.checked)}
+						className='rounded border-gray-300'
+					/>
 					<span>Save as draft</span>
 				</label>
 			</div>
 		</form>
 	);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/Reactions.tsx
 
 ```tsx
-"use client";
-import { useState, useEffect } from "react";
-import { supabaseClient } from "@/lib/auth";
-import { Heart, ThumbsUp, Star, Coffee } from "lucide-react";
+/* src/components/Reactions.tsx */
+'use client'
+import { useState, useEffect } from 'react'
+import { supabaseClient } from '@/lib/auth'
+import { Heart, ThumbsUp, Star, Coffee } from 'lucide-react'
 
 const REACTIONS = [
-	{ type: "like", icon: ThumbsUp },
-	{ type: "love", icon: Heart },
-	{ type: "star", icon: Star },
-	{ type: "coffee", icon: Coffee },
-] as const;
+  { type: 'like', icon: ThumbsUp },
+  { type: 'love', icon: Heart },
+  { type: 'star', icon: Star },
+  { type: 'coffee', icon: Coffee },
+] as const
+
 
 export function Reactions({ postId }: { postId: string }) {
-	const [counts, setCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({})
 
-	useEffect(() => {
-		loadReactions();
-	}, [postId]);
+  useEffect(() => {
+    loadReactions()
+  }, [postId])
 
-	const loadReactions = async () => {
-		const { data } = await supabaseClient.from("reactions").select("type").eq("post_id", postId);
+  const loadReactions = async () => {
+    const { data } = await supabaseClient
+      .from('reactions')
+      .select('type')
+      .eq('post_id', postId)
 
-		const newCounts: Record<string, number> = {};
-		data?.forEach((reaction) => {
-			newCounts[reaction.type] = (newCounts[reaction.type] || 0) + 1;
-		});
-		setCounts(newCounts);
-	};
+    const newCounts: Record<string, number> = {}
+    data?.forEach(reaction => {
+      newCounts[reaction.type] = (newCounts[reaction.type] || 0) + 1
+    })
+    setCounts(newCounts)
+  }
 
-	const handleReaction = async (type: string) => {
-		try {
-			await supabaseClient.from("reactions").insert({
-				post_id: postId,
-				type,
-			});
-			loadReactions();
-		} catch (error) {
-			console.error("Error updating reaction:", error);
-		}
-	};
+  const handleReaction = async (type: string) => {
+    try {
+      await supabaseClient
+        .from('reactions')
+        .insert({
+          post_id: postId,
+          type
+        })
+      loadReactions()
+    } catch (error) {
+      console.error('Error updating reaction:', error)
+    }
+  }
 
-	return (
-		<div className='flex gap-4 items-center'>
-			{REACTIONS.map(({ type, icon: Icon }) => (
-				<button
-					key={type}
-					onClick={() => handleReaction(type)}
-					className='flex items-center gap-1 p-2 rounded-full transition-colors
-            bg-gray-800 text-gray-300 hover:bg-gray-700'
-				>
-					<Icon size={20} />
-					<span className='text-sm'>{counts[type] || 0}</span>
-				</button>
-			))}
-		</div>
-	);
+  return (
+    <div className="flex gap-4 items-center">
+      {REACTIONS.map(({ type, icon: Icon }) => (
+        <button
+          key={type}
+          onClick={() => handleReaction(type)}
+          className="flex items-center gap-1 p-2 rounded-full transition-colors
+            bg-gray-800 text-gray-300 hover:bg-gray-700"
+        >
+          <Icon size={20} />
+          <span className="text-sm">{counts[type] || 0}</span>
+        </button>
+      ))}
+    </div>
+  )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/RichMarkdownEditor.tsx
 
 ```tsx
+/* src/components/RichMarkdownEditor.tsx */
 "use client";
 import { useState, useRef } from "react";
 import { supabaseClient } from "@/lib/auth";
@@ -6375,7 +13628,7 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 		{ icon: ListOrdered, label: "Numbered List", prefix: "1. ", suffix: "", block: true },
 		{ icon: LinkIcon, label: "Link", prefix: "[", suffix: "](url)" },
 		{ icon: Quote, label: "Quote", prefix: "> ", suffix: "", block: true },
-		{ icon: Code, label: "Code", prefix: "```\n", suffix: "\n```", block: true },
+		{ icon: Code, label: "Code", prefix: "\`\`\`\n", suffix: "\n\`\`\`", block: true },
 		{ icon: Minus, label: "Horizontal Rule", prefix: "\n---\n", suffix: "", block: true },
 	];
 
@@ -6389,6 +13642,7 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 
 		let newText = "";
 		if (block) {
+
 			const beforeSelection = content.substring(0, start);
 			const needsNewLine = beforeSelection.length > 0 && !beforeSelection.endsWith("\n");
 			newText = (needsNewLine ? "\n" : "") + prefix + selectedText + suffix;
@@ -6400,6 +13654,7 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 
 		setContent(newContent);
 		onChange(newContent);
+
 
 		const newCursorPos = block ? start + prefix.length + selectedText.length + suffix.length : start + prefix.length + (selectedText.length || suffix.length);
 
@@ -6451,15 +13706,39 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 			{/* Toolbar */}
 			<div className='flex flex-wrap items-center gap-1 p-2 border-b border-gray-700 bg-gray-800'>
 				{formatActions.map((action) => (
-					<button key={action.label} type='button' onClick={() => insertTextAtCursor(action.prefix, action.suffix, action.block)} className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded' title={action.label}>
+					<button
+						key={action.label}
+						type='button'
+						onClick={() => insertTextAtCursor(action.prefix, action.suffix, action.block)}
+						className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded'
+						title={action.label}
+					>
 						<action.icon size={18} />
 					</button>
 				))}
 				<div className='w-px h-6 bg-gray-700 mx-1' />
-				<button type='button' onClick={() => fileInputRef.current?.click()} className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded' disabled={isUploading} title='Upload Image'>
-					{isUploading ? <Loader2 className='animate-spin' size={18} /> : <ImageIcon size={18} />}
+				<button
+					type='button'
+					onClick={() => fileInputRef.current?.click()}
+					className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded'
+					disabled={isUploading}
+					title='Upload Image'
+				>
+					{isUploading ? (
+						<Loader2
+							className='animate-spin'
+							size={18}
+						/>
+					) : (
+						<ImageIcon size={18} />
+					)}
 				</button>
-				<button type='button' onClick={() => setShowHelp((prev) => !prev)} className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded ml-auto' title='Markdown Help'>
+				<button
+					type='button'
+					onClick={() => setShowHelp((prev) => !prev)}
+					className='p-1.5 text-gray-300 hover:text-white hover:bg-gray-700 rounded ml-auto'
+					title='Markdown Help'
+				>
 					<AlertCircle size={18} />
 				</button>
 			</div>
@@ -6535,11 +13814,206 @@ export function RichMarkdownEditor({ initialContent, onChange }: EditorProps) {
 		</div>
 	);
 }
+
+```
+
+# src/components/skeleton-components/SkeletonLoader.tsx
+
+```tsx
+import React from 'react';
+
+const SkeletonLoader = ({ height = 'h-5', width = 'w-full', rounded = 'rounded-md' }) => {
+  return (
+    <div
+      className={`bg-gray-200 ${height} ${width} ${rounded} animate-pulse`}
+    ></div>
+  );
+};
+
+export default SkeletonLoader;
+```
+
+# src/components/skeleton-components/SkeletonLoaderApp.tsx
+
+```tsx
+import React from 'react';
+import SkeletonLoader from './SkeletonLoader';
+
+const SkeletonLoaderAppApp = () => {
+  return (
+    <div className="p-6 space-y-4">
+      <h1 className="text-xl font-bold">Skeleton Loader Example</h1>
+      <SkeletonLoader height="h-10" width="w-3/4" rounded="rounded-lg" />
+      <SkeletonLoader height="h-6" width="w-1/2" />
+      <SkeletonLoader height="h-6" width="w-full" />
+    </div>
+  );
+};
+
+export default SkeletonLoaderAppApp;
+```
+
+# src/components/skeleton-components/UserProfile.tsx
+
+```tsx
+/*---= src/components/skeleton-components/UserProfile.tsx =---*/
+"use client";
+import React, { useState, useEffect, useRef } from 'react';
+import SkeletonLoader from './SkeletonLoader';
+import { CodeBlock } from '../blog-components/CodeBlock';
+
+
+interface User {
+   name: string;
+   email: string;
+   bio: string;
+}
+
+const skeletonLoaderCode = `
+   ...
+   {loading ? (
+      <div className="mt-12 space-y-4">
+         <SkeletonLoader height="h-8" width="w-1/2" />
+         <SkeletonLoader height="h-6" width="w-3/4" />
+         <SkeletonLoader height="h-20" width="w-full" rounded="rounded-lg" />
+      </div>
+   ) : (
+      <div className='space-y-4'>
+         <h1 className="text-xl font-bold">{user?.name}</h1>
+         <p className="text-gray-600">{user?.email}</p>
+         <p className="text-gray-800 mt-4">{user?.bio}</p>
+      </div>
+   )}
+   ...
+`;
+
+const UserProfile: React.FC = () => {
+   const [loading, setLoading] = useState<boolean>(true);
+   const [user, setUser] = useState<User | null>(null);
+   const profileRef = useRef<HTMLDivElement>(null);
+
+   const fetchData = () => {
+      setLoading(true);
+      setUser(null);
+      setTimeout(() => {
+         setUser({
+            name: 'John Doe',
+            email: 'john.doe@example.com',
+            bio: 'Web developer and coffee enthusiast.',
+         });
+         setLoading(false);
+      }, 3000);
+   };
+
+   useEffect(() => {
+      fetchData();
+   }, []);
+
+   useEffect(() => {
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  fetchData();
+               }
+            });
+         },
+         { threshold: 0.5 }
+      );
+
+      if (profileRef.current) {
+         observer.observe(profileRef.current);
+      }
+
+      return () => {
+         if (profileRef.current) {
+            observer.unobserve(profileRef.current);
+         }
+      };
+   }, []);
+
+   return (
+
+      <>
+         <div className="p-6 max-w-md mx-3.5 bg-gray-50/50 shadow-xl rounded border " ref={profileRef}>
+            <h1 className="text-2xl font-bold mb-0">Skeleton Loader Example</h1>
+            <p className='mt-0 mb-10'>To experience the effect again, simply scroll this sample out of view and back into view. Powered by lazy-loading.</p>
+            {loading ? (
+               <div className="mt-12 space-y-4">
+                  <SkeletonLoader height="h-8" width="w-1/2" />
+                  <SkeletonLoader height="h-6" width="w-3/4" />
+                  <SkeletonLoader height="h-20" width="w-full" rounded="rounded-lg" />
+               </div>
+            ) : (
+               <div className='space-y-4'>
+                  <h1 className="text-xl font-bold">{user?.name}</h1>
+                  <p className="text-gray-600">{user?.email}</p>
+                  <p className="text-gray-800 mt-4">{user?.bio}</p>
+               </div>
+            )}
+         </div>
+            <div>
+               <p className='mt-8 mb-1'>UserProfile.tsx</p>
+               <CodeBlock
+                  code={skeletonLoaderCode}
+                  language='typescript'
+                  fontSize='1rem'
+               />
+            </div>
+      </>
+   );
+};
+
+export default UserProfile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/StagingArea.tsx
 
 ```tsx
+/* src/components/StagingArea.tsx */
 "use client";
 import React, { useState, useEffect } from "react";
 import { supabaseClient } from "@/lib/auth";
@@ -6547,6 +14021,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Edit, Eye, Trash2, CheckCircle, XCircle } from "lucide-react";
 import { categories } from "@/data/categories";
+
 
 export default function StagingArea() {
 	const [draftPosts, setDraftPosts] = useState([]);
@@ -6615,7 +14090,10 @@ export default function StagingArea() {
 			) : (
 				<div className='space-y-4'>
 					{draftPosts.map((post) => (
-						<div key={post.id} className='flex items-center justify-between bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm'>
+						<div
+							key={post.id}
+							className='flex items-center justify-between bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm'
+						>
 							<div className='flex-1'>
 								<h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-1'>{post.title}</h3>
 								<div className='flex items-center gap-4'>
@@ -6625,16 +14103,30 @@ export default function StagingArea() {
 							</div>
 
 							<div className='flex items-center gap-3'>
-								<Link href={`/blog/${post.slug}?preview=true`} className='p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'>
+								<Link
+									href={`/blog/${post.slug}?preview=true`}
+									className='p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+								>
 									<Eye size={20} />
 								</Link>
-								<Link href={`/blog/edit/${post.slug}`} className='p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'>
+								<Link
+									href={`/blog/edit/${post.slug}`}
+									className='p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
+								>
 									<Edit size={20} />
 								</Link>
-								<button onClick={() => publishPost(post.id)} className='p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300' title='Publish post'>
+								<button
+									onClick={() => publishPost(post.id)}
+									className='p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+									title='Publish post'
+								>
 									<CheckCircle size={20} />
 								</button>
-								<button onClick={() => deletePost(post.id)} className='p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300' title='Delete draft'>
+								<button
+									onClick={() => deletePost(post.id)}
+									className='p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+									title='Delete draft'
+								>
 									<Trash2 size={20} />
 								</button>
 							</div>
@@ -6645,11 +14137,15 @@ export default function StagingArea() {
 		</div>
 	);
 }
+
+
+
 ```
 
 # src/components/ThemeToggle.tsx
 
 ```tsx
+/* src/components/ThemeToggle.tsx */
 "use client";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -6658,16 +14154,22 @@ export function ThemeToggle() {
 	const { isDark, toggleTheme } = useTheme();
 
 	return (
-		<button onClick={toggleTheme} className='p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors' aria-label='Toggle theme'>
+		<button
+			onClick={toggleTheme}
+			className='p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+			aria-label='Toggle theme'
+		>
 			{isDark ? <Sun className='h-5 w-5 text-yellow-500' /> : <Moon className='h-5 w-5 text-gray-700' />}
 		</button>
 	);
 }
+
 ```
 
 # src/contexts/ThemeContext.tsx
 
 ```tsx
+/* src/contexts/ThemeContext.tsx */
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -6725,1057 +14227,1682 @@ export function useTheme() {
 	}
 	return context;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/data/categories.ts
 
 ```ts
+/* src/data/categories.ts */
 import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
 export const categories = [
-	{
-		id: "tech",
-		name: "Tech Articles",
-		icon: Laptop,
-		description: "Deep dives into software development, web technologies, and the latest tech trends.",
-		gradient: "from-blue-500 to-blue-700",
-		textColor: "text-primary-400",
-	},
-	{
-		id: "media",
-		name: "Visual Media",
-		icon: Newspaper,
-		description: "In this section, I share my experiences working on creative projects like video editing with DaVinci Resolve, creating simple animations, designing clean static layouts, and developing intros for corporate presentations. It’s a place to explore the practical side of visual storytelling and design.",
-		gradient: "from-purple-500 to-purple-700",
-		textColor: "text-secondary-400",
-	},
-	{
-		id: "food",
-		name: "Fusion Food",
-		icon: Coffee,
-		description: "Creative recipes blending different culinary traditions.",
-		gradient: "from-green-500 to-green-700",
-		textColor: "text-accent-400",
-	},
-	{
-		id: "personal",
-		name: "Personal",
-		icon: User,
-		description: "Personal reflections, experiences, and life lessons. In this section, I share my thoughts, experiences, and lessons I’ve learned along the way. It’s a place for personal stories and reflections on everyday life, offering a glimpse into my journey and the moments that matter most to me.",
-		gradient: "from-yellow-500 to-yellow-700",
-		textColor: "text-success-400",
-	},
+   {
+      id: 'tech',
+      name: 'Tech Articles',
+      icon: Laptop,
+      description: 'Deep dives into software development, web technologies, and the latest tech trends.',
+      gradient: 'from-blue-500 to-blue-700',
+      textColor: "text-primary-400"
+   },
+   {
+      id: 'media',
+      name: 'Visual Media',
+      icon: Newspaper,
+      description: 'In this section, I share my experiences working on creative projects like video editing with DaVinci Resolve, creating simple animations, designing clean static layouts, and developing intros for corporate presentations. It’s a place to explore the practical side of visual storytelling and design.',
+      gradient: 'from-purple-500 to-purple-700',
+      textColor: "text-secondary-400"
+   },
+   {
+      id: 'food',
+      name: 'Fusion Food',
+      icon: Coffee,
+      description: 'Creative recipes blending different culinary traditions.',
+      gradient: 'from-green-500 to-green-700',
+      textColor: "text-accent-400"
+   },
+   {
+      id: 'personal',
+      name: 'Personal',
+      icon: User,
+      description: 'Personal reflections, experiences, and life lessons. In this section, I share my thoughts, experiences, and lessons I’ve learned along the way. It’s a place for personal stories and reflections on everyday life, offering a glimpse into my journey and the moments that matter most to me.',
+      gradient: 'from-yellow-500 to-yellow-700',
+      textColor: "text-success-400"
+   }
 ] as const;
 
-export type CategoryId = (typeof categories)[number]["id"];
+export type CategoryId = typeof categories[number]['id'];
+
 ```
 
 # src/data/navbarConfig.ts
 
 ```ts
-import type { ReactNode } from "react";
-import Image from "next/image";
+/* src/data/navbarConfig.ts */
+import type { ReactNode } from 'react'
+import Image from 'next/image'
 
 export interface NavLink {
-	href: string;
-	label: string;
-	icon?: ReactNode;
-	isButton?: boolean;
-	authRequired?: boolean;
+   href: string
+   label: string
+   icon?: ReactNode
+   isButton?: boolean
+   authRequired?: boolean
 }
 
 export const navLinks = {
-	brand: {
-		href: "/",
-		label: "Mash Media Studio",
-		logo: "/assets/GD-Fusion-logo.png",
-	},
-	mainLinks: [
-		{
-			href: "/blog",
-			label: "Blog",
-		},
-		{
-			href: "/blog/new",
-			label: "New Post",
-			authRequired: true,
-		},
-		{
-			href: "/blog/drafts",
-			label: "Drafts",
-			authRequired: true,
-		},
-	],
-	authLinks: {
-		signIn: {
-			label: "Sign In",
-			isButton: true,
-		},
-		signOut: {
-			label: "Sign Out",
-			isButton: true,
-		},
-	},
+   brand: {
+      href: '/',
+      label: 'Mash Media Studio',
+      logo: '/assets/GD-Fusion-logo.png'
+   },
+   mainLinks: [
+      {
+         href: '/blog',
+         label: 'Blog'
+      },
+      {
+         href: '/blog/new',
+         label: 'New Post',
+         authRequired: true
+      },
+      {
+         href: '/blog/drafts',
+         label: 'Drafts',
+         authRequired: true
+      }
+   ],
+   authLinks: {
+      signIn: {
+         label: 'Sign In',
+         isButton: true
+      },
+      signOut: {
+         label: 'Sign Out',
+         isButton: true
+      }
+   }
 } as const;
 
 export const navStyles = {
-	base: "bg-white dark:bg-gray-900 shadow-lg transition-colors",
+   base: "bg-white dark:bg-gray-900 shadow-lg transition-colors",
 
-	container: "max-w-page mx-auto px-4",
-	inner: "flex justify-between h-16",
-	brand: "flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white",
-	link: "hover:text-gray-600 dark:hover:text-gray-300",
-	button: "bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700",
+   container: "max-w-page mx-auto px-4",
+   inner: "flex justify-between h-16",
+   brand: "flex items-center gap-2 font-bold text-xl text-gray-900 dark:text-white",
+   link: "hover:text-gray-600 dark:hover:text-gray-300",
+   button: "bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
 } as const;
+
 ```
 
 # src/hooks/useAuth.ts
 
 ```ts
-"use client";
-import { useEffect, useState } from "react";
-import { supabaseClient } from "@/lib/auth";
-import type { User } from "@supabase/supabase-js";
+/* src/hooks/useAuth.ts */
+'use client'
+import { useEffect, useState } from 'react'
+import { supabaseClient } from '@/lib/auth'
+import type { User } from '@supabase/supabase-js'
 
 export function useAuth() {
-	const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null)
 
-	useEffect(() => {
-		const {
-			data: { subscription },
-		} = supabaseClient.auth.onAuthStateChange((_, session) => {
-			setUser(session?.user ?? null);
-		});
+  useEffect(() => {
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+    })
 
-		return () => subscription.unsubscribe();
-	}, []);
+    return () => subscription.unsubscribe()
+  }, [])
 
-	return { user, isAuthenticated: !!user };
+  return { user, isAuthenticated: !!user }
 }
+```
+
+# src/hooks/useFetchData.ts
+
+```ts
+/*-= src/hooks/useFetchData.ts =-*/
+import { useState, useEffect, useRef } from 'react';
+
+type FetchDataOptions<T> = {
+   fetchData: () => Promise<T>;
+   onIntersect?: boolean;
+   threshold?: number;
+   initialData?: T | null;
+};
+
+export const useFetchData = <T>({
+   fetchData,
+   onIntersect = true,
+   threshold = 0.5,
+   initialData = null,
+}: FetchDataOptions<T>) => {
+   const [data, setData] = useState<T | null>(initialData);
+   const [loading, setLoading] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+
+   const loadData = async () => {
+      setLoading(true);
+      try {
+         const result = await fetchData();
+         setData(result);
+      } catch (error) {
+         console.error('Error fetching data:', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      loadData();
+   }, []);
+
+   useEffect(() => {
+      if (!onIntersect) return;
+
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  loadData();
+               }
+            });
+         },
+         { threshold }
+      );
+
+      if (ref.current) {
+         observer.observe(ref.current);
+      }
+
+      return () => {
+         if (ref.current) {
+            observer.unobserve(ref.current);
+         }
+      };
+   }, [onIntersect, threshold]);
+
+   return { data, loading, ref };
+};
+```
+
+# src/hooks/useLazyLoadComponent.ts
+
+```ts
+/*-= src/hooks/useLazyLoadComponent.ts =-*/
+import { useState, useEffect, useRef } from 'react';
+
+type UseLazyLoadComponentOptions = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   threshold?: number;
+};
+
+export const useLazyLoadComponent = ({
+   importComponent,
+   threshold = 0.5,
+}: UseLazyLoadComponentOptions) => {
+   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
+   const [loading, setLoading] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+
+   const loadComponent = async () => {
+      setLoading(true);
+      try {
+         const { default: loadedComponent } = await importComponent();
+         setComponent(() => loadedComponent);
+      } catch (error) {
+         console.error('Error loading component:', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  loadComponent();
+               }
+            });
+         },
+         { threshold }
+      );
+
+      if (ref.current) {
+         observer.observe(ref.current);
+      }
+
+      return () => {
+         observer.disconnect();
+      };
+   }, []);
+
+   return { Component, loading, ref };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/hooks/useLazyLoadComponentWithVisibility.ts
+
+```ts
+/*-= src/hooks/useLazyLoadComponentWithVisibility.ts =-*/
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+type UseLazyLoadComponentOptions = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   threshold?: number;
+};
+
+export const useLazyLoadComponentWithVisibility = ({
+   importComponent,
+   threshold = 0.5,
+}: UseLazyLoadComponentOptions) => {
+   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
+   const [loading, setLoading] = useState(false);
+   const [isVisible, setIsVisible] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+
+   const loadComponent = useCallback(async () => {
+      setLoading(true);
+      try {
+         const { default: loadedComponent } = await importComponent();
+         setComponent(() => loadedComponent);
+      } catch (error) {
+         console.error('Error loading component:', error);
+      } finally {
+         setLoading(false);
+      }
+   }, [importComponent]);
+
+   useEffect(() => {
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  setIsVisible(true);
+                  if (!Component) loadComponent();
+               } else {
+                  setIsVisible(false);
+                  setComponent(null);
+               }
+            });
+         },
+         { threshold }
+      );
+
+      if (ref.current) {
+         observer.observe(ref.current);
+      }
+
+      return () => {
+         observer.disconnect();
+      };
+   }, [Component, loadComponent, threshold]);
+
+   return { Component, loading, isVisible, ref };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/hooks/useLazyLoadWithSkeleton.ts
+
+```ts
+/*-= src/hooks/useLazyLoadWithSkeleton.ts =-*/
+import { useState, useEffect, useRef } from 'react';
+
+type UseLazyLoadWithSkeletonOptions = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   threshold?: number;
+};
+
+export const useLazyLoadWithSkeleton = ({
+   importComponent,
+   threshold = 0.5,
+}: UseLazyLoadWithSkeletonOptions) => {
+   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
+   const [loading, setLoading] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+
+   const loadComponent = async () => {
+      setLoading(true);
+      try {
+         const { default: loadedComponent } = await importComponent();
+         setComponent(() => loadedComponent);
+      } catch (error) {
+         console.error('Error loading component:', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   useEffect(() => {
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  loadComponent();
+               }
+            });
+         },
+         { threshold }
+      );
+
+      if (ref.current) {
+         observer.observe(ref.current);
+      }
+
+      return () => {
+         observer.disconnect();
+      };
+   }, []);
+
+   return { Component, loading, ref };
+};
 ```
 
 # src/hooks/useTheme.ts
 
 ```ts
-"use client";
-import { useState, useEffect } from "react";
+/* src/hooks/useTheme.ts */
+'use client'
+import { useState, useEffect } from 'react'
 
 export function useTheme() {
-	const [darkMode, setDarkMode] = useState(false);
-	const [mounted, setMounted] = useState(false);
+  const [darkMode, setDarkMode] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-	useEffect(() => {
-		const isDark = document.documentElement.classList.contains("dark");
-		setDarkMode(isDark);
-		setMounted(true);
-	}, []);
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark')
+    setDarkMode(isDark)
+    setMounted(true)
+  }, [])
 
-	const toggleTheme = () => {
-		const newDarkMode = !darkMode;
-		setDarkMode(newDarkMode);
+  const toggleTheme = () => {
+    const newDarkMode = !darkMode
+    setDarkMode(newDarkMode)
 
-		if (newDarkMode) {
-			document.documentElement.classList.add("dark");
-			localStorage.setItem("theme", "dark");
-		} else {
-			document.documentElement.classList.remove("dark");
-			localStorage.setItem("theme", "light");
-		}
-	};
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
-	return { darkMode, toggleTheme, mounted };
+  return { darkMode, toggleTheme, mounted }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/hooks/useVisibilityToggleComponent.ts
+
+```ts
+/*-= src/hooks/useVisibilityToggleComponent.ts =-*/
+import { useState, useEffect, useRef } from 'react';
+
+type UseVisibilityToggleComponentOptions = {
+   importComponent: () => Promise<{ default: React.ComponentType<any> }>;
+   threshold?: number;
+};
+
+export const useVisibilityToggleComponent = ({
+   importComponent,
+   threshold = 0.5,
+}: UseVisibilityToggleComponentOptions) => {
+   const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
+   const [loading, setLoading] = useState(false);
+   const ref = useRef<HTMLDivElement | null>(null);
+
+   const loadComponent = async () => {
+      setLoading(true);
+      try {
+         const { default: loadedComponent } = await importComponent();
+         setComponent(() => loadedComponent);
+      } catch (error) {
+         console.error('Error loading component:', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const unloadComponent = () => {
+      setComponent(null);
+   };
+
+   useEffect(() => {
+      const observer = new IntersectionObserver(
+         (entries) => {
+            entries.forEach((entry) => {
+               if (entry.isIntersecting) {
+                  loadComponent();
+               } else {
+                  unloadComponent();
+               }
+            });
+         },
+         { threshold }
+      );
+
+      if (ref.current) {
+         observer.observe(ref.current);
+      }
+
+      return () => {
+         observer.disconnect();
+      };
+   }, []);
+
+   return { Component, loading, ref };
+};
 ```
 
 # src/lib/auth.ts
 
 ```ts
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+/* src/lib/auth.ts */
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export const supabaseClient = createClientComponentClient();
+export const supabaseClient = createClientComponentClient()
 ```
 
 # src/lib/portfolio-theme.ts
 
 ```ts
-export type { ThemeMode, ColorWithShades, ColorShades, BorderColors, ColorPalette, Typography, Theme } from "./types";
+/* src/styles/theme.ts : originall from Portfolio 2025 */
 
-export { colors, baseTheme, lightTheme, darkTheme, theme, getColor, getBackgroundColor, getTextColor, getBorderColor, getFontFamily, getFontWeight, getFontSize, applyFontStyle } from "./theme-config";
+export type {
+   ThemeMode,
+   ColorWithShades,
+   ColorShades,
+   BorderColors,
+   ColorPalette,
+   Typography,
+   Theme
+ } from './types'
+
+ export {
+   colors,
+   baseTheme,
+   lightTheme,
+   darkTheme,
+   theme,
+   getColor,
+   getBackgroundColor,
+   getTextColor,
+   getBorderColor,
+   getFontFamily,
+   getFontWeight,
+   getFontSize,
+   applyFontStyle
+ } from './theme-config'
+
+
+
+
+
+
+
+
 ```
 
 # src/lib/supabase.ts
 
 ```ts
-import { createClient } from "@supabase/supabase-js";
-import { CategoryId } from "@/data/categories";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { createClient } from '@supabase/supabase-js';
+import { CategoryId } from '@/data/categories';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
 
 export type Post = {
-	id: string;
-	title: string;
-	slug: string;
-	content: string;
-	excerpt?: string;
-	category: CategoryId;
-	published: boolean;
-	created_at: string;
-	updated_at: string;
-};
+   id: string
+   title: string
+   slug: string
+   content: string
+   excerpt?: string
+   category: CategoryId
+   published: boolean
+   created_at: string
+   updated_at: string
+}
+
 
 export const blogApi = {
-	async getAllPosts() {
-		const { data, error } = await supabase.from("posts").select("*").eq("published", true).order("created_at", { ascending: false });
 
-		if (error) throw error;
-		return data as Post[];
-	},
+   async getAllPosts() {
+      const { data, error } = await supabase
+         .from('posts')
+         .select('*')
+         .eq('published', true)
+         .order('created_at', { ascending: false })
 
-	async getPostBySlug(slug: string) {
-		const { data, error } = await supabase.from("posts").select("*").eq("slug", slug).single();
+      if (error) throw error
+      return data as Post[]
+   },
 
-		if (error) throw error;
-		return data as Post;
-	},
 
-	async createPost(post: Omit<Post, "id" | "created_at" | "updated_at">) {
-		const { data, error } = await supabase.from("posts").insert([post]).select().single();
+   async getPostBySlug(slug: string) {
+      const { data, error } = await supabase
+         .from('posts')
+         .select('*')
+         .eq('slug', slug)
+         .single()
 
-		if (error) throw error;
-		return data as Post;
-	},
+      if (error) throw error
+      return data as Post
+   },
 
-	async updatePost(id: string, updates: Partial<Post>) {
-		const { data, error } = await supabase.from("posts").update(updates).eq("id", id).select().single();
 
-		if (error) throw error;
-		return data as Post;
-	},
+   async createPost(post: Omit<Post, 'id' | 'created_at' | 'updated_at'>) {
+      const { data, error } = await supabase
+         .from('posts')
+         .insert([post])
+         .select()
+         .single()
 
-	async deletePost(id: string) {
-		const { error } = await supabase.from("posts").delete().eq("id", id);
+      if (error) throw error
+      return data as Post
+   },
 
-		if (error) throw error;
 
-		const res = await fetch("/api/revalidate", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ path: "/blog" }),
-		});
+   async updatePost(id: string, updates: Partial<Post>) {
+      const { data, error } = await supabase
+         .from('posts')
+         .update(updates)
+         .eq('id', id)
+         .select()
+         .single()
 
-		if (!res.ok) {
-			throw new Error("Failed to revalidate cache");
-		}
+      if (error) throw error
+      return data as Post
+   },
 
-		return true;
-	},
-};
+
+   async deletePost(id: string) {
+      const { error } = await supabase
+         .from('posts')
+         .delete()
+         .eq('id', id)
+
+      if (error) throw error
+
+
+      const res = await fetch('/api/revalidate', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ path: '/blog' })
+      })
+
+      if (!res.ok) {
+         throw new Error('Failed to revalidate cache')
+      }
+
+      return true
+   }
+}
+
 ```
 
 # src/lib/theme-config.ts
 
 ```ts
-import { ThemeMode, ColorWithShades, ColorShades, BorderColors, Theme } from "./portfolio-theme";
 
-type HeadingSizes = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-type BodySizes = "xs" | "sm" | "base" | "lg" | "xl";
+
+
+
+
+
+
+import {
+   ThemeMode,
+   ColorWithShades,
+   ColorShades,
+   BorderColors,
+
+
+   Theme
+} from "./portfolio-theme";
+
+type HeadingSizes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+type BodySizes = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+
 
 export const baseTheme = {
-	typography: {
-		heading: {
-			fontFamily: '"Libre Baskerville", serif',
-			weights: {
-				regular: 400,
-				medium: 500,
-				bold: 700,
-			},
-			sizes: {
-				h1: "2.5rem",
-				h2: "2rem",
-				h3: "1.75rem",
-				h4: "1.5rem",
-				h5: "1.25rem",
-				h6: "1rem",
-			},
-		},
-		body: {
-			fontFamily: '"Open Sans", sans-serif',
-			weights: {
-				regular: 400,
-				medium: 500,
-				bold: 700,
-			},
-			sizes: {
-				xs: "0.75rem",
-				sm: "0.875rem",
-				base: "1rem",
-				lg: "1.125rem",
-				xl: "1.25rem",
-			},
-		},
-	},
+   typography: {
+      heading: {
+         fontFamily: '"Libre Baskerville", serif',
+         weights: {
+            regular: 400,
+            medium: 500,
+            bold: 700
+         },
+         sizes: {
+            h1: '2.5rem',
+            h2: '2rem',
+            h3: '1.75rem',
+            h4: '1.5rem',
+            h5: '1.25rem',
+            h6: '1rem'
+         }
+      },
+      body: {
+         fontFamily: '"Open Sans", sans-serif',
+         weights: {
+            regular: 400,
+            medium: 500,
+            bold: 700
+         },
+         sizes: {
+            xs: '0.75rem',
+            sm: '0.875rem',
+            base: '1rem',
+            lg: '1.125rem',
+            xl: '1.25rem'
+         }
+      }
+   }
 } as const;
 
-export const colors = {
-	primary: {
-		100: "#EBE5F6",
-		200: "#D7CCED",
-		300: "#C3B2E3",
-		400: "#AF99DA",
-		500: "#8465C3",
-		600: "#6A51C0",
-		700: "#503DBD",
-		800: "#3629BA",
-		900: "#1C15B7",
-	},
-	secondary: {
-		100: "#E6FEFF",
-		200: "#CCFEFF",
-		300: "#B3FDFF",
-		400: "#99FCFF",
-		500: "#3AF1F9",
-		600: "#2ED8E0",
-		700: "#22BFC6",
-		800: "#16A6AD",
-		900: "#0A8D93",
-	},
-	accent: {
-		100: "#FFE9E3",
-		200: "#FFD3C8",
-		300: "#FFBDAC",
-		400: "#FFA791",
-		500: "#F46A47",
-		600: "#DB503D",
-		700: "#C23633",
-		800: "#A91C29",
-		900: "#90021F",
-	},
-	success: {
-		100: "#F0F7E6",
-		200: "#E1EFCC",
-		300: "#D2E7B3",
-		400: "#C3DF99",
-		500: "#A2C465",
-		600: "#88AB4B",
-		700: "#6F9231",
-		800: "#557917",
-		900: "#3C5F00",
-	},
-	warning: {
-		100: "#FFF5EB",
-		200: "#FFEBD7",
-		300: "#FFE1C3",
-		400: "#FFD7AF",
-		500: "#FAD8B4",
-		600: "#E1BF9A",
-		700: "#C8A680",
-		800: "#AF8D66",
-		900: "#96744C",
-	},
-	danger: {
-		100: "#FFE5E8",
-		200: "#FFCCD1",
-		300: "#FFB2BA",
-		400: "#FF99A3",
-		500: "#F5536A",
-		600: "#DC3950",
-		700: "#C21F36",
-		800: "#A9051C",
-		900: "#900002",
-	},
-	gray: {
-		100: "#F7F7F7",
-		200: "#E6E6E6",
-		300: "#D5D5D5",
-		400: "#C4C4C4",
-		500: "#676767",
-		600: "#525252",
-		700: "#3D3D3D",
-		800: "#282828",
-		900: "#131313",
-	},
 
-	border: {
-		light: {
-			primary: "#0F66AF",
-		},
-		dark: {
-			primary: "#0D94A0",
-		},
-	},
+export const colors = {
+   primary: {
+      100: '#EBE5F6',
+      200: '#D7CCED',
+      300: '#C3B2E3',
+      400: '#AF99DA',
+      500: '#8465C3',
+      600: '#6A51C0',
+      700: '#503DBD',
+      800: '#3629BA',
+      900: '#1C15B7'
+
+   },
+   secondary: {
+      100: '#E6FEFF',
+      200: '#CCFEFF',
+      300: '#B3FDFF',
+      400: '#99FCFF',
+      500: '#3AF1F9',
+      600: '#2ED8E0',
+      700: '#22BFC6',
+      800: '#16A6AD',
+      900: '#0A8D93'
+   },
+   accent: {
+      100: '#FFE9E3',
+      200: '#FFD3C8',
+      300: '#FFBDAC',
+      400: '#FFA791',
+      500: '#F46A47',
+      600: '#DB503D',
+      700: '#C23633',
+      800: '#A91C29',
+      900: '#90021F'
+   },
+   success: {
+      100: '#F0F7E6',
+      200: '#E1EFCC',
+      300: '#D2E7B3',
+      400: '#C3DF99',
+      500: '#A2C465',
+      600: '#88AB4B',
+      700: '#6F9231',
+      800: '#557917',
+      900: '#3C5F00'
+   },
+   warning: {
+      100: '#FFF5EB',
+      200: '#FFEBD7',
+      300: '#FFE1C3',
+      400: '#FFD7AF',
+      500: '#FAD8B4',
+      600: '#E1BF9A',
+      700: '#C8A680',
+      800: '#AF8D66',
+      900: '#96744C'
+   },
+   danger: {
+      100: '#FFE5E8',
+      200: '#FFCCD1',
+      300: '#FFB2BA',
+      400: '#FF99A3',
+      500: '#F5536A',
+      600: '#DC3950',
+      700: '#C21F36',
+      800: '#A9051C',
+      900: '#900002'
+   },
+   gray: {
+      100: '#F7F7F7',
+      200: '#E6E6E6',
+      300: '#D5D5D5',
+      400: '#C4C4C4',
+      500: '#676767',
+      600: '#525252',
+      700: '#3D3D3D',
+      800: '#282828',
+      900: '#131313'
+   },
+
+   border: {
+      light: {
+         primary: '#0F66AF'
+      },
+      dark: {
+         primary: '#0D94A0'
+      }
+   }
 };
 
+
 export const lightTheme: Theme = {
-	isDarkTheme: false,
-	colors: {
-		...colors,
-		backgrounds: {
-			light: "#EBE5F6",
-			dark: "#121212",
-			nav: "rgba(255, 255, 255, 0.8)",
-		},
-		text: {
-			light: {
-				primary: "red",
-				secondary: "yellow",
-				accent: "magenta",
-				disabled: "#CCCCCC",
-				svgColor1: "red",
-				svgColor2: "blue",
-				svgColor3: "magenta",
-				svgColor4: "cyan",
-				svgColor5: "green",
-			},
-			dark: {
-				primary: "",
-				secondary: "",
-				accent: "",
-				svgColor1: "",
-				svgColor2: "",
-				svgColor3: "",
-				svgColor4: "",
-				svgColor5: "",
-				disabled: "",
-			},
-		},
-		border: colors.border,
-	},
-	typography: baseTheme.typography,
-	sizes: {
-		navHeight: "80px",
-	},
-	navBackground: "rgba(255, 255, 255, 0.8)",
-	textSecondary: "#8F8F8F",
-	border: "#E5E7EB",
-	error: "#DC2626",
+   isDarkTheme: false,
+   colors: {
+      ...colors,
+      backgrounds: {
+         light: '#EBE5F6',
+         dark: '#121212',
+         nav: 'rgba(255, 255, 255, 0.8)'
+      },
+      text: {
+         light: {
+            primary: 'red',
+            secondary: 'yellow',
+            accent: 'magenta',
+            disabled: '#CCCCCC',
+            svgColor1: "red",
+            svgColor2: "blue",
+            svgColor3: "magenta",
+            svgColor4: "cyan",
+            svgColor5: "green",
+         },
+         dark: {
+            primary: '',
+            secondary: '',
+            accent: '',
+            svgColor1: "",
+            svgColor2: "",
+            svgColor3: "",
+            svgColor4: "",
+            svgColor5: "",
+            disabled: ''
+         }
+      },
+      border: colors.border
+   },
+   typography: baseTheme.typography,
+   sizes: {
+      navHeight: '80px'
+   },
+   navBackground: 'rgba(255, 255, 255, 0.8)',
+   textSecondary: '#8F8F8F',
+   border: '#E5E7EB',
+   error: '#DC2626'
 };
 
 export const darkTheme: Theme = {
-	isDarkTheme: true,
-	colors: {
-		...colors,
-		backgrounds: {
-			light: "#121212",
-			dark: "#000000",
+   isDarkTheme: true,
+   colors: {
+      ...colors,
+      backgrounds: {
+         light: '#121212',
+         dark: '#000000',
 
-			nav: "#C21F36",
-		},
-		text: {
-			light: {
-				primary: "",
-				secondary: "",
-				accent: "",
-				svgColor1: "",
-				svgColor2: "",
-				svgColor3: "",
-				svgColor4: "",
-				svgColor5: "",
-				disabled: "",
-			},
-			dark: {
-				primary: "yellowGreen",
+         nav: "#C21F36"
+      },
+      text: {
+         light: {
+            primary: '',
+            secondary: '',
+            accent: '',
+            svgColor1: "",
+            svgColor2: "",
+            svgColor3: "",
+            svgColor4: "",
+            svgColor5: "",
+            disabled: ''
+         },
+         dark: {
+            primary: 'yellowGreen',
 
-				secondary: "#0d94a0cc",
-				accent: "yellowgreen",
-				disabled: "#6E6E6E",
-				svgColor1: "#C4C4C4",
-				svgColor2: "#900002",
-				svgColor3: "#6F9231",
-				svgColor4: "orange",
-				svgColor5: "green",
-			},
-		},
-		border: colors.border,
-	},
-	typography: baseTheme.typography,
-	sizes: {
-		navHeight: "80px",
-	},
-	navBackground: "#FAD8B4",
-	textSecondary: "#E0E0E0",
-	border: "#374151",
-	error: "#EF4444",
+            secondary: '#0d94a0cc',
+            accent: 'yellowgreen',
+            disabled: '#6E6E6E',
+            svgColor1: "#C4C4C4",
+            svgColor2: "#900002",
+            svgColor3: "#6F9231",
+            svgColor4: "orange",
+            svgColor5: "green",
+         }
+      },
+      border: colors.border
+   },
+   typography: baseTheme.typography,
+   sizes: {
+      navHeight: '80px'
+   },
+   navBackground: "#FAD8B4",
+   textSecondary: '#E0E0E0',
+   border: '#374151',
+   error: '#EF4444'
 };
+
 
 export const theme = lightTheme;
 
-export const getColor = (colorName: ColorWithShades, shade: keyof ColorShades = 500): string => {
-	const color = theme.colors[colorName];
 
-	if (!isColorShades(color)) {
-		throw new Error(`Color ${colorName} does not have shades`);
-	}
-	return color[shade];
+
+
+
+
+
+export const getColor = (
+   colorName: ColorWithShades,
+   shade: keyof ColorShades = 500
+): string => {
+   const color = theme.colors[colorName];
+
+   if (!isColorShades(color)) {
+      throw new Error(`Color ${colorName} does not have shades`);
+   }
+   return color[shade];
 };
+
+
+
+
 
 const isColorShades = (color: unknown): color is ColorShades => {
-	return typeof color === "object" && color !== null && "500" in color;
+   return typeof color === 'object' &&
+      color !== null &&
+      '500' in color;
 };
 
-export const getBackgroundColor = (mode: ThemeMode, type: "default" | "nav" = "default"): string => {
-	if (type === "nav") {
-		return theme.colors.backgrounds.nav;
-	}
-	return theme.colors.backgrounds[mode];
+
+
+
+
+export const getBackgroundColor = (
+   mode: ThemeMode,
+   type: 'default' | 'nav' = 'default'
+): string => {
+   if (type === 'nav') {
+      return theme.colors.backgrounds.nav;
+   }
+   return theme.colors.backgrounds[mode];
 };
 
-export const getTextColor = (mode: ThemeMode, variant: "primary" | "secondary" | "disabled"): string => {
-	return theme.colors.text[mode][variant];
+export const getTextColor = (
+   mode: ThemeMode,
+   variant: "primary" | "secondary" | "disabled"
+): string => {
+   return theme.colors.text[mode][variant];
 };
 
 export const getBorderColor = (mode: ThemeMode, variant: keyof BorderColors): string => {
-	return theme.colors.border[mode][variant];
+   return theme.colors.border[mode][variant];
 };
 
-export const getFontFamily = (type: "heading" | "body"): string => {
-	return theme.typography[type].fontFamily;
+export const getFontFamily = (
+   type: "heading" | "body"
+): string => {
+   return theme.typography[type].fontFamily;
 };
 
-export const getFontWeight = (type: "heading" | "body", weight: "regular" | "medium" | "bold"): number => {
-	return theme.typography[type].weights[weight];
+export const getFontWeight = (
+   type: "heading" | "body",
+   weight: "regular" | "medium" | "bold"
+): number => {
+   return theme.typography[type].weights[weight];
 };
 
-export const getFontSize = (type: "heading" | "body", size: HeadingSizes | BodySizes): string => {
-	if (type === "heading" && isHeadingSize(size)) {
-		return theme.typography.heading.sizes[size];
-	}
-	if (type === "body" && isBodySize(size)) {
-		return theme.typography.body.sizes[size];
-	}
-	throw new Error(`Invalid size ${size} for type ${type}`);
+export const getFontSize = (
+   type: "heading" | "body",
+   size: HeadingSizes | BodySizes
+): string => {
+   if (type === "heading" && isHeadingSize(size)) {
+      return theme.typography.heading.sizes[size];
+   }
+   if (type === "body" && isBodySize(size)) {
+      return theme.typography.body.sizes[size];
+   }
+   throw new Error(`Invalid size ${size} for type ${type}`);
 };
+
 
 const isHeadingSize = (size: HeadingSizes | BodySizes): size is HeadingSizes => {
-	return ["h1", "h2", "h3", "h4", "h5", "h6"].includes(size);
+   return ["h1", "h2", "h3", "h4", "h5", "h6"].includes(size);
 };
 
 const isBodySize = (size: HeadingSizes | BodySizes): size is BodySizes => {
-	return ["xs", "sm", "base", "lg", "xl"].includes(size);
+   return ["xs", "sm", "base", "lg", "xl"].includes(size);
 };
 
+
 export const applyFontStyle = (type: "heading" | "body", weight: "regular" | "medium" | "bold", size: HeadingSizes | BodySizes): string => {
-	return `
+   return `
     font-family: ${getFontFamily(type)};
     font-weight: ${getFontWeight(type, weight)};
     font-size: ${getFontSize(type, size)};
   `;
 };
-```
 
-# src/lib/theme.ts
-
-```ts
-"use client";
-import { createGlobalStyle } from "styled-components";
-
-import { lightTheme as portfolioLight, darkTheme as portfolioDark } from "./portfolio-theme";
-import type { Theme } from "./types";
-
-export const theme = {
-	light: {
-		...portfolioLight,
-
-		prose: {
-			headings: portfolioLight.colors.text.light.primary,
-			body: portfolioLight.colors.text.light.secondary,
-			links: portfolioLight.colors.primary[500],
-			code: {
-				background: portfolioLight.colors.gray[100],
-				text: portfolioLight.colors.gray[900],
-			},
-		},
-	},
-	dark: {
-		...portfolioDark,
-
-		prose: {
-			headings: portfolioDark.colors.text.dark.primary,
-			body: portfolioDark.colors.text.dark.secondary,
-			links: portfolioDark.colors.primary[400],
-			code: {
-				background: portfolioDark.colors.gray[800],
-				text: portfolioDark.colors.gray[100],
-			},
-		},
-	},
-};
-
-export const GlobalStyle = createGlobalStyle<{ theme: Theme }>`
-  :root {
-   /* Only set CSS variables that won't conflict with Tailwind */
-    --nav-height: ${({ theme }) => theme.sizes.navHeight};
- }
-
-  body {
-   min-height: 100vh;
-   font-family: ${({ theme }) => theme.typography.body.fontFamily};
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: ${({ theme }) => theme.typography.heading.fontFamily};
-   }
-
-
-  .prose {
-    h1 {
-      font-size: ${({ theme }) => theme.typography.heading.sizes.h1};
-      margin-bottom: 1.5rem;
-    }
-    h2 {
-      font-size: ${({ theme }) => theme.typography.heading.sizes.h2};
-      margin-bottom: 1.25rem;
-    }
-    h3 {
-      font-size: ${({ theme }) => theme.typography.heading.sizes.h3};
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: ${({ theme }) => theme.typography.body.sizes.base};
-      line-height: 1.75;
-      margin-bottom: 1.5rem;
-    }
-
-    a {
-      color: ${({ theme }) => (theme.isDarkTheme ? theme.colors.primary[400] : theme.colors.primary[600])};
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    code {
-      background: ${({ theme }) => (theme.isDarkTheme ? theme.colors.gray[800] : theme.colors.gray[100])};
-      padding: 0.2em 0.4em;
-      border-radius: 0.25rem;
-      font-size: 0.875em;
-    }
-
-    pre {
-      background: ${({ theme }) => (theme.isDarkTheme ? theme.colors.gray[900] : theme.colors.gray[100])};
-      padding: 1.5rem;
-      border-radius: 0.5rem;
-      overflow-x: auto;
-      margin: 1.5rem 0;
-
-      code {
-        background: none;
-        padding: 0;
-      }
-    }
-  }
-`;
-
-export type { Theme };
-```
-
-# src/lib/ThemeContext.tsx
-
-```tsx
-"use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { lightTheme, darkTheme } from "@/lib/theme-config";
-import type { Theme } from "@/lib/types";
-
-interface ThemeContextType {
-	theme: Theme;
-	toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setTheme] = useState<Theme>(lightTheme);
-
-	useEffect(() => {
-		const stored = localStorage.getItem("theme");
-		const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-		if (stored === "dark" || (!stored && systemDark)) {
-			setTheme(darkTheme);
-			document.documentElement.classList.add("dark");
-		}
-	}, []);
-
-	const toggleTheme = () => {
-		setTheme((prev) => {
-			const newTheme = prev.isDarkTheme ? lightTheme : darkTheme;
-			localStorage.setItem("theme", newTheme.isDarkTheme ? "dark" : "light");
-
-			if (newTheme.isDarkTheme) {
-				document.documentElement.classList.add("dark");
-			} else {
-				document.documentElement.classList.remove("dark");
-			}
-
-			return newTheme;
-		});
-	};
-
-	return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
-}
-
-export const useTheme = () => {
-	const context = useContext(ThemeContext);
-	if (!context) throw new Error("useTheme must be used within ThemeProvider");
-	return context;
-};
 ```
 
 # src/lib/types.ts
 
 ```ts
 export interface BaseInterface {
-	someProperty: string;
-}
+   someProperty: string;
 
-export type ThemeMode = "light" | "dark";
+ }
 
-export type ColorWithShades = "primary" | "secondary" | "accent" | "success" | "warning" | "danger" | "gray";
+export type ThemeMode = 'light' | 'dark';
+
+
+export type ColorWithShades = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'danger' | 'gray';
+
 
 export interface ColorShades {
-	100: string;
-	200: string;
-	300: string;
-	400: string;
-	500: string;
-	600: string;
-	700: string;
-	800: string;
-	900: string;
+   100: string;
+   200: string;
+   300: string;
+   400: string;
+   500: string;
+   600: string;
+   700: string;
+   800: string;
+   900: string;
 }
 
 export interface BorderColors {
-	primary: string;
-}
+   primary: string;
+
+
+
+ }
 
 export interface ColorPalette {
-	primary: ColorShades;
-	secondary: ColorShades;
-	accent: ColorShades;
-	success: ColorShades;
-	warning: ColorShades;
-	danger: ColorShades;
-	gray: ColorShades;
-	backgrounds: {
-		light: string;
-		dark: string;
-		nav: string;
-	};
-	text: {
-		light: {
-			primary: string;
-			secondary: string;
-			accent: string;
-			disabled: string;
-			svgColor1: string;
-			svgColor2: string;
-			svgColor3: string;
-			svgColor4: string;
-			svgColor5: string;
-		};
-		dark: {
-			primary: string;
-			secondary: string;
-			accent: string;
-			disabled: string;
-			svgColor1: string;
-			svgColor2: string;
-			svgColor3: string;
-			svgColor4: string;
-			svgColor5: string;
-		};
-	};
-	border: {
-		light: BorderColors;
-		dark: BorderColors;
-	};
+   primary: ColorShades;
+   secondary: ColorShades;
+   accent: ColorShades;
+   success: ColorShades;
+   warning: ColorShades;
+   danger: ColorShades;
+   gray: ColorShades;
+   backgrounds: {
+      light: string;
+      dark: string;
+      nav: string;
+   };
+   text: {
+      light: {
+         primary: string;
+         secondary: string;
+         accent: string;
+         disabled: string;
+         svgColor1: string;
+         svgColor2: string;
+         svgColor3: string;
+         svgColor4: string;
+         svgColor5: string;
+      };
+      dark: {
+         primary: string;
+         secondary: string;
+         accent: string;
+         disabled: string;
+         svgColor1: string;
+         svgColor2: string;
+         svgColor3: string;
+         svgColor4: string;
+         svgColor5: string;
+      };
+   };
+   border: {
+      light: BorderColors;
+      dark: BorderColors;
+    }
 }
 
 export interface Typography {
-	heading: {
-		fontFamily: string;
-		weights: {
-			regular: number;
-			medium: number;
-			bold: number;
-		};
-		sizes: {
-			h1: string;
-			h2: string;
-			h3: string;
-			h4: string;
-			h5: string;
-			h6: string;
-		};
-	};
-	body: {
-		fontFamily: string;
-		weights: {
-			regular: number;
-			medium: number;
-			bold: number;
-		};
-		sizes: {
-			xs: string;
-			sm: string;
-			base: string;
-			lg: string;
-			xl: string;
-		};
-	};
+   heading: {
+      fontFamily: string;
+      weights: {
+         regular: number;
+         medium: number;
+         bold: number;
+      };
+      sizes: {
+         h1: string;
+         h2: string;
+         h3: string;
+         h4: string;
+         h5: string;
+         h6: string;
+      };
+   };
+   body: {
+      fontFamily: string;
+      weights: {
+         regular: number;
+         medium: number;
+         bold: number;
+      };
+      sizes: {
+         xs: string;
+         sm: string;
+         base: string;
+         lg: string;
+         xl: string;
+      };
+   };
 }
 
 export interface Theme {
-	isDarkTheme: boolean;
-	colors: ColorPalette;
+   isDarkTheme: boolean;
+   colors: ColorPalette;
 
-	typography: Typography;
-	sizes: {
-		navHeight: string;
-	};
-	navBackground: string;
-	textSecondary: string;
 
-	border: string;
 
-	error: string;
-	backgroundColor?: string;
-	backgroundBlendMode?: string;
+
+
+
+   typography: Typography;
+   sizes: {
+      navHeight: string;
+   };
+   navBackground: string;
+   textSecondary: string;
+
+   border: string;
+
+
+
+
+   error: string;
+   backgroundColor?: string;
+   backgroundBlendMode?: string;
 }
+
 ```
 
 # src/middleware.ts
 
 ```ts
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+/* src/middleware.ts */
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
-	const res = NextResponse.next();
-	const supabase = createMiddlewareClient({ req, res });
-	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+   const res = NextResponse.next()
+   const supabase = createMiddlewareClient({ req, res })
+   const { data: { session } } = await supabase.auth.getSession()
 
-	if (!session && req.nextUrl.pathname.startsWith("/blog/new")) {
-		return NextResponse.redirect(new URL("/auth/signin", req.url));
-	}
+   if (!session && req.nextUrl.pathname.startsWith('/blog/new')) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url))
+   }
 
-	return res;
+   return res
 }
 
 export const config = {
-	matcher: ["/blog/new", "/blog/drafts"],
-};
-```
-
-# src/styles/globals.css
-
-```css
-/* src/styles/globals.css */
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Only include core styles that don't depend on theme */
-html {
-	scroll-behavior: smooth;
-}
-
-body {
-	min-height: 100vh;
-}
-
-/* Use CSS variables for theme values */
-:root {
-	--nav-height: 80px;
-}
-
-/* Remove default styles that might conflict */
-button,
-input,
-textarea {
-	all: unset;
+   matcher: ['/blog/new', '/blog/drafts']
 }
 ```
 
 # tailwind.config.ts
 
 ```ts
+/*-= tailwind.config.ts =-*/
 import type { Config } from "tailwindcss";
 import typography from "@tailwindcss/typography";
 
 export default {
-	darkMode: "class",
-	content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
-	theme: {
-		extend: {
-			maxWidth: {
-				page: "var(--page-width)",
-			},
-			fontFamily: {
-				baskerville: ["var(--font-baskerville)", "serif"],
-				opensans: ["var(--font-opensans)", "system-ui", "sans-serif"],
-			},
-			colors: {
-				primary: {
-					50: "#ecffff",
-					100: "#ceffff",
-					200: "#a3fbfe",
-					300: "#64f6fc",
-					400: "#1ee6f2",
-					500: "#02cad8",
-					600: "#04a1b6",
-					700: "#0c899d",
-					800: "#136777",
-					900: "#145565",
-					950: "#073945",
-				},
-				secondary: {
-					50: "#fff1fe",
-					100: "#ffe1fe",
-					200: "#ffc3fd",
-					300: "#ff94f8",
-					400: "#ff54f4",
-					500: "#ff16f2",
-					600: "#f700ff",
-					700: "#d300d9",
-					800: "#ae00b1",
-					900: "#80007f",
-					950: "#630063",
-				},
-				accent: {
-					50: "#fff9ec",
-					100: "#fff3d3",
-					200: "#ffe2a5",
-					300: "#ffcc6d",
-					400: "#ffab32",
-					500: "#ff900a",
-					600: "#fa7500",
-					700: "#cc5602",
-					800: "#a1430b",
-					900: "#82390c",
-					950: "#461a04",
-				},
-				success: {
-					50: "#f8ffe5",
-					100: "#efffc7",
-					200: "#deff95",
-					300: "#bbff3d",
-					400: "#aaf625",
-					500: "#8add05",
-					600: "#6ab100",
-					700: "#508605",
-					800: "#41690b",
-					900: "#37590e",
-					950: "#1b3201",
-				},
-			},
-			typography: {
-				DEFAULT: {
-					css: {
-						fontSize: "1rem",
-						p: {
-							fontSize: "1rem",
-						},
-					},
-				},
-			},
-			keyframes: {
-				rise: {
-					"0%": {
-						transform: "translateY(100%) scale(0)",
-						opacity: "0",
-					},
-					"20%": {
-						opacity: "0.5",
-						transform: "translateY(80%) scale(0.8)",
-					},
-					"80%": {
-						opacity: "0.8",
-						transform: "translateY(20%) scale(1)",
-					},
-					"100%": {
-						transform: "translateY(-100%) scale(1)",
-						opacity: "0",
-					},
-				},
-			},
-			animation: {
-				rise: "rise 4s ease-out forwards",
-			},
-		},
-	},
-	plugins: [typography],
+   darkMode: "class",
+   content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
+   theme: {
+      extend: {
+         height: {
+            screen: '100vh',
+            'screen-small': '100svh',
+         },
+         transitionProperty: {
+            height: 'height',
+         },
+         maxWidth: {
+            'page': 'var(--page-width)',
+         },
+         fontFamily: {
+
+
+            garamond: ["var(--font-garamond)", "serif"],
+            nunitosans: ["var(--font-nunitosans)", "system-ui", "sans-serif"],
+         },
+         colors: {
+            primary: {
+               50: '#ecffff',
+               100: '#ceffff',
+               200: '#a3fbfe',
+               300: '#64f6fc',
+               400: '#1ee6f2',
+               500: '#02cad8',
+               600: '#04a1b6',
+               700: '#0c899d',
+               800: '#136777',
+               900: '#145565',
+               950: '#073945',
+
+
+
+
+
+
+
+
+
+
+
+            },
+            secondary: {
+               50: '#fff1fe',
+               100: '#ffe1fe',
+               200: '#ffc3fd',
+               300: '#ff94f8',
+               400: '#ff54f4',
+               500: '#ff16f2',
+               600: '#f700ff',
+               700: '#d300d9',
+               800: '#ae00b1',
+               900: '#80007f',
+               950: '#630063',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            },
+            accent: {
+               50: '#fff9ec',
+               100: '#fff3d3',
+               200: '#ffe2a5',
+               300: '#ffcc6d',
+               400: '#ffab32',
+               500: '#ff900a',
+               600: '#fa7500',
+               700: '#cc5602',
+               800: '#a1430b',
+               900: '#82390c',
+               950: '#461a04',
+
+
+
+
+
+
+
+
+
+
+
+            },
+            success: {
+               50: "#f8ffe5",
+               100: "#efffc7",
+               200: "#deff95",
+               300: "#bbff3d",
+               400: "#aaf625",
+               500: "#8add05",
+               600: "#6ab100",
+               700: "#508605",
+               800: "#41690b",
+               900: "#37590e",
+               950: "#1b3201",
+            },
+         },
+         typography: {
+            DEFAULT: {
+               css: {
+                  fontSize: '1rem',
+                  p: {
+                     fontSize: '1rem',
+                  }
+               }
+            }
+         },
+         keyframes: {
+            rise: {
+               '0%': {
+                  transform: 'translateY(100%) scale(0)',
+                  opacity: '0'
+               },
+               '20%': {
+                  opacity: '0.5',
+                  transform: 'translateY(80%) scale(0.8)'
+               },
+               '80%': {
+                  opacity: '0.8',
+                  transform: 'translateY(20%) scale(1)'
+               },
+               '100%': {
+                  transform: 'translateY(-100%) scale(1)',
+                  opacity: '0'
+               }
+            },
+            loader: {
+               '0%': { transform: 'scale(0)' },
+               '100%': { transform: 'scale(1)' },
+            }
+         },
+         animation: {
+            'rise': 'rise 4s ease-out forwards',
+            'spin-slow': 'spin 3s linear infinite',
+            'spin-custom': 'spin 4s ease-in-out infinite',
+
+            'loader': 'loader 1s linear infinite',
+         }
+      },
+   },
+   plugins: [typography],
 } satisfies Config;
+
 ```
 
 # tsconfig.json
 
 ```json
 {
-	"compilerOptions": {
-		"target": "ES2017",
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
-		"incremental": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"paths": {
-			"@/*": ["./src/*"]
-		}
-	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
+
 ```
 
 # types/blog.ts
 
 ```ts
+
 export type BasePost = {
-	id: string;
-	title: string;
-	slug: string;
-	category: string;
-	excerpt?: string;
-	cover_image?: string;
-	created_at: string;
-	updated_at: string;
-	author_id: string;
+   id: string;
+   title: string;
+   slug: string;
+   category: string;
+   excerpt?: string;
+   cover_image?: string;
+   created_at: string;
+   updated_at: string;
+   author_id: string;
 };
 
 export type MarkdownPost = BasePost & {
-	type: "markdown";
-	content: string;
+   type: 'markdown';
+   content: string;
 };
 
 export type ComponentPost = BasePost & {
-	type: "component";
-	component_name: string;
-	props?: Record<string, unknown>;
+   type: 'component';
+   component_name: string;
+   props?: Record<string, unknown>;
 };
 
 export type Post = MarkdownPost | ComponentPost;
+
+
 ```
+

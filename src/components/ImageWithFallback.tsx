@@ -1,4 +1,4 @@
-// src/components/ImageWithFallback.tsx
+/*-= src/components/ImageWithFallback.tsx =-*/
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'

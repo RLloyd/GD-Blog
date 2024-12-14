@@ -1,4 +1,4 @@
-// src/data/categories.ts
+/*-= src/data/categories.ts =-*/
 import { Newspaper, Coffee, Laptop, User } from "lucide-react";
 
 export const categories = [

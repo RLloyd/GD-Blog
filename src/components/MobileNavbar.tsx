@@ -1,4 +1,4 @@
-// src/components/MobileNavbar.tsx
+/*-= src/components/MobileNavbar.tsx =-*/
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
@@ -210,7 +210,7 @@ export function Navbar() {
     </>
   );
 }
-// // src/components/MobileNavbar.tsx
+// /*-= src/components/MobileNavbar.tsx =-*/
 // "use client";
 // import { useState } from "react";
 // import Link from "next/link";
@@ -340,7 +340,7 @@ export function Navbar() {
 // 		</>
 // 	);
 // }
-// // // src/components/MobileNavbar.tsx
+// // /*-= src/components/MobileNavbar.tsx =-*/
 // // "use client";
 // // import { useState } from "react";
 // // import Link from "next/link";

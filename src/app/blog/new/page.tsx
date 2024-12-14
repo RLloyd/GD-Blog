@@ -1,4 +1,4 @@
-// src/app/blog/new/page.tsx
+/*-= src/app/blog/new/page.tsx =-*/
 import { PostForm } from '@/components/PostForm'
 
 export default function NewPost() {

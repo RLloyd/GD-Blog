@@ -1,21 +1,35 @@
-// src/app/layout.tsx
-import { Libre_Baskerville, Open_Sans } from "next/font/google";
+/*-= src/app/layout.tsx =-*/
+// import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import { Providers } from "./providers";
 // import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 // import MobileNavbar from "@/components/MobileNavbar";
 import { Navbar } from "@/components/MobileNavbar";
 
-const baskerville = Libre_Baskerville({
-	subsets: ["latin"],
-	weight: ["400", "700"],
-	variable: "--font-baskerville",
+// const baskerville = Libre_Baskerville({
+// 	subsets: ["latin"],
+// 	weight: ["400", "700"],
+// 	variable: "--font-baskerville",
+// });
+
+// const openSans = Open_Sans({
+// 	subsets: ["latin"],
+// 	weight: ["400", "500", "600", "700"],
+// 	variable: "--font-opensans",
+// });
+
+import { EB_Garamond, Nunito_Sans } from "next/font/google";
+
+const garamond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-garamond",
 });
 
-const openSans = Open_Sans({
-	subsets: ["latin"],
-	weight: ["400", "500", "600", "700"],
-	variable: "--font-opensans",
+const nunitoSans = Nunito_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-nunitosans",
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -23,7 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html
 			lang='en'
 			suppressHydrationWarning
-			className={`${baskerville.variable} ${openSans.variable}`}
+			// className={`${baskerville.variable} ${openSans.variable}`}
+         className={`${garamond.variable} ${nunitoSans.variable}`}
 		>
 			<head>
 				<script
@@ -40,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				/>
 			</head>
 			<body
-				className={openSans.className}
+				// className={openSans.className}
+				className={nunitoSans.className}
 				suppressHydrationWarning
 			>
 				<Providers>
@@ -55,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	);
 }
 
-// // src/app/layout.tsx
+// /*-= src/app/layout.tsx =-*/
 // import { Libre_Baskerville } from "next/font/google";
 // import { Providers } from "./providers";
 // import { Navbar } from "@/components/Navbar";

@@ -1,4 +1,4 @@
-// src/components/blog/dashboard/DynamicComponentPreview.tsx
+/*-= src/components/blog/dashboard/DynamicComponentPreview.tsx =-*/
 import dynamic from "next/dynamic";
 
 type DynamicComponentPreviewProps = {

@@ -1,4 +1,4 @@
-// src/components/blog-components/CodeBlock.tsx
+/*-= src/components/blog-components/CodeBlock.tsx =-*/
 "use client";
 import Prism from "prismjs";
 import { useState, useEffect } from "react";
@@ -86,7 +86,7 @@ export function CodeBlock({
   fontSize="1rem" // 16px
 /> */
 }
-// // src/components/blog-components/CodeBlock.tsx
+// /*-= src/components/blog-components/CodeBlock.tsx =-*/
 // "use client";
 // import { useEffect, useState } from "react";
 // import { Copy, CheckCircle } from "lucide-react";
@@ -148,7 +148,7 @@ export function CodeBlock({
 // 		</div>
 // 	);
 // }
-// // // src/components/blog-components/CodeBlock.tsx
+// // /*-= src/components/blog-components/CodeBlock.tsx =-*/
 // // "use client";
 // // import { useState } from "react";
 // // import { Copy, CheckCircle } from "lucide-react";
@@ -290,7 +290,7 @@ export function CodeBlock({
 // // // 		</div>
 // // // 	);
 // // // }
-// // // // src/components/blog-components/CodeBlock.tsx
+// // // /*-= src/components/blog-components/CodeBlock.tsx =-*/
 // // // "use client";
 // // // import { useState } from "react";
 // // // import { Copy, CheckCircle } from "lucide-react";
