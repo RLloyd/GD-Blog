@@ -38,7 +38,7 @@ const circularLoaderTSXCode = `
                };
 
                xhr.onload = () => {
-                  if (xhr.status === 200) {
+                  if (xhr.status === 200) { // successful
                      setProgress(100);
                      resolve();
                   } else {

@@ -41,7 +41,7 @@ const UserProfile: React.FC = () => {
          setUser({
             name: 'John Doe',
             email: 'john.doe@example.com',
-            bio: 'Web developer and coffee enthusiast.',
+            bio: 'Web developer and coffee enthusiast with a passion for crafting intuitive, user-friendly websites and applications. ',
          });
          setLoading(false);
       }, 3000);
