@@ -51,44 +51,21 @@ export default function HomePage() {
       }
    ];
 
-   //   const additionalImages = [
-   //     "/assets/images/fourth.webp",
-   //     "/assets/images/third.webp",
-   //     "/assets/images/fifth.webp"
-   //   ];
+   // const additionalImages = [
+   //    "/assets/images/fourth.webp",
+   //    "/assets/images/fifth.webp",
+   //    "/assets/images/sixth.webp"
+   // ];
 
    return (
+      // <div style={{ height: `${(sections.length + additionalImages.length) * 100}vh` }}>
+      //    <RevealSection sections={sections} additionalImages={additionalImages} />
+      // </div>
       <div className="homepageContainer relative">
          {/* Main parallax sections */}
          <div style={{ height: `${sections.length * 100}vh` }}>
             <RevealSection sections={sections} />
          </div>
-
-         {/* <div style={{ height: '300vh' }}>
-            <RevealSection sections={sections} />
-         </div> */}
-         {/* <div style={{ height: `${(sections.length - 1) * 100}vh`}}>
-        <RevealSection sections={sections} />
-      </div> */}
-
-         {/* Additional images section */}
-         {/* <div className="w-screen">
-        {additionalImages.map((img, index) => (
-          <div
-            key={index}
-            className="relative w-full h-screen"
-          >
-            <Image
-              src={img}
-              alt={`Additional view ${index + 1}`}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority={index === 0}
-            />
-          </div>
-        ))}
-      </div> */}
       </div>
    );
 }

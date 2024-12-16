@@ -5,8 +5,20 @@ import HomePage from '@/components/parallax2/HomePage'
 import Parallax from '@/components/parallax3/Parallax3'
 import React from 'react'
 import { PortfolioSection } from './layout'
+import { MultiRevealSection } from '@/components/parallax4/MultiRevealSection'
+import Parallax5 from '@/components/parallax5/Parallax5'
+import ParallaxScroll from '@/components/parallaxScroll/ParallaxScroll'
 
 const page = () => {
+
+
+   const sections = [
+      { images: ['/assets/images/first.webp'] }, // First section with 1 image
+      { images: ['/assets/images/second.webp'] }, // Second section with 1 image
+      // { images: ['/assets/images/third.webp'] }, // Third section with 3 images
+      { images: ['/assets/images/third.webp', '/assets/images/fourth.webp', '/assets/images/fifth.webp'] }, // Third section with 3 images
+   ];
+
   return (
    // //  <div className="relative h-[4000px] main-container">
    // //  <div className="relative h-[4000px] main-container max-w-screen-xl mx-auto overflow-x-hidden">
@@ -16,10 +28,16 @@ const page = () => {
    //    <Parallax />
    //  </div>
 
+   // {/* // Full width content */}
+   // {/*  */}
+
+   // {/* <HomePage /> */}
+   // {/* <Parallax /> //works */}
+   // <MultiRevealSection sections={sections} />
+   // <Parallax5 />
+
       <PortfolioSection>
-         {/* Full width content */}
-         <HomePage />
-         {/* <Parallax /> */}
+         <ParallaxScroll />
       </PortfolioSection>
   )
 }
