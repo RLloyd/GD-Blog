@@ -10,7 +10,8 @@ import React from 'react';
 
 export const PortfolioSection = ({ children }: { children: React.ReactNode }) => (
    <section className="portfolioSectionContainer relative w-screen overflow-hidden">
-      <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8"> */}
+      <div>
          {children}
       </div>
    </section>

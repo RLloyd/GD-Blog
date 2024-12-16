@@ -36,9 +36,13 @@ const page = () => {
    // <MultiRevealSection sections={sections} />
    // <Parallax5 />
 
-      <PortfolioSection>
-         <ParallaxScroll />
-      </PortfolioSection>
+   <PortfolioSection>
+      <ParallaxScroll />
+   </PortfolioSection>
+
+   // <main className="relative w-full h-screen overflow-hidden">
+   //    <ParallaxScroll />
+   // </main>
   )
 }
 

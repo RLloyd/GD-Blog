@@ -3,9 +3,28 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
 	--nav-height: 80px;
 	--page-width: 1080px;
+   --tw-translate-x: none;
+   --tw-translate-y: none;
+}
+
+body {
+   margin: 0;
+   padding: 0;
+   width: 100vw;
+   overflow-x: hidden;
+}
+
+.wrapper {
+   position: relative;
+   width: 100vw;
+   left: 50%;
+   right: 50%;
+   margin-left: -50vw;
+   margin-right: -50vw;
 }
 
 @layer base {
@@ -14,10 +33,15 @@
 	}
 
 	body {
+      /* margin: 0;
+      padding: 0;
+      overflow-x: hidden; */
 		/* @apply min-h-screen flex flex-col font-opensans; */
 		@apply min-h-screen flex flex-col font-nunitosans;
 		@apply bg-primary-50/20 min-h-screen text-primary-900;
 		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
+
+      /* transform: translate(var(--tw-translate-x), var(--tw-translate-y)) */
 	}
 
 	main {
@@ -70,6 +94,11 @@
 
  .fade-transition {
    transition: opacity 0.3s ease-in-out;
+ }
+
+ /* Solved the full screen width issue with GSAP parallax scrolling */
+ .myMainContainer {
+   transform: none !important;
  }
 
 /*
