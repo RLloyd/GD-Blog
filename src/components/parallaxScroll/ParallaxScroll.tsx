@@ -1,177 +1,387 @@
 /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
-/*-= Enhanced ParallaxScroll Component • 8 =-*/
+/*-= ParallaxScroll with Lenis =-*/
 /*-=========================================================================
 Key changes made:
-Added the myMainContainer class to prevent GSAP transform issues
-Maintained the working structure with proper positioning
-Added content overlays with titles, descriptions, and buttons
-Kept the clean transition animations between sections
-Added proper font classes for typography
+Added Lenis initialization with custom configuration
+Connected Lenis to GSAP's requestAnimationFrame loop
+Added proper cleanup in the useEffect hook
+Maintained all our existing functionality including:
+   - The myMainContainer class fix
+   - The h-[200vh] height for the third section
+   - All the section content and animations
+Added the ParallaxNavigation component : 12.17.2024
 ===========================================================================-*/
 'use client';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from '@studio-freight/lenis';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ParallaxNavigation } from '../ParallaxNavigation';
+import EnhancedParallaxNavigation from '../EnhancedParallaxNavigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function ParallaxScroll() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const section1Ref = useRef<HTMLDivElement>(null);
-  const section2Ref = useRef<HTMLDivElement>(null);
-  const section3Ref = useRef<HTMLDivElement>(null);
+   const containerRef = useRef<HTMLDivElement>(null);
+   const section1Ref = useRef<HTMLDivElement>(null);
+   const section2Ref = useRef<HTMLDivElement>(null);
+   const section3Ref = useRef<HTMLDivElement>(null);
+   const lenisRef = useRef<Lenis | null>(null);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+   useEffect(() => {
+      // Initialize Lenis
+      lenisRef.current = new Lenis({
+         duration: 1.2,
+         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // ease out expo
+         orientation: 'vertical',
+         gestureOrientation: 'vertical',
+         smoothWheel: true,
+         wheelMultiplier: 1,
+         // smoothTouch: false,
+         touchMultiplier: 2,
+      });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-        pin: true,
-      },
-    });
+      // Connect Lenis to GSAP
+      function raf(time: number) {
+         lenisRef.current?.raf(time);
+         requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
 
-    tl.to(section1Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    });
+      // GSAP Animation
+      if (!containerRef.current) return;
 
-    tl.to(section2Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    }, '>');
+      const tl = gsap.timeline({
+         scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1,
+            pin: true,
+         },
+      });
 
-    tl.to(section3Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    }, '>');
+      tl.to(section1Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      });
 
-    return () => {
-      tl.kill();
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
+      tl.to(section2Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      }, '>');
 
-  return (
-    <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
-      {/* First Section */}
-      <div
-        ref={section1Ref}
-        className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        <div className="relative h-full">
-          <Image
-            src="/assets/images/first.webp"
-            alt="Web Development"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
-            <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
-            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
-              Creating modern, responsive web applications with cutting-edge technologies.
-            </p>
-            <Link
-              href="/portfolio/web-development"
-              className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+      tl.to(section3Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      }, '>');
+
+      // Cleanup
+      return () => {
+         lenisRef.current?.destroy();
+         tl.kill();
+         ScrollTrigger.getAll().forEach(t => t.kill());
+      };
+   }, []);
+
+   return (
+      <>
+         <ParallaxNavigation />
+         {/* <EnhancedParallaxNavigation /> */}
+         <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
+            {/* First Section */}
+            <div
+               id="web"
+               ref={section1Ref}
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
             >
-              View Projects
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Second Section */}
-      <div
-        ref={section2Ref}
-        className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        <div className="relative h-full">
-          <Image
-            src="/assets/images/second.webp"
-            alt="UI Design"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
-            <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
-            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
-              Crafting beautiful user interfaces that deliver exceptional experiences.
-            </p>
-            <Link
-              href="/portfolio/ui-design"
-              className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
-            >
-              See Designs
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Third Section with Multiple Images */}
-      <div
-        ref={section3Ref}
-      //   className="fixed top-0 right-0 left-0 h-screen z-10" //this line don't work!
-        className="fixed top-0 right-0 left-0 h-[200vh] z-10" //this line works
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        {[
-          {
-            src: '/assets/images/third.webp',
-            title: 'Video Editing',
-            description: 'Professional video editing and post-production services.',
-            link: '/portfolio/multimedia/video'
-          },
-          {
-            src: '/assets/images/fourth.webp',
-            title: 'Motion Graphics',
-            description: 'Engaging motion graphics and visual effects.',
-            link: '/portfolio/multimedia/motion'
-          },
-          {
-            src: '/assets/images/fifth.webp',
-            title: 'Sound Design',
-            description: 'Immersive audio experiences and sound engineering.',
-            link: '/portfolio/multimedia/sound'
-          }
-        ].map((item, index) => (
-          <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
-               style={{ top: `${index * 100}vh` }}>
-            <div className="relative h-full">
-              <Image
-                src={item.src}
-                alt={item.title}
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
-                <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
-                <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
-                  {item.description}
-                </p>
-                <Link
-                  href={item.link}
-                  className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
-                >
-                  Learn More
-                </Link>
-              </div>
+               <div className="relative h-full">
+                  <Image
+                     src="/assets/images/first.webp"
+                     alt="Web Development"
+                     fill
+                     className="object-cover"
+                     priority
+                  />
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
+                        Creating modern, responsive web applications with cutting-edge technologies.
+                     </p>
+                     <Link
+                        href="/portfolio/web-development"
+                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        View Projects
+                     </Link>
+                  </div>
+               </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+
+            {/* Second Section */}
+            <div
+               id="ui"
+               ref={section2Ref}
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               <div className="relative h-full">
+                  <Image
+                     src="/assets/images/second.webp"
+                     alt="UI Design"
+                     fill
+                     className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+                        Crafting beautiful user interfaces that deliver exceptional experiences.
+                     </p>
+                     <Link
+                        href="/portfolio/ui-design"
+                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        See Designs
+                     </Link>
+                  </div>
+               </div>
+            </div>
+
+            {/* Third Section with Multiple Images */}
+            <div
+               id="multimedia"
+               ref={section3Ref}
+               className="fixed top-0 right-0 left-0 h-[200vh] z-10"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               {[
+                  {
+                     src: '/assets/images/third.webp',
+                     title: 'Video Editing',
+                     description: 'Professional video editing and post-production services.',
+                     link: '/portfolio/multimedia/video'
+                  },
+                  {
+                     src: '/assets/images/fourth.webp',
+                     title: 'Motion Graphics',
+                     description: 'Engaging motion graphics and visual effects.',
+                     link: '/portfolio/multimedia/motion'
+                  },
+                  {
+                     src: '/assets/images/fifth.webp',
+                     title: 'Sound Design',
+                     description: 'Immersive audio experiences and sound engineering.',
+                     link: '/portfolio/multimedia/sound'
+                  }
+               ].map((item, index) => (
+                  <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
+                     style={{ top: `${index * 100}vh` }}>
+                     <div className="relative h-full">
+                        <Image
+                           src={item.src}
+                           alt={item.title}
+                           fill
+                           className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                           <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+                           <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+                              {item.description}
+                           </p>
+                           <Link
+                              href={item.link}
+                              className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                           >
+                              Learn More
+                           </Link>
+                        </div>
+                     </div>
+                  </div>
+               ))}
+            </div>
+         </div>
+      </>
+
+   );
 }
 /*-|================================================================================|-*/
+// /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
+// /*-= Enhanced ParallaxScroll Component • 8 =-*/
+// /*-=========================================================================
+// Key changes made:
+// Added the myMainContainer class to prevent GSAP transform issues
+// Maintained the working structure with proper positioning
+// Added content overlays with titles, descriptions, and buttons
+// Kept the clean transition animations between sections
+// Added proper font classes for typography
+// ===========================================================================-*/
+// 'use client';
+// import { useEffect, useRef } from 'react';
+// import { gsap } from 'gsap';
+// import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// import Image from 'next/image';
+// import Link from 'next/link';
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// export default function ParallaxScroll() {
+//   const containerRef = useRef<HTMLDivElement>(null);
+//   const section1Ref = useRef<HTMLDivElement>(null);
+//   const section2Ref = useRef<HTMLDivElement>(null);
+//   const section3Ref = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     if (!containerRef.current) return;
+
+//     const tl = gsap.timeline({
+//       scrollTrigger: {
+//         trigger: containerRef.current,
+//         start: 'top top',
+//         end: 'bottom bottom',
+//         scrub: 1,
+//         pin: true,
+//       },
+//     });
+
+//     tl.to(section1Ref.current, {
+//       yPercent: -100,
+//       ease: 'none',
+//     });
+
+//     tl.to(section2Ref.current, {
+//       yPercent: -100,
+//       ease: 'none',
+//     }, '>');
+
+//     tl.to(section3Ref.current, {
+//       yPercent: -100,
+//       ease: 'none',
+//     }, '>');
+
+//     return () => {
+//       tl.kill();
+//       ScrollTrigger.getAll().forEach(t => t.kill());
+//     };
+//   }, []);
+
+//   return (
+//     <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
+//       {/* First Section */}
+//       <div
+//         ref={section1Ref}
+//         className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+//         style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//       >
+//         <div className="relative h-full">
+//           <Image
+//             src="/assets/images/first.webp"
+//             alt="Web Development"
+//             fill
+//             className="object-cover"
+//             priority
+//           />
+//           <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+//             <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
+//             <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+//               Creating modern, responsive web applications with cutting-edge technologies.
+//             </p>
+//             <Link
+//               href="/portfolio/web-development"
+//               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//             >
+//               View Projects
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Second Section */}
+//       <div
+//         ref={section2Ref}
+//         className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
+//         style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//       >
+//         <div className="relative h-full">
+//           <Image
+//             src="/assets/images/second.webp"
+//             alt="UI Design"
+//             fill
+//             className="object-cover"
+//           />
+//           <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+//             <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
+//             <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+//               Crafting beautiful user interfaces that deliver exceptional experiences.
+//             </p>
+//             <Link
+//               href="/portfolio/ui-design"
+//               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//             >
+//               See Designs
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Third Section with Multiple Images */}
+//       <div
+//         ref={section3Ref}
+//       //   className="fixed top-0 right-0 left-0 h-screen z-10" //this line don't work!
+//         className="fixed top-0 right-0 left-0 h-[200vh] z-10" //this line works
+//         style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//       >
+//         {[
+//           {
+//             src: '/assets/images/third.webp',
+//             title: 'Video Editing',
+//             description: 'Professional video editing and post-production services.',
+//             link: '/portfolio/multimedia/video'
+//           },
+//           {
+//             src: '/assets/images/fourth.webp',
+//             title: 'Motion Graphics',
+//             description: 'Engaging motion graphics and visual effects.',
+//             link: '/portfolio/multimedia/motion'
+//           },
+//           {
+//             src: '/assets/images/fifth.webp',
+//             title: 'Sound Design',
+//             description: 'Immersive audio experiences and sound engineering.',
+//             link: '/portfolio/multimedia/sound'
+//           }
+//         ].map((item, index) => (
+//           <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
+//                style={{ top: `${index * 100}vh` }}>
+//             <div className="relative h-full">
+//               <Image
+//                 src={item.src}
+//                 alt={item.title}
+//                 fill
+//                 className="object-cover"
+//               />
+//               <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+//                 <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+//                 <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+//                   {item.description}
+//                 </p>
+//                 <Link
+//                   href={item.link}
+//                   className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//                 >
+//                   Learn More
+//                 </Link>
+//               </div>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+// /*-|================================================================================|-*/
 
 
 // /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/

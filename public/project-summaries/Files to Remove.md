@@ -90,3 +90,4 @@ src/app/page.tsx
 src/contexts/ThemeContext.tsx
 src/lib/auth.ts
 src/lib/supabase.ts
+

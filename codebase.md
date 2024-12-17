@@ -54,15 +54,6 @@ next-env.d.ts
 public/notes/*
 ```
 
-# .vscode/settings.json
-
-```json
-{
-   "editor.fontWeight": "normal"
-}
-
-```
-
 # cleanup.sh
 
 ```sh
@@ -96,6 +87,1302 @@ npm install -D eslint-plugin-unused-imports
 npx eslint --fix "src/**/*.{ts,tsx}"
 
 echo -e "${GREEN}Cleanup complete! Please review changes.${NC}"
+
+```
+
+# Garbage/components/blog-components/articles/SpinningDots.tsx
+
+```tsx
+"use client";
+import { motion } from "framer-motion";
+
+const SpinningDots = () => {
+	const rotations = [
+		{ speed: 2, color: "magenta" },
+		{ speed: 3, color: "cyan" },
+		{ speed: 5, color: "yellow" },
+		{ speed: 7, color: "black" },
+	];
+
+	return (
+		<svg
+			width='300'
+			height='300'
+			viewBox='0 0 300 300'
+		>
+			<circle
+				cx='150'
+				cy='150'
+				r='110'
+				stroke='grey'
+				strokeWidth='2'
+				fill='transparent'
+			/>
+			{rotations.map((item, index) => (
+				<motion.circle
+					key={index}
+					cx='100'
+					cy='50'
+					r='20'
+					fill={item.color}
+					style={{
+						originX: "50%",
+						originY: "50%",
+					}}
+					animate={{
+						rotate: 360,
+					}}
+					transition={{
+						repeat: Infinity,
+						duration: item.speed,
+						ease: "linear",
+					}}
+				/>
+			))}
+		</svg>
+	);
+};
+
+export default SpinningDots;
+
+```
+
+# Garbage/components/blog-components/CircularLoader.tsx
+
+```tsx
+"use client";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import CircularSVG2 from "./articles/CircularSVG2";
+
+const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
+   const [progress, setProgress] = useState(0);
+   const [isLoaded, setIsLoaded] = useState(false);
+
+   useEffect(() => {
+      const loadImage = (src: string): Promise<void> => {
+         return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", src, true);
+            xhr.responseType = "arraybuffer";
+
+            xhr.onprogress = (event) => {
+               if (event.lengthComputable) {
+                  const percentComplete = (event.loaded / event.total) * 100;
+                  setProgress(Math.round(percentComplete));
+               }
+            };
+
+            xhr.onload = () => {
+               if (xhr.status === 200) {
+                  setProgress(100);
+                  resolve();
+               } else {
+                  reject(new Error(`Failed to load image: ${xhr.statusText}`));
+               }
+            };
+            xhr.onerror = () => reject(new Error("Error loading image"));
+            xhr.send();
+         });
+      };
+
+      loadImage(src)
+         .then(() => setIsLoaded(true))
+         .catch((err) => console.error(err));
+
+      return () => {
+
+      };
+   }, [src]);
+
+   return (
+      <>
+         {/* <div className='image-loader-container'>
+			{!isLoaded && (
+				<div className='loader-overlay'>
+					<div className='loader-animation'>
+					</div>
+               <CircularSVG2 />
+					<div className='loader-progress'>
+						{progress}%
+					</div>
+				</div>
+			)} */}
+         <div className="relative w-full h-full flex justify-center items-center overflow-hidden">
+            {!isLoaded && (
+               <div className="absolute inset-0 flex flex-col justify-center items-center bg-white/80 z-10">
+                  <div className="mb-2.5">
+                     <div className="w-[100px] h-[100px] animate-spin">
+                        <CircularSVG2 />
+                     </div>
+                  </div>
+                  <div className="text-2xl font-bold text-green-500">
+                     {progress}% {/* Shows the loading percentage */}
+                  </div>
+               </div>
+            )}
+            <Image
+               src={src}
+               alt={alt}
+               width={500}
+               height={300}
+            />
+         </div>
+      </>
+   );
+};
+
+export default CircularLoader;
+
+```
+
+# Garbage/components/blog-components/CircularLoaderApp.tsx
+
+```tsx
+
+
+import React from "react";
+import "./CircularLoader.css";
+
+interface ImageLoaderProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const ImageLoaderApp: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
+
+  return (
+    <div className="image-loader-container">
+      <div className="loader-overlay">Loading...</div>
+      <img
+        src={src}
+        alt={alt}
+        className={`image-loader-image ${className || ""}`}
+      />
+    </div>
+  );
+};
+
+export default ImageLoaderApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# Garbage/components/blog-components/LazyImageLoader.tsx
+
+```tsx
+/*-= src/components/blog-components/LazyImageLoader.tsx =-*/
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+
+
+const BubbleLoader = React.lazy(() => import("./BubbleLoader"));
+
+const LazyImageLoader: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, []);
+
+  const handleLoaderComplete = () => {
+    setIsLoaded(true);
+  };
+
+  return (
+    <div ref={loaderRef} style={{ position: "relative", minHeight: "300px" }}>
+      {!isLoaded && isVisible && (
+        <React.Suspense fallback={<div>Loading animation...</div>}>
+          <BubbleLoader duration={5000} onComplete={handleLoaderComplete} />
+        </React.Suspense>
+      )}
+      {isLoaded && (
+        <img
+          src={src}
+          alt={alt}
+          style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default LazyImageLoader;
+```
+
+# Garbage/components/blog/CodeBlock.tsx
+
+```tsx
+/*-= src/components/blog/CodeBlock.tsx =-*/
+"use client";
+import { useState } from "react";
+import { Copy, CheckCircle } from "lucide-react";
+
+type CodeBlockProps = {
+	code: string;
+	language?: string;
+	showLineNumbers?: boolean;
+};
+
+export function CodeBlockXXX({ code, language, showLineNumbers = true }: CodeBlockProps) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(code);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	return (
+		<div className='relative group'>
+			{/* Language Label */}
+			{language && <div className='absolute top-2 right-12 px-2 py-1 text-xs text-gray-400 bg-gray-800 rounded'>{language}</div>}
+
+			{/* Copy Button */}
+			<button
+				onClick={handleCopy}
+				className='absolute top-2 right-2 p-1 text-gray-400 hover:text-white transition-colors'
+				aria-label='Copy code'
+			>
+				{copied ? (
+					<CheckCircle
+						size={16}
+						className='text-green-500'
+					/>
+				) : (
+					<Copy size={16} />
+				)}
+			</button>
+
+			{/* Code Content */}
+			<pre className='p-4 bg-gray-900 rounded-lg overflow-x-auto'>
+				<code className='relative flex'>
+					{showLineNumbers && (
+						<div className='pr-4 text-gray-500 select-none text-right'>
+							{code.split("\n").map((_, i) => (
+								<span
+									key={i}
+									className='block'
+								>
+									{i + 1}
+								</span>
+							))}
+						</div>
+					)}
+					<div className='flex-1'>{code}</div>
+				</code>
+			</pre>
+		</div>
+	);
+}
+
+```
+
+# Garbage/components/data-list-components/DataList.tsx
+
+```tsx
+import { useFetchData } from '@/hooks/useFetchData';
+import React from 'react';
+
+
+type DataListProps<T> = {
+   fetchData: () => Promise<T[]>;
+   renderItem: (item: T) => React.ReactNode;
+   onIntersect?: boolean;
+};
+
+const DataList = <T,>({ fetchData, renderItem, onIntersect = true }: DataListProps<T>) => {
+   const { data, loading, ref } = useFetchData({
+      fetchData,
+      onIntersect,
+   });
+
+   return (
+      <div ref={ref}>
+         {loading && <p>Loading...</p>}
+         {data && data.length > 0 ? (
+            <ul>
+               {data.map((item, index) => (
+                  <li key={index}>{renderItem(item)}</li>
+               ))}
+            </ul>
+         ) : (
+            !loading && <p>No data available.</p>
+         )}
+      </div>
+   );
+};
+
+export default DataList;
+```
+
+# Garbage/components/data-list-components/DataListApp.tsx
+
+```tsx
+import DataList from "./DataList";
+
+const fetchUsers = async () => {
+   return new Promise<{ name: string; email: string; bio: string }[]>((resolve) =>
+      setTimeout(() => {
+         resolve([
+            { name: 'John Doe', email: 'john.doe@example.com', bio: 'Web developer' },
+            { name: 'Jane Smith', email: 'jane.smith@example.com', bio: 'Designer' },
+         ]);
+      }, 3000)
+   );
+};
+
+const DataListApp = () => {
+   return (
+      <DataList
+         fetchData={fetchUsers}
+         renderItem={(user) => (
+            <>
+               <h3>{user.name}</h3>
+               <p>{user.email}</p>
+               <p>{user.bio}</p>
+            </>
+         )}
+      />
+   );
+};
+export default DataListApp;
+```
+
+# Garbage/components/ImageWithFallback.tsx
+
+```tsx
+/*-= src/components/ImageWithFallback.tsx =-*/
+'use client'
+import { useState } from 'react'
+import Image from 'next/image'
+import { ImageOff } from 'lucide-react'
+
+interface ImageWithFallbackProps {
+  src: string
+  alt: string
+  className?: string
+  priority?: boolean
+}
+
+export function ImageWithFallback({
+  src,
+  alt,
+  className = '',
+  priority = false
+}: ImageWithFallbackProps) {
+  const [error, setError] = useState(false)
+
+  if (error) {
+    return (
+      <div className={`flex items-center justify-center bg-gray-900 ${className}`}>
+        <ImageOff className="text-gray-600" size={48} />
+      </div>
+    )
+  }
+
+  return (
+    <div className={`relative ${className}`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        onError={() => setError(true)}
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
+  )
+}
+```
+
+# Garbage/components/modal-components/ProgressRing.tsx
+
+```tsx
+import React from 'react'
+import Image from 'next/image'
+import ModalContentTemplate from "./ModalContentTemplate"
+
+const ProgressRing = () => {
+  return (
+   <ModalContentTemplate
+      title="Creating the circular SVG"
+      subtitle="Using Figma or other vector based apps"
+      imageUrl="/assets/Screenshot-CircularLoader-SaveSVG.png"
+      altText="Select the illustration, right click on it, Copy/Paste as, Copy as SVG"
+   />
+
+  )
+}
+
+export default ProgressRing
+```
+
+# Garbage/components/modal-components/Spinner.js
+
+```js
+"use client";
+
+const Spinner = () => {
+
+
+  return (
+    <>
+  <h1>Spinner</h1>
+    </>
+  );
+};
+
+export default Spinner;
+```
+
+# Garbage/components/portfolio/HeroSection.tsx
+
+```tsx
+/* src/components/portfolio/HeroSection.tsx */
+'use client'
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import Image from 'next/image'
+
+export function HeroSection() {
+   const sectionRef = useRef<HTMLElement>(null)
+   const headingRef = useRef<HTMLHeadingElement>(null)
+   const imageRef = useRef<HTMLDivElement>(null)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   useEffect(() => {
+      const mm = gsap.matchMedia();
+
+
+      mm.add("(min-width: 768px)", () => {
+         gsap.to(imageRef.current, {
+            yPercent: 50,
+            ease: 'none',
+            scrollTrigger: {
+               trigger: sectionRef.current,
+               start: 'top top',
+               end: 'bottom top',
+               scrub: true
+            }
+         });
+
+         gsap.from(headingRef.current, {
+            y: 100,
+            opacity: 0,
+            duration: 1.5,
+            scrollTrigger: {
+               trigger: headingRef.current,
+               start: 'top center',
+               toggleActions: 'play none none reverse'
+            }
+         });
+      });
+
+
+      mm.add("(max-width: 767px)", () => {
+         gsap.to(imageRef.current, {
+            yPercent: 30,
+            ease: 'none',
+            scrollTrigger: {
+               trigger: sectionRef.current,
+               start: 'top top',
+               end: 'bottom top',
+               scrub: true
+            }
+         });
+
+         gsap.from(headingRef.current, {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            scrollTrigger: {
+               trigger: headingRef.current,
+               start: 'top center+=100',
+               toggleActions: 'play none none reverse'
+            }
+         });
+      });
+
+      return () => mm.revert();
+   }, []);
+
+   return (
+      <section
+         ref={sectionRef}
+         className="relative h-screen overflow-hidden"
+      >
+         <div
+            ref={imageRef}
+            className="absolute inset-0 w-full h-[120%]"
+         >
+            <Image
+               src="/assets/bonsaiLightBg.webp"
+               alt="Hero Background"
+               fill
+               className="object-cover"
+               priority
+            />
+         </div>
+
+         <div className="relative z-10 flex items-center justify-center h-full">
+            <h1
+               ref={headingRef}
+               className="text-6xl font-bold text-accent-500 text-center"
+            >
+               Welcome to My Portfolio
+            </h1>
+         </div>
+      </section>
+   )
+}
+
+
+```
+
+# Garbage/components/portfolio/ParallaxSection.tsx
+
+```tsx
+/* src/components/portfolio/ParallaxSection.tsx */
+'use client';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+
+export function ParallaxSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+
+
+    mm.add("(min-width: 768px)", () => {
+      gsap.to(sectionRef.current, {
+        backgroundPosition: '50% 50%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          pin: true
+        }
+      });
+    });
+
+
+    mm.add("(max-width: 767px)", () => {
+      gsap.to(sectionRef.current, {
+        backgroundPosition: '50% 30%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          pin: false
+        }
+      });
+    });
+
+    return () => mm.revert();
+  }, []);
+
+  return (
+
+  );
+}
+```
+
+# Garbage/components/portfolio/ProjectCard.tsx
+
+```tsx
+/* src/components/portfolio/ProjectCard.tsx */
+'use client';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+
+export function ProjectCard() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+
+
+    mm.add("(min-width: 768px)", () => {
+      gsap.from(cardRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        scrollTrigger: {
+          trigger: cardRef.current,
+          start: 'top bottom-=100',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+
+
+    mm.add("(max-width: 767px)", () => {
+      gsap.from(cardRef.current, {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: cardRef.current,
+          start: 'top bottom',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+
+    return () => mm.revert();
+  }, []);
+
+  return (
+
+  );
+}
+```
+
+# Garbage/components/portfolio/ProjectSection.tsx
+
+```tsx
+/* src/components/portfolio/ProjectSection.tsx */
+'use client'
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+
+export function ProjectSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+
+    gsap.from(section.children, {
+      y: 100,
+      opacity: 0,
+      duration: 1,
+      stagger: 0.2,
+      scrollTrigger: {
+        trigger: section,
+        start: 'top center+=100',
+        end: 'bottom center',
+        toggleActions: 'play none none reverse'
+      }
+    })
+  }, [])
+
+  return (
+    <section
+      ref={sectionRef}
+      className="py-20 bg-gray-100 dark:bg-gray-900"
+    >
+      {/* Add your project cards/content here */}
+    </section>
+  )
+}
+
+
+```
+
+# Garbage/lib/portfolio-theme.ts
+
+```ts
+/*-= src/styles/theme.ts : originall from Portfolio 2025 =-*/
+
+export type {
+   ThemeMode,
+   ColorWithShades,
+   ColorShades,
+   BorderColors,
+   ColorPalette,
+   Typography,
+   Theme
+ } from './types'
+
+ export {
+   colors,
+   baseTheme,
+   lightTheme,
+   darkTheme,
+   theme,
+   getColor,
+   getBackgroundColor,
+   getTextColor,
+   getBorderColor,
+   getFontFamily,
+   getFontWeight,
+   getFontSize,
+   applyFontStyle
+ } from './theme-config'
+
+
+
+
+
+
+
+
+```
+
+# Garbage/lib/theme-config.ts
+
+```ts
+
+
+
+
+
+
+
+import {
+   ThemeMode,
+   ColorWithShades,
+   ColorShades,
+   BorderColors,
+
+
+   Theme
+} from "./portfolio-theme";
+
+type HeadingSizes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+type BodySizes = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+
+
+export const baseTheme = {
+   typography: {
+      heading: {
+         fontFamily: '"Libre Baskerville", serif',
+         weights: {
+            regular: 400,
+            medium: 500,
+            bold: 700
+         },
+         sizes: {
+            h1: '2.5rem',
+            h2: '2rem',
+            h3: '1.75rem',
+            h4: '1.5rem',
+            h5: '1.25rem',
+            h6: '1rem'
+         }
+      },
+      body: {
+         fontFamily: '"Open Sans", sans-serif',
+         weights: {
+            regular: 400,
+            medium: 500,
+            bold: 700
+         },
+         sizes: {
+            xs: '0.75rem',
+            sm: '0.875rem',
+            base: '1rem',
+            lg: '1.125rem',
+            xl: '1.25rem'
+         }
+      }
+   }
+} as const;
+
+
+export const colors = {
+   primary: {
+      100: '#EBE5F6',
+      200: '#D7CCED',
+      300: '#C3B2E3',
+      400: '#AF99DA',
+      500: '#8465C3',
+      600: '#6A51C0',
+      700: '#503DBD',
+      800: '#3629BA',
+      900: '#1C15B7'
+
+   },
+   secondary: {
+      100: '#E6FEFF',
+      200: '#CCFEFF',
+      300: '#B3FDFF',
+      400: '#99FCFF',
+      500: '#3AF1F9',
+      600: '#2ED8E0',
+      700: '#22BFC6',
+      800: '#16A6AD',
+      900: '#0A8D93'
+   },
+   accent: {
+      100: '#FFE9E3',
+      200: '#FFD3C8',
+      300: '#FFBDAC',
+      400: '#FFA791',
+      500: '#F46A47',
+      600: '#DB503D',
+      700: '#C23633',
+      800: '#A91C29',
+      900: '#90021F'
+   },
+   success: {
+      100: '#F0F7E6',
+      200: '#E1EFCC',
+      300: '#D2E7B3',
+      400: '#C3DF99',
+      500: '#A2C465',
+      600: '#88AB4B',
+      700: '#6F9231',
+      800: '#557917',
+      900: '#3C5F00'
+   },
+   warning: {
+      100: '#FFF5EB',
+      200: '#FFEBD7',
+      300: '#FFE1C3',
+      400: '#FFD7AF',
+      500: '#FAD8B4',
+      600: '#E1BF9A',
+      700: '#C8A680',
+      800: '#AF8D66',
+      900: '#96744C'
+   },
+   danger: {
+      100: '#FFE5E8',
+      200: '#FFCCD1',
+      300: '#FFB2BA',
+      400: '#FF99A3',
+      500: '#F5536A',
+      600: '#DC3950',
+      700: '#C21F36',
+      800: '#A9051C',
+      900: '#900002'
+   },
+   gray: {
+      100: '#F7F7F7',
+      200: '#E6E6E6',
+      300: '#D5D5D5',
+      400: '#C4C4C4',
+      500: '#676767',
+      600: '#525252',
+      700: '#3D3D3D',
+      800: '#282828',
+      900: '#131313'
+   },
+
+   border: {
+      light: {
+         primary: '#0F66AF'
+      },
+      dark: {
+         primary: '#0D94A0'
+      }
+   }
+};
+
+
+export const lightTheme: Theme = {
+   isDarkTheme: false,
+   colors: {
+      ...colors,
+      backgrounds: {
+         light: '#EBE5F6',
+         dark: '#121212',
+         nav: 'rgba(255, 255, 255, 0.8)'
+      },
+      text: {
+         light: {
+            primary: 'red',
+            secondary: 'yellow',
+            accent: 'magenta',
+            disabled: '#CCCCCC',
+            svgColor1: "red",
+            svgColor2: "blue",
+            svgColor3: "magenta",
+            svgColor4: "cyan",
+            svgColor5: "green",
+         },
+         dark: {
+            primary: '',
+            secondary: '',
+            accent: '',
+            svgColor1: "",
+            svgColor2: "",
+            svgColor3: "",
+            svgColor4: "",
+            svgColor5: "",
+            disabled: ''
+         }
+      },
+      border: colors.border
+   },
+   typography: baseTheme.typography,
+   sizes: {
+      navHeight: '80px'
+   },
+   navBackground: 'rgba(255, 255, 255, 0.8)',
+   textSecondary: '#8F8F8F',
+   border: '#E5E7EB',
+   error: '#DC2626'
+};
+
+export const darkTheme: Theme = {
+   isDarkTheme: true,
+   colors: {
+      ...colors,
+      backgrounds: {
+         light: '#121212',
+         dark: '#000000',
+
+         nav: "#C21F36"
+      },
+      text: {
+         light: {
+            primary: '',
+            secondary: '',
+            accent: '',
+            svgColor1: "",
+            svgColor2: "",
+            svgColor3: "",
+            svgColor4: "",
+            svgColor5: "",
+            disabled: ''
+         },
+         dark: {
+            primary: 'yellowGreen',
+
+            secondary: '#0d94a0cc',
+            accent: 'yellowgreen',
+            disabled: '#6E6E6E',
+            svgColor1: "#C4C4C4",
+            svgColor2: "#900002",
+            svgColor3: "#6F9231",
+            svgColor4: "orange",
+            svgColor5: "green",
+         }
+      },
+      border: colors.border
+   },
+   typography: baseTheme.typography,
+   sizes: {
+      navHeight: '80px'
+   },
+   navBackground: "#FAD8B4",
+   textSecondary: '#E0E0E0',
+   border: '#374151',
+   error: '#EF4444'
+};
+
+
+export const theme = lightTheme;
+
+
+
+
+
+
+
+export const getColor = (
+   colorName: ColorWithShades,
+   shade: keyof ColorShades = 500
+): string => {
+   const color = theme.colors[colorName];
+
+   if (!isColorShades(color)) {
+      throw new Error(`Color ${colorName} does not have shades`);
+   }
+   return color[shade];
+};
+
+
+
+
+
+const isColorShades = (color: unknown): color is ColorShades => {
+   return typeof color === 'object' &&
+      color !== null &&
+      '500' in color;
+};
+
+
+
+
+
+export const getBackgroundColor = (
+   mode: ThemeMode,
+   type: 'default' | 'nav' = 'default'
+): string => {
+   if (type === 'nav') {
+      return theme.colors.backgrounds.nav;
+   }
+   return theme.colors.backgrounds[mode];
+};
+
+export const getTextColor = (
+   mode: ThemeMode,
+   variant: "primary" | "secondary" | "disabled"
+): string => {
+   return theme.colors.text[mode][variant];
+};
+
+export const getBorderColor = (mode: ThemeMode, variant: keyof BorderColors): string => {
+   return theme.colors.border[mode][variant];
+};
+
+export const getFontFamily = (
+   type: "heading" | "body"
+): string => {
+   return theme.typography[type].fontFamily;
+};
+
+export const getFontWeight = (
+   type: "heading" | "body",
+   weight: "regular" | "medium" | "bold"
+): number => {
+   return theme.typography[type].weights[weight];
+};
+
+export const getFontSize = (
+   type: "heading" | "body",
+   size: HeadingSizes | BodySizes
+): string => {
+   if (type === "heading" && isHeadingSize(size)) {
+      return theme.typography.heading.sizes[size];
+   }
+   if (type === "body" && isBodySize(size)) {
+      return theme.typography.body.sizes[size];
+   }
+   throw new Error(`Invalid size ${size} for type ${type}`);
+};
+
+
+const isHeadingSize = (size: HeadingSizes | BodySizes): size is HeadingSizes => {
+   return ["h1", "h2", "h3", "h4", "h5", "h6"].includes(size);
+};
+
+const isBodySize = (size: HeadingSizes | BodySizes): size is BodySizes => {
+   return ["xs", "sm", "base", "lg", "xl"].includes(size);
+};
+
+
+export const applyFontStyle = (type: "heading" | "body", weight: "regular" | "medium" | "bold", size: HeadingSizes | BodySizes): string => {
+   return `
+    font-family: ${getFontFamily(type)};
+    font-weight: ${getFontWeight(type, weight)};
+    font-size: ${getFontSize(type, size)};
+  `;
+};
+
+```
+
+# Garbage/lib/types.ts
+
+```ts
+export interface BaseInterface {
+   someProperty: string;
+
+ }
+
+export type ThemeMode = 'light' | 'dark';
+
+
+export type ColorWithShades = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'danger' | 'gray';
+
+
+export interface ColorShades {
+   100: string;
+   200: string;
+   300: string;
+   400: string;
+   500: string;
+   600: string;
+   700: string;
+   800: string;
+   900: string;
+}
+
+export interface BorderColors {
+   primary: string;
+
+
+
+ }
+
+export interface ColorPalette {
+   primary: ColorShades;
+   secondary: ColorShades;
+   accent: ColorShades;
+   success: ColorShades;
+   warning: ColorShades;
+   danger: ColorShades;
+   gray: ColorShades;
+   backgrounds: {
+      light: string;
+      dark: string;
+      nav: string;
+   };
+   text: {
+      light: {
+         primary: string;
+         secondary: string;
+         accent: string;
+         disabled: string;
+         svgColor1: string;
+         svgColor2: string;
+         svgColor3: string;
+         svgColor4: string;
+         svgColor5: string;
+      };
+      dark: {
+         primary: string;
+         secondary: string;
+         accent: string;
+         disabled: string;
+         svgColor1: string;
+         svgColor2: string;
+         svgColor3: string;
+         svgColor4: string;
+         svgColor5: string;
+      };
+   };
+   border: {
+      light: BorderColors;
+      dark: BorderColors;
+    }
+}
+
+export interface Typography {
+   heading: {
+      fontFamily: string;
+      weights: {
+         regular: number;
+         medium: number;
+         bold: number;
+      };
+      sizes: {
+         h1: string;
+         h2: string;
+         h3: string;
+         h4: string;
+         h5: string;
+         h6: string;
+      };
+   };
+   body: {
+      fontFamily: string;
+      weights: {
+         regular: number;
+         medium: number;
+         bold: number;
+      };
+      sizes: {
+         xs: string;
+         sm: string;
+         base: string;
+         lg: string;
+         xl: string;
+      };
+   };
+}
+
+export interface Theme {
+   isDarkTheme: boolean;
+   colors: ColorPalette;
+
+
+
+
+
+
+   typography: Typography;
+   sizes: {
+      navHeight: string;
+   };
+   navBackground: string;
+   textSecondary: string;
+
+   border: string;
+
+
+
+
+   error: string;
+   backgroundColor?: string;
+   backgroundBlendMode?: string;
+}
+
+```
+
+# Garbage/vscode/settings.json
+
+```json
+{
+   "editor.fontWeight": "normal"
+}
 
 ```
 
@@ -446,22 +1733,142 @@ Bridge Color Palette:
 # public/notes/misc.tsx
 
 ```tsx
-/*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
-/*-= xxxx • x =-*/
+/*-=  src/components/ParallaxNavigation.tsx =-*/
+/*-= xxx =-*/
 /*-=========================================================================
-Key changes made:
-
+xxx
 ===========================================================================-*/
 
-/*-|================================================================================|-*/
-
-transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
+/*-= src/components/xxx.tsx =-*/
+/*-=========================================================================
+Prompt:
 
+===========================================================================-*/
+
+/*-|================================================================================|-*/
+
+```
+
+# public/notes/misc3.tsx
+
+```tsx
+/* src/app/portfolio/[category]/page.tsx */
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { PortfolioSection } from '@/app/layout';
+
+interface Props {
+  params: {
+    category: string;
+  }
+}
+
+const categoryData: Record<string, {
+  title: string;
+  description: string;
+  image: string;
+  content: React.ReactNode;
+}> = {
+  'web-development': {
+    title: 'Web Development',
+    description: 'Modern web applications built with cutting-edge technologies.',
+    image: '/assets/images/first.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your web development projects here */}
+      </div>
+    )
+  },
+  'ui-design': {
+    title: 'UI Design',
+    description: 'Beautiful user interfaces that deliver exceptional experiences.',
+    image: '/assets/images/second.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your UI design projects here */}
+      </div>
+    )
+  },
+  'multimedia': {
+    title: 'Multimedia Production',
+    description: 'Comprehensive multimedia solutions for modern storytelling.',
+    image: '/assets/images/third.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your multimedia projects here */}
+      </div>
+    )
+  },
+  'video': {
+    title: 'Video Editing',
+    description: 'Professional video editing and post-production services.',
+    image: '/assets/images/third.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your video projects here */}
+      </div>
+    )
+  },
+  'motion': {
+    title: 'Motion Graphics',
+    description: 'Engaging motion graphics and visual effects.',
+    image: '/assets/images/fourth.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your motion graphics projects here */}
+      </div>
+    )
+  },
+  'sound': {
+    title: 'Sound Design',
+    description: 'Immersive audio experiences and sound engineering.',
+    image: '/assets/images/fifth.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your sound design projects here */}
+      </div>
+    )
+  }
+};
+
+export default function CategoryPage({ params }: Props) {
+  const data = categoryData[params.category];
+
+  if (!data) {
+    notFound();
+  }
+
+  return (
+    <PortfolioSection>
+      <div className="min-h-screen bg-black text-white">
+        <div className="relative h-[50vh] mb-16">
+          <Image
+            src={data.image}
+            alt={data.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
+            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+              {data.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          {data.content}
+        </div>
+      </div>
+    </PortfolioSection>
+  );
+}
 ```
 
 # public/notes/Netlify-Portfolio-Parallax/Parallax.tsx
@@ -1349,6 +2756,18 @@ app/layout.tsx wraps around all pages
 Files in src/lib are for shared code (like our Supabase setup)
 ```
 
+# public/notes/Prompts.txt
+
+```txt
+
+I want to continue on the portfolio parallax. Our working parallax: ParallaxScroll component.
+Can we add titles, short descriptions and a button to each one of our sections.
+
+Create the detail page for each of the sections.
+
+We should also move the porfolio in app directory to sit side by side with blog.
+```
+
 # public/notes/SioaPao.md
 
 ```md
@@ -1758,6 +3177,27 @@ Future requirements:
 
 - Add Lenis for smooth scrolling
 - Add section titles and call to action buttons
+
+### December 17, 2024
+- Fixed file structure:
+src/
+├── app/
+│   ├── portfolio/
+│   │   ├── layout.tsx           # Main portfolio layout
+│   │   ├── page.tsx            # Main portfolio page with ParallaxScroll
+│   │   └── [category]/
+│   │       └── page.tsx        # Dynamic category pages
+│   └── layout.tsx              # Root layout
+└── components/
+    ├── parallaxScroll/
+    │   └── ParallaxScroll.tsx  # Our main parallax component
+    └── ParallaxNavigation.tsx  # Navigation dots component
+
+- Edit settings.json, adjust typescript memory allocation
+"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+      "typescript.tsserver.maxMemory": 4096
+	},
 
 ### Search and Replace using Regex in codebase.md file
 - /* src/(.+) : Search for anything that starts with
@@ -2427,6 +3867,105 @@ Requires Supabase RLS policy to be set up for post deletion.
 
 ```
 
+# public/project-summaries/Files to Remove.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+</style>
+
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+# Files to Remove
+Portfolio-Related Files/Folders That Can Be Removed
+
+### Unused Portfolio Components:
+
+src/components/portfolio/HeroSection.tsx
+src/components/portfolio/ParallaxSection.tsx
+src/components/portfolio/ProjectCard.tsx
+src/components/portfolio/ProjectSection.tsx
+
+### Unused Portfolio Styles:
+
+src/lib/portfolio-theme.ts
+src/lib/theme-config.ts
+src/lib/types.ts
+
+### Unused Portfolio Pages:
+
+src/app/portfolio/page.tsx
+src/app/portfolio/projects/page.tsx
+Blog-Related Files/Folders That Can Be Removed
+
+### Duplicate/Unused Components:
+
+src/components/blog-components/CircularLoader.css
+src/components/blog-components/CircularLoaderApp.tsx
+src/components/blog-components/LazyImageLoader.tsx
+src/components/blog-components/articles/SpinningDots.tsx
+src/components/data-list-components/ (entire folder)
+src/components/modal-components/Spinner.js
+src/components/modal-components/ProgressRing.tsx
+
+### Unused Blog Components:
+
+src/components/ImageWithFallback.tsx
+src/components/blog/CodeBlock.tsx (duplicate of blog-components/CodeBlock.tsx)
+
+### General Cleanup:
+
+public/notes/ (entire folder, appears to be just documentation)
+public/project-summaries/ (can be moved to documentation if needed)
+
+### Unused Configuration Files:
+
+.vscode/settings.json (minimal settings)
+cleanup.sh (not essential for the app)
+Keep Important Files
+Ensure we keep these critical files:
+
+### Core Blog Components:
+
+src/components/blog/dashboard/
+src/components/BlogPostContent.tsx
+src/components/PostForm.tsx
+src/components/RichMarkdownEditor.tsx
+
+### Core Portfolio Components:
+
+src/components/parallaxScroll/ParallaxScroll.tsx (main parallax component)
+
+### Essential Configuration:
+
+next.config.ts
+tailwind.config.ts
+tsconfig.json
+package.json
+
+### Core Application Files:
+
+src/app/layout.tsx
+src/app/page.tsx
+src/contexts/ThemeContext.tsx
+src/lib/auth.ts
+src/lib/supabase.ts
+
+
+```
+
 # public/project-summaries/Markdown Implementation.md
 
 ```md
@@ -2484,7 +4023,54 @@ import "highlight.js/styles/github-dark.css";
 # public/project-summaries/ParallaxScroll Implementation.md
 
 ```md
-Ask Claude to summarize
+Here's a summary of our parallax scrolling journey and solution:
+
+# Crafting a Full-width Parallax Scroll Experience in Next.js
+
+## The Challenge
+We set out to create a smooth parallax scrolling effect where three sections would gracefully reveal each other during scroll. The specific requirements were:
+- First section scrolls up to reveal the second section
+- Second section scrolls up to reveal the third section
+- Third section contains three vertically stacked images that scroll as one unit
+- Everything needed to be full viewport width without any side margins or horizontal movement
+
+## The Technical Implementation
+We used a combination of:
+- GSAP (GreenSock Animation Platform) for scroll-triggered animations
+- Next.js Image component for optimized image loading
+- CSS positioning for proper stacking and layout
+
+## The Unexpected Hurdle
+While the basic animation worked perfectly, we encountered an issue where GSAP was dynamically adding a `transform: translate(0px, 0px)` style to our container. This caused unwanted margins and prevented our content from reaching full viewport width.
+
+## Various Attempted Solutions
+We tried multiple approaches:
+1. Modifying GSAP's ScrollTrigger configuration
+2. Using different positioning strategies (fixed, absolute, relative)
+3. Adding wrapper elements
+4. Setting explicit width and transform properties
+5. Adjusting container margins and positioning
+
+## The Simple Solution
+After trying various complex solutions, we found that the simplest approach was the most effective. Adding one CSS rule solved our issue:
+\`\`\`css
+.myMainContainer {
+  transform: none !important;
+}
+\`\`\`
+
+## Key Takeaways
+1. Sometimes the simplest solution is the best solution
+2. While `!important` is often discouraged, it can be the right tool when:
+   - Overriding third-party library styles
+   - Dealing with dynamically added styles
+   - Other solutions would introduce unnecessary complexity
+3. Understanding the root cause (GSAP's transform) helped us find the right solution
+4. When building complex animations, start with the basic functionality and then solve edge cases one at a time
+
+This case serves as a reminder that in web development, there's often a balance between following best practices and finding practical solutions. While we generally avoid using `!important`, recognizing when it's the right tool for the job is part of the developer's skill set.
+
+Would you like me to expand on any part of this summary for your article?
 ```
 
 # public/project-summaries/Project-Structure-Overview.md
@@ -2752,6 +4338,59 @@ function Component() {
 4. Use theme object for complex dynamic styles
 5. Maintain TypeScript types for theme objects
 
+```
+
+# public/scripts/ReadMe.md
+
+```md
+# Scripts for terminal
+```
+
+# public/scripts/setup-portfolio-Instruction.md
+
+```md
+
+# To use this:
+
+Save the script as setup-portfolio.sh
+Make it executable: chmod +x setup-portfolio.sh
+Run it: ./setup-portfolio.sh
+Add your project images to the public/assets/projects directory
+Update the project data in each category page
+```
+
+# public/scripts/setup-portfolio.sh
+
+```sh
+#!/bin/bash
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Setting up portfolio directory structure...${NC}"
+
+# Create portfolio directories
+mkdir -p src/app/portfolio/web-development
+mkdir -p src/app/portfolio/ui-design
+mkdir -p src/app/portfolio/multimedia/{video,motion,sound}
+
+# Create necessary directories for assets
+mkdir -p public/assets/projects
+
+# Copy the provided page files
+for file in portfolio/{layout,page}.tsx portfolio/web-development/page.tsx portfolio/multimedia/[category]/page.tsx; do
+  mkdir -p "src/app/$(dirname $file)"
+  # Copy the content from the artifact to the file
+  echo "Creating src/app/$file"
+done
+
+echo -e "${GREEN}Portfolio structure created successfully!${NC}"
+echo -e "${BLUE}Next steps:${NC}"
+echo "1. Add your project images to public/assets/projects/"
+echo "2. Update the project data in each category page"
+echo "3. Add category-specific components as needed"
 ```
 
 # public/vercel.svg
@@ -3246,6 +4885,7 @@ body {
    transition: opacity 0.3s ease-in-out;
  }
 
+ /* Solved the full screen width issue with GSAP parallax scrolling */
  .myMainContainer {
    transform: none !important;
  }
@@ -3314,45 +4954,9 @@ body {
 
 ```tsx
 /*-= src/app/layout.tsx =-*/
-
 import { Providers } from "./providers";
-
 import "./globals.css";
-
 import { Navbar } from "@/components/MobileNavbar";
-
-import React from 'react';
-
-export const PortfolioSection = ({ children }: { children: React.ReactNode }) => (
-   <section className="portfolioSectionContainer relative w-screen overflow-hidden">
-      {/* <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8"> */}
-      <div>
-         {children}
-      </div>
-   </section>
-);
-
-export const BlogSection = ({ children }: { children: React.ReactNode }) => (
-   <section className="blogSectionContainer relative w-full">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-         {children}
-      </div>
-   </section>
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { EB_Garamond, Nunito_Sans } from "next/font/google";
 
 const garamond = EB_Garamond({
@@ -3367,92 +4971,34 @@ const nunitoSans = Nunito_Sans({
    variable: "--font-nunitosans",
 });
 
+export const PortfolioSection = ({ children }: { children: React.ReactNode }) => (
+   <section className="portfolioSectionContainer relative w-screen overflow-hidden">
+      <div>{children}</div>
+   </section>
+);
+
+export const BlogSection = ({ children }: { children: React.ReactNode }) => (
+   <section className="blogSectionContainer relative w-full">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+         {children}
+      </div>
+   </section>
+);
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
    return (
-      <html
-         lang='en'
-         suppressHydrationWarning
-
-         className={`${garamond.variable} ${nunitoSans.variable}`}
-      >
-         <head>
-            <script
-               dangerouslySetInnerHTML={{
-                  __html: `
-              if (localStorage.theme === 'dark') {
-                document.documentElement.classList.add('dark')
-              } else {
-                document.documentElement.classList.remove('dark')
-                localStorage.setItem('theme', 'light')
-              }
-            `,
-               }}
-            />
-         </head>
-         <body
-
-            className={nunitoSans.className}
-            suppressHydrationWarning
-         >
+      <html lang="en" suppressHydrationWarning className={`${garamond.variable} ${nunitoSans.variable}`}>
+         <body suppressHydrationWarning className={nunitoSans.className}>
             <Providers>
-               <div className='min-h-screen flex flex-col'>
+               <div className="min-h-screen flex flex-col">
                   <Navbar />
-                  {/* <MobileNavbar /> */}
-                  <main className='mainContainer flex-1 container mx-auto px-4 py-8'>{children}</main>
+                  {children}
                </div>
             </Providers>
          </body>
       </html>
    );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{
-   /* <Navbar />; */
-}
-
-
-
-
-
-
-
 
 ```
 
@@ -3722,16 +5268,386 @@ export default page
 
 ```
 
+# src/app/portfolio/[category]/page.tsx
+
+```tsx
+/*-= src/app/portfolio/[category]/page.tsx =-*/
+/*-= Portfolio Category Page =-*/
+/*-=========================================================================
+The key changes are:
+
+Added proper import of PortfolioSection from root layout
+Wrapped the entire content with PortfolioSection
+Maintained consistent font usage with font-garamond and font-nunitosans classes
+Added support for all categories including multimedia subcategories
+Used consistent styling with the main portfolio page
+===========================================================================-*/
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { PortfolioSection } from '@/app/layout';
+
+interface Props {
+  params: {
+    category: string;
+  }
+}
+
+const categoryData: Record<string, {
+  title: string;
+  description: string;
+  image: string;
+  content: React.ReactNode;
+}> = {
+  'web-development': {
+    title: 'Web Development',
+    description: 'Modern web applications built with cutting-edge technologies.',
+    image: '/assets/images/first.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your web development projects here */}
+      </div>
+    )
+  },
+  'ui-design': {
+    title: 'UI Design',
+    description: 'Beautiful user interfaces that deliver exceptional experiences.',
+    image: '/assets/images/second.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your UI design projects here */}
+      </div>
+    )
+  },
+  'multimedia': {
+    title: 'Multimedia Production',
+    description: 'Comprehensive multimedia solutions for modern storytelling.',
+    image: '/assets/images/third.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Add your multimedia projects here */}
+      </div>
+    )
+  },
+  'video': {
+    title: 'Video Editing',
+    description: 'Professional video editing and post-production services.',
+    image: '/assets/images/third.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your video projects here */}
+      </div>
+    )
+  },
+  'motion': {
+    title: 'Motion Graphics',
+    description: 'Engaging motion graphics and visual effects.',
+    image: '/assets/images/fourth.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your motion graphics projects here */}
+      </div>
+    )
+  },
+  'sound': {
+    title: 'Sound Design',
+    description: 'Immersive audio experiences and sound engineering.',
+    image: '/assets/images/fifth.webp',
+    content: (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Add your sound design projects here */}
+      </div>
+    )
+  }
+};
+
+export default function CategoryPage({ params }: Props) {
+  const data = categoryData[params.category];
+
+  if (!data) {
+    notFound();
+  }
+
+  return (
+    <PortfolioSection>
+      <div className="min-h-screen bg-black text-white">
+        <div className="relative h-[50vh] mb-16">
+          <Image
+            src={data.image}
+            alt={data.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
+            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+              {data.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          {data.content}
+        </div>
+      </div>
+    </PortfolioSection>
+  );
+}
+/*-|================================================================================|-*/
+```
+
+# src/app/portfolio/layout.tsx
+
+```tsx
+/*-= src/app/portfolio/layout.tsx =-*/
+import React from 'react';
+import { ParallaxNavigation } from '@/components/ParallaxNavigation';
+import { EnhancedParallaxNavigation } from '@/components/EnhancedParallaxNavigation';
+
+export default function PortfolioLayout({ children, }: { children: React.ReactNode }) {
+   return (
+      <div className="relative">
+         <ParallaxNavigation />
+         {/* <EnhancedParallaxNavigation /> */}
+         {children}
+      </div>
+   );
+}
+```
+
+# src/app/portfolio/multimedia/[category]/page.tsx
+
+```tsx
+/*-= src/app/portfolio/multimedia/[category]/page.tsx =-*/
+/*-|================================================================================|-*/
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+
+interface Props {
+   params: {
+      category: string;
+   }
+}
+
+const categoryData: Record<string, {
+   title: string;
+   description: string;
+   image: string;
+   content: React.ReactNode;
+}> = {
+   video: {
+      title: 'Video Editing',
+      description: 'Professional video editing and post-production services.',
+      image: '/assets/images/third.webp',
+      content: (
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Add your video projects here */}
+         </div>
+      )
+   },
+   motion: {
+      title: 'Motion Graphics',
+      description: 'Engaging motion graphics and visual effects.',
+      image: '/assets/images/fourth.webp',
+      content: (
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Add your motion graphics projects here */}
+            <iframe id="ytplayer" type="text/html" width="720" height="405"
+               src="https://www.youtube.com/watch?v=R16RDhbeKD8"
+               frameborder="0" allowfullscreen>
+            </iframe>
+         </div>
+      )
+   },
+   sound: {
+      title: 'Sound Design',
+      description: 'Immersive audio experiences and sound engineering.',
+      image: '/assets/images/fifth.webp',
+      content: (
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Add your sound design projects here */}
+         </div>
+      )
+   }
+};
+
+export default function MultimediaCategoryPage({ params }: Props) {
+   const data = categoryData[params.category];
+
+   if (!data) {
+      notFound();
+   }
+
+   return (
+      <div className="min-h-screen bg-black text-white">
+         <div className="relative h-[50vh] mb-16">
+            <Image
+               src={data.image}
+               alt={data.title}
+               fill
+               className="object-cover"
+               priority
+            />
+            <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+               <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
+               <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+                  {data.description}
+               </p>
+            </div>
+         </div>
+
+         <div className="max-w-7xl mx-auto px-4 py-16">
+            {data.content}
+         </div>
+      </div>
+   );
+}
+
+/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*-|================================================================================|-*/
+```
+
 # src/app/portfolio/page.tsx
 
 ```tsx
 
+/*-= src/app/portfolio/page.tsx =-*/
+
+
+import { PortfolioSection } from '../layout'
+import ParallaxScroll from '@/components/parallaxScroll/ParallaxScroll'
+
+export default function PortfolioPage() {
+   return (
+     <PortfolioSection>
+       <ParallaxScroll />
+     </PortfolioSection>
+   );
+ }
+
+
+
+
+
+
+
+
+
+
+
 ```
 
-# src/app/portfolio/projects/page.tsx
+# src/app/portfolio/web-development/page.tsx
 
 ```tsx
+/*-= src/app/portfolio/web-development/page.tsx =-*/
+ import Image from 'next/image';
+ import Link from 'next/link';
 
+ const projects = [
+   {
+     title: 'Project 1',
+     description: 'Modern web application built with Next.js and TypeScript',
+     image: '/assets/projects/web1.webp',
+     link: '#'
+   },
+
+ ];
+ export default function WebDevelopmentPage() {
+   return (
+     <main className="min-h-screen bg-black text-white">
+       <div className="relative h-[50vh] mb-16">
+         <Image
+           src="/assets/images/first.webp"
+           alt="Web Development"
+           fill
+           className="object-cover"
+           priority
+         />
+         <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+           <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
+           <p className="text-xl max-w-2xl text-center font-nunitosans">
+             Creating modern, responsive web applications with cutting-edge technologies.
+           </p>
+         </div>
+       </div>
+
+       <div className="max-w-7xl mx-auto px-4 py-16">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+           {projects.map((project, index) => (
+             <Link href={project.link} key={index} className="group">
+               <div className="relative aspect-video mb-4 overflow-hidden rounded-lg">
+                 <Image
+                   src={project.image}
+                   alt={project.title}
+                   fill
+                   className="object-cover transition-transform duration-300 group-hover:scale-105"
+                 />
+               </div>
+               <h3 className="text-xl font-garamond mb-2">{project.title}</h3>
+               <p className="text-gray-400 font-nunitosans">{project.description}</p>
+             </Link>
+           ))}
+         </div>
+       </div>
+     </main>
+   )
+ }
 ```
 
 # src/app/providers.tsx
@@ -4573,63 +6489,6 @@ const Spinner = () => {
 };
 
 export default Spinner;
-
-```
-
-# src/components/blog-components/articles/SpinningDots.tsx
-
-```tsx
-"use client";
-import { motion } from "framer-motion";
-
-const SpinningDots = () => {
-	const rotations = [
-		{ speed: 2, color: "magenta" },
-		{ speed: 3, color: "cyan" },
-		{ speed: 5, color: "yellow" },
-		{ speed: 7, color: "black" },
-	];
-
-	return (
-		<svg
-			width='300'
-			height='300'
-			viewBox='0 0 300 300'
-		>
-			<circle
-				cx='150'
-				cy='150'
-				r='110'
-				stroke='grey'
-				strokeWidth='2'
-				fill='transparent'
-			/>
-			{rotations.map((item, index) => (
-				<motion.circle
-					key={index}
-					cx='100'
-					cy='50'
-					r='20'
-					fill={item.color}
-					style={{
-						originX: "50%",
-						originY: "50%",
-					}}
-					animate={{
-						rotate: 360,
-					}}
-					transition={{
-						repeat: Infinity,
-						duration: item.speed,
-						ease: "linear",
-					}}
-				/>
-			))}
-		</svg>
-	);
-};
-
-export default SpinningDots;
 
 ```
 
@@ -6695,142 +8554,6 @@ export default BubbleLoaderApp;
 
 ```
 
-# src/components/blog-components/CircularLoader.tsx
-
-```tsx
-"use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import CircularSVG2 from "./articles/CircularSVG2";
-
-const CircularLoader = ({ src, alt }: { src: string; alt: string }) => {
-   const [progress, setProgress] = useState(0);
-   const [isLoaded, setIsLoaded] = useState(false);
-
-   useEffect(() => {
-      const loadImage = (src: string): Promise<void> => {
-         return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", src, true);
-            xhr.responseType = "arraybuffer";
-
-            xhr.onprogress = (event) => {
-               if (event.lengthComputable) {
-                  const percentComplete = (event.loaded / event.total) * 100;
-                  setProgress(Math.round(percentComplete));
-               }
-            };
-
-            xhr.onload = () => {
-               if (xhr.status === 200) {
-                  setProgress(100);
-                  resolve();
-               } else {
-                  reject(new Error(`Failed to load image: ${xhr.statusText}`));
-               }
-            };
-            xhr.onerror = () => reject(new Error("Error loading image"));
-            xhr.send();
-         });
-      };
-
-      loadImage(src)
-         .then(() => setIsLoaded(true))
-         .catch((err) => console.error(err));
-
-      return () => {
-
-      };
-   }, [src]);
-
-   return (
-      <>
-         {/* <div className='image-loader-container'>
-			{!isLoaded && (
-				<div className='loader-overlay'>
-					<div className='loader-animation'>
-					</div>
-               <CircularSVG2 />
-					<div className='loader-progress'>
-						{progress}%
-					</div>
-				</div>
-			)} */}
-         <div className="relative w-full h-full flex justify-center items-center overflow-hidden">
-            {!isLoaded && (
-               <div className="absolute inset-0 flex flex-col justify-center items-center bg-white/80 z-10">
-                  <div className="mb-2.5">
-                     <div className="w-[100px] h-[100px] animate-spin">
-                        <CircularSVG2 />
-                     </div>
-                  </div>
-                  <div className="text-2xl font-bold text-green-500">
-                     {progress}% {/* Shows the loading percentage */}
-                  </div>
-               </div>
-            )}
-            <Image
-               src={src}
-               alt={alt}
-               width={500}
-               height={300}
-            />
-         </div>
-      </>
-   );
-};
-
-export default CircularLoader;
-
-```
-
-# src/components/blog-components/CircularLoaderApp.tsx
-
-```tsx
-
-
-import React from "react";
-import "./CircularLoader.css";
-
-interface ImageLoaderProps {
-  src: string;
-  alt: string;
-  className?: string;
-}
-
-const ImageLoaderApp: React.FC<ImageLoaderProps> = ({ src, alt, className }) => {
-
-  return (
-    <div className="image-loader-container">
-      <div className="loader-overlay">Loading...</div>
-      <img
-        src={src}
-        alt={alt}
-        className={`image-loader-image ${className || ""}`}
-      />
-    </div>
-  );
-};
-
-export default ImageLoaderApp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
 # src/components/blog-components/CodeBlock.tsx
 
 ```tsx
@@ -7391,67 +9114,6 @@ export default function InteractiveCounterPost() {
 
 ```
 
-# src/components/blog-components/LazyImageLoader.tsx
-
-```tsx
-/*-= src/components/blog-components/LazyImageLoader.tsx =-*/
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-
-
-const BubbleLoader = React.lazy(() => import("./BubbleLoader"));
-
-const LazyImageLoader: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const loaderRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
-    };
-  }, []);
-
-  const handleLoaderComplete = () => {
-    setIsLoaded(true);
-  };
-
-  return (
-    <div ref={loaderRef} style={{ position: "relative", minHeight: "300px" }}>
-      {!isLoaded && isVisible && (
-        <React.Suspense fallback={<div>Loading animation...</div>}>
-          <BubbleLoader duration={5000} onComplete={handleLoaderComplete} />
-        </React.Suspense>
-      )}
-      {isLoaded && (
-        <img
-          src={src}
-          alt={alt}
-          style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }}
-        />
-      )}
-    </div>
-  );
-};
-
-export default LazyImageLoader;
-```
-
 # src/components/blog-components/LazyLoader.tsx
 
 ```tsx
@@ -7737,74 +9399,6 @@ export function AuthorInfo({ date }: AuthorInfoProps) {
 				<p className='text-gray-600 dark:text-gray-400 text-sm mb-0 m-0'>Software Engineer</p>
 				<time className='text-gray-500 dark:text-gray-500 text-sm mt-0'>{formatDate(date)}</time>
 			</div>
-		</div>
-	);
-}
-
-```
-
-# src/components/blog/CodeBlock.tsx
-
-```tsx
-/*-= src/components/blog/CodeBlock.tsx =-*/
-"use client";
-import { useState } from "react";
-import { Copy, CheckCircle } from "lucide-react";
-
-type CodeBlockProps = {
-	code: string;
-	language?: string;
-	showLineNumbers?: boolean;
-};
-
-export function CodeBlockXXX({ code, language, showLineNumbers = true }: CodeBlockProps) {
-	const [copied, setCopied] = useState(false);
-
-	const handleCopy = async () => {
-		await navigator.clipboard.writeText(code);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
-	};
-
-	return (
-		<div className='relative group'>
-			{/* Language Label */}
-			{language && <div className='absolute top-2 right-12 px-2 py-1 text-xs text-gray-400 bg-gray-800 rounded'>{language}</div>}
-
-			{/* Copy Button */}
-			<button
-				onClick={handleCopy}
-				className='absolute top-2 right-2 p-1 text-gray-400 hover:text-white transition-colors'
-				aria-label='Copy code'
-			>
-				{copied ? (
-					<CheckCircle
-						size={16}
-						className='text-green-500'
-					/>
-				) : (
-					<Copy size={16} />
-				)}
-			</button>
-
-			{/* Code Content */}
-			<pre className='p-4 bg-gray-900 rounded-lg overflow-x-auto'>
-				<code className='relative flex'>
-					{showLineNumbers && (
-						<div className='pr-4 text-gray-500 select-none text-right'>
-							{code.split("\n").map((_, i) => (
-								<span
-									key={i}
-									className='block'
-								>
-									{i + 1}
-								</span>
-							))}
-						</div>
-					)}
-					<div className='flex-1'>{code}</div>
-				</code>
-			</pre>
 		</div>
 	);
 }
@@ -9627,77 +11221,6 @@ export function Comments({ postId }: { postId: string }) {
 	);
 }
 
-```
-
-# src/components/data-list-components/DataList.tsx
-
-```tsx
-import { useFetchData } from '@/hooks/useFetchData';
-import React from 'react';
-
-
-type DataListProps<T> = {
-   fetchData: () => Promise<T[]>;
-   renderItem: (item: T) => React.ReactNode;
-   onIntersect?: boolean;
-};
-
-const DataList = <T,>({ fetchData, renderItem, onIntersect = true }: DataListProps<T>) => {
-   const { data, loading, ref } = useFetchData({
-      fetchData,
-      onIntersect,
-   });
-
-   return (
-      <div ref={ref}>
-         {loading && <p>Loading...</p>}
-         {data && data.length > 0 ? (
-            <ul>
-               {data.map((item, index) => (
-                  <li key={index}>{renderItem(item)}</li>
-               ))}
-            </ul>
-         ) : (
-            !loading && <p>No data available.</p>
-         )}
-      </div>
-   );
-};
-
-export default DataList;
-```
-
-# src/components/data-list-components/DataListApp.tsx
-
-```tsx
-import DataList from "./DataList";
-
-const fetchUsers = async () => {
-   return new Promise<{ name: string; email: string; bio: string }[]>((resolve) =>
-      setTimeout(() => {
-         resolve([
-            { name: 'John Doe', email: 'john.doe@example.com', bio: 'Web developer' },
-            { name: 'Jane Smith', email: 'jane.smith@example.com', bio: 'Designer' },
-         ]);
-      }, 3000)
-   );
-};
-
-const DataListApp = () => {
-   return (
-      <DataList
-         fetchData={fetchUsers}
-         renderItem={(user) => (
-            <>
-               <h3>{user.name}</h3>
-               <p>{user.email}</p>
-               <p>{user.bio}</p>
-            </>
-         )}
-      />
-   );
-};
-export default DataListApp;
 ```
 
 # src/components/DeletePost.tsx
@@ -11971,6 +13494,468 @@ export function EditForm({ post }: { post: Post }) {
 
 ```
 
+# src/components/EnhancedParallaxNavigation.tsx
+
+```tsx
+/*-= src/components/EnhancedParallaxNavigation.tsx =-*/
+/*-= Fixed Portfolio Navigation =-*/
+/*-=========================================================================
+Key improvements:
+
+Better scroll observation:
+
+Added rootMargin to improve trigger accuracy
+Higher threshold for more precise section detection
+
+
+Proper route handling:
+
+Checks for exact path matches
+Updates active state based on current route
+Maintains state across navigation
+
+
+Improved visibility:
+
+Always visible on all portfolio pages
+Smoother transitions between states
+Better contrast for labels
+
+
+More reliable state management:
+
+Proper cleanup of observers
+Clear separation of route and scroll logic
+Better state initialization
+===========================================================================-*/
+"use client";
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+
+export default function EnhancedParallaxNavigation() {
+  const [activeSection, setActiveSection] = useState<string>('web');
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  const sections = [
+    {
+      id: 'web',
+      label: 'Web Development',
+      path: '/portfolio/web-development',
+      color: 'bg-accent-500'
+    },
+    {
+      id: 'ui',
+      label: 'UI Design',
+      path: '/portfolio/ui-design',
+      color: 'bg-secondary-500'
+    },
+    {
+      id: 'multimedia',
+      label: 'Multimedia',
+      path: '/portfolio/multimedia',
+      color: 'bg-success-500'
+    }
+  ];
+
+  useEffect(() => {
+
+    const currentSection = sections.find(section => pathname === section.path);
+    if (currentSection) {
+      setActiveSection(currentSection.id);
+      return;
+    }
+
+
+    if (pathname === '/portfolio') {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const sectionId = entry.target.id;
+              setActiveSection(sectionId);
+            }
+          });
+        },
+        {
+          threshold: 0.6,
+          rootMargin: '-20% 0px -20% 0px'
+        }
+      );
+
+      sections.forEach(section => {
+        const element = document.getElementById(section.id);
+        if (element) {
+          observer.observe(element);
+        }
+      });
+
+      return () => observer.disconnect();
+    }
+  }, [pathname]);
+
+  return (
+    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
+      <div className="flex flex-col gap-6">
+        {sections.map((section) => {
+          const isActive = activeSection === section.id;
+
+          return (
+            <div
+              key={section.id}
+              className="group relative flex items-center justify-end"
+              onMouseEnter={() => setHoveredSection(section.id)}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              {/* Label */}
+              <div
+                className={`absolute right-full mr-4 px-2 py-1 rounded-md
+                  text-white text-sm whitespace-nowrap bg-gray-900/90
+                  transition-opacity duration-200
+                  ${hoveredSection === section.id ? 'opacity-100' : 'opacity-0'}`}
+              >
+                {section.label}
+              </div>
+
+              {/* Active indicator line */}
+              {isActive && (
+                <div
+                  className={`absolute right-full mr-2 w-6 h-0.5
+                    transition-all duration-300 ${section.color}`}
+                />
+              )}
+
+              {/* Navigation dot */}
+              <Link
+                href={section.path}
+                className={`w-3 h-3 rounded-full transition-all duration-300
+                  ${isActive
+                    ? `scale-125 ${section.color}`
+                    : 'bg-white/50 hover:bg-white/80'
+                  }
+                  hover:scale-125`}
+                aria-label={section.label}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*-|================================================================================|-*/
+
+/*-= src/components/EnhancedParallaxNavigation.tsx =-*/
+/*-= Enhanced Parallax Navigation =-*/
+/*-=========================================================================
+The new navigation features:
+   • Visual feedback for the active section
+   • Hover labels showing section names
+   • Animated indicator lines
+   • Smooth scrolling to sections
+   • Automatic section detection using Intersection Observer
+   • Gradient colors matching your sections
+   • Responsive design that works with your existing layout
+===========================================================================-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
 # src/components/home/FullHeightSection.tsx
 
 ```tsx
@@ -12541,54 +14526,6 @@ export function ImageUpload({ onUploadComplete, existingUrl }: ImageUploadProps)
   )
 }
 
-```
-
-# src/components/ImageWithFallback.tsx
-
-```tsx
-/*-= src/components/ImageWithFallback.tsx =-*/
-'use client'
-import { useState } from 'react'
-import Image from 'next/image'
-import { ImageOff } from 'lucide-react'
-
-interface ImageWithFallbackProps {
-  src: string
-  alt: string
-  className?: string
-  priority?: boolean
-}
-
-export function ImageWithFallback({
-  src,
-  alt,
-  className = '',
-  priority = false
-}: ImageWithFallbackProps) {
-  const [error, setError] = useState(false)
-
-  if (error) {
-    return (
-      <div className={`flex items-center justify-center bg-gray-900 ${className}`}>
-        <ImageOff className="text-gray-600" size={48} />
-      </div>
-    )
-  }
-
-  return (
-    <div className={`relative ${className}`}>
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        className="object-cover"
-        onError={() => setError(true)}
-        priority={priority}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      />
-    </div>
-  )
-}
 ```
 
 # src/components/lazy-load-components/LazyLoadComponent.tsx
@@ -14386,46 +16323,6 @@ export default MultiStepModal;
 
 
 
-```
-
-# src/components/modal-components/ProgressRing.tsx
-
-```tsx
-import React from 'react'
-import Image from 'next/image'
-import ModalContentTemplate from "./ModalContentTemplate"
-
-const ProgressRing = () => {
-  return (
-   <ModalContentTemplate
-      title="Creating the circular SVG"
-      subtitle="Using Figma or other vector based apps"
-      imageUrl="/assets/Screenshot-CircularLoader-SaveSVG.png"
-      altText="Select the illustration, right click on it, Copy/Paste as, Copy as SVG"
-   />
-
-  )
-}
-
-export default ProgressRing
-```
-
-# src/components/modal-components/Spinner.js
-
-```js
-"use client";
-
-const Spinner = () => {
-
-
-  return (
-    <>
-  <h1>Spinner</h1>
-    </>
-  );
-};
-
-export default Spinner;
 ```
 
 # src/components/parallax/ParallaxSection.tsx
@@ -20315,48 +22212,9 @@ const Parallax5: React.FC = () => {
 export default Parallax5;
 ```
 
-# src/components/parallaxScroll/ParallaxScroll.tsx
+# src/components/ParallaxNavigation.tsx
 
 ```tsx
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -20450,306 +22308,117 @@ export default Parallax5;
 /*-|================================================================================|-*/
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
-/*-= Parallax Component with Fixed Width • 5 =-*/
-/*-= This is a modified version of the "Fixed Parallax Component with Stacked Third Section • 2" =-*/
+/*-= src/components/ParallaxNavigation.tsx =-*/
 /*-=========================================================================
-Key changes made:
-Added explicit width: 100vw to all sections
-Used left: 50% and transform: translateX(-50%) to center the sections properly
-Added explicit margin and padding resets
-Used right/left/top positioning instead of just width/height
-Kept the 200vh height for the third section as you mentioned it works better
+Prompt:
+Still nope! It select the first dot for a milliseconds then hilite the last dot.
+
+Let's try a different approach by detecting which section is actually visible on initial load instead of trying to skip observations. Here's the modified version:
+
+The key changes:
+
+Added findVisibleSection function to check what's actually visible in the viewport on load
+Set initial active section based on the visible section
+Maintains the same scroll behavior after initial load
+
+This should correctly identify and highlight the first dot when the page loads because the first section will be visible in the viewport.
 ===========================================================================-*/
 'use client';
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Image from 'next/image';
 
-gsap.registerPlugin(ScrollTrigger);
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
-export default function ParallaxScroll() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const section1Ref = useRef<HTMLDivElement>(null);
-  const section2Ref = useRef<HTMLDivElement>(null);
-  const section3Ref = useRef<HTMLDivElement>(null);
+export function ParallaxNavigation() {
+  const [activeSection, setActiveSection] = useState('web');
+  const pathname = usePathname();
+
+  const sections = [
+    { id: 'web', index: 0, label: 'Web Dev', path: '/portfolio/web-development', color: 'bg-accent-500' },
+    { id: 'ui', index: 1, label: 'UI Design', path: '/portfolio/ui-design', color: 'bg-secondary-500' },
+    { id: 'multimedia', index: 2, label: 'Multimedia', path: '/portfolio/multimedia', color: 'bg-success-500' }
+  ];
 
   useEffect(() => {
-    if (!containerRef.current) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-        pin: true,
-      },
-    });
+    const section = sections.find(s => pathname === s.path);
+    if (section) {
+      setActiveSection(section.id);
+      return;
+    }
 
 
-    tl.to(section1Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    });
-
-
-    tl.to(section2Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    }, '>');
-
-
-    tl.to(section3Ref.current, {
-      yPercent: -100,
-      ease: 'none',
-    }, '>');
-
-    return () => {
-      tl.kill();
-      ScrollTrigger.getAll().forEach(t => t.kill());
+    const findVisibleSection = () => {
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= window.innerHeight/2 && rect.bottom >= window.innerHeight/2) {
+            return section.id;
+          }
+        }
+      }
+      return 'web';
     };
-  }, []);
+
+
+    setActiveSection(findVisibleSection());
+
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const sectionId = entry.target.id;
+          const currentIndex = sections.find(s => s.id === sectionId)?.index || 0;
+
+          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+
+            const nextSection = sections[currentIndex + 1];
+            if (nextSection) {
+              setActiveSection(nextSection.id);
+            }
+          } else if (entry.isIntersecting) {
+
+            setActiveSection(sectionId);
+          }
+        });
+      },
+      {
+        threshold: [0, 1],
+        rootMargin: '-20px 0px -20px 0px'
+      }
+    );
+
+    sections.forEach(section => {
+      const element = document.getElementById(section.id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, [pathname]);
 
   return (
-    <div ref={containerRef}
-      className="myMainContainer relative h-[400vh] w-full overflow-hidden"
-      style={{ margin: 0, padding: 0 }}
-    >
-      {/* First Section */}
-      <div ref={section1Ref}
-        className="firstContainwer fixed top-0 right-0 left-0 h-screen bg-black z-30"
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        <Image
-          src="/assets/images/first.webp"
-          alt="First Section"
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-
-      {/* Second Section */}
-      <div
-        ref={section2Ref}
-        className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        <Image
-          src="/assets/images/second.webp"
-          alt="Second Section"
-          fill
-          className="object-cover"
-        />
-      </div>
-
-      {/* Third Section - Stacked Images */}
-      <div
-        ref={section3Ref}
-        className="fixed top-0 right-0 left-0 h-[200vh] z-10"
-        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-      >
-        {[
-          '/assets/images/third.webp',
-          '/assets/images/fourth.webp',
-          '/assets/images/fifth.webp'
-        ].map((src, index) => (
-          <div
-            key={index}
-            className="absolute top-0 right-0 left-0 h-screen bg-black"
-            style={{ top: `${index * 100}vh`, margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-          >
-            <Image
-              src={src}
-              alt={`Third Section Image ${index + 1}`}
-              fill
-              className="object-cover"
-            />
+    <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6">
+      {sections.map((section) => (
+        <div key={section.id} className="group relative flex items-center">
+          <div className="absolute right-full mr-4 px-2 py-1 rounded
+            bg-black/80 text-white text-sm opacity-0 group-hover:opacity-100
+            transition-opacity whitespace-nowrap">
+            {section.label}
           </div>
-        ))}
-      </div>
+
+          <Link
+            href={section.path}
+            className={`w-3 h-3 rounded-full transition-all duration-300
+              ${activeSection === section.id
+                ? `w-4 h-4 ${section.color}`
+                : 'bg-white/50 hover:bg-white/80'}`}
+            aria-label={section.label}
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -20984,7 +22653,6 @@ export default function ParallaxScroll() {
 
 
 
-/*-|================================================================================|-*/
 
 
 
@@ -21101,564 +22769,951 @@ export default function ParallaxScroll() {
 
 
 
-/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/parallaxScroll/ParallaxScroll.tsx
+
+```tsx
 /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
-/*-= Fixed Parallax Component • 1 =-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/portfolio/HeroSection.tsx
-
-```tsx
-/* src/components/portfolio/HeroSection.tsx */
-'use client'
-import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import Image from 'next/image'
-
-export function HeroSection() {
-   const sectionRef = useRef<HTMLElement>(null)
-   const headingRef = useRef<HTMLHeadingElement>(null)
-   const imageRef = useRef<HTMLDivElement>(null)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   useEffect(() => {
-      const mm = gsap.matchMedia();
-
-
-      mm.add("(min-width: 768px)", () => {
-         gsap.to(imageRef.current, {
-            yPercent: 50,
-            ease: 'none',
-            scrollTrigger: {
-               trigger: sectionRef.current,
-               start: 'top top',
-               end: 'bottom top',
-               scrub: true
-            }
-         });
-
-         gsap.from(headingRef.current, {
-            y: 100,
-            opacity: 0,
-            duration: 1.5,
-            scrollTrigger: {
-               trigger: headingRef.current,
-               start: 'top center',
-               toggleActions: 'play none none reverse'
-            }
-         });
-      });
-
-
-      mm.add("(max-width: 767px)", () => {
-         gsap.to(imageRef.current, {
-            yPercent: 30,
-            ease: 'none',
-            scrollTrigger: {
-               trigger: sectionRef.current,
-               start: 'top top',
-               end: 'bottom top',
-               scrub: true
-            }
-         });
-
-         gsap.from(headingRef.current, {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            scrollTrigger: {
-               trigger: headingRef.current,
-               start: 'top center+=100',
-               toggleActions: 'play none none reverse'
-            }
-         });
-      });
-
-      return () => mm.revert();
-   }, []);
-
-   return (
-      <section
-         ref={sectionRef}
-         className="relative h-screen overflow-hidden"
-      >
-         <div
-            ref={imageRef}
-            className="absolute inset-0 w-full h-[120%]"
-         >
-            <Image
-               src="/assets/bonsaiLightBg.webp"
-               alt="Hero Background"
-               fill
-               className="object-cover"
-               priority
-            />
-         </div>
-
-         <div className="relative z-10 flex items-center justify-center h-full">
-            <h1
-               ref={headingRef}
-               className="text-6xl font-bold text-accent-500 text-center"
-            >
-               Welcome to My Portfolio
-            </h1>
-         </div>
-      </section>
-   )
-}
-
-
-```
-
-# src/components/portfolio/ParallaxSection.tsx
-
-```tsx
-/* src/components/portfolio/ParallaxSection.tsx */
+/*-= ParallaxScroll with Lenis =-*/
+/*-=========================================================================
+Key changes made:
+Added Lenis initialization with custom configuration
+Connected Lenis to GSAP's requestAnimationFrame loop
+Added proper cleanup in the useEffect hook
+Maintained all our existing functionality including:
+   - The myMainContainer class fix
+   - The h-[200vh] height for the third section
+   - All the section content and animations
+Added the ParallaxNavigation component : 12.17.2024
+===========================================================================-*/
 'use client';
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from '@studio-freight/lenis';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ParallaxNavigation } from '../ParallaxNavigation';
+import EnhancedParallaxNavigation from '../EnhancedParallaxNavigation';
 
-export function ParallaxSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+gsap.registerPlugin(ScrollTrigger);
 
-  useEffect(() => {
-    const mm = gsap.matchMedia();
+export default function ParallaxScroll() {
+   const containerRef = useRef<HTMLDivElement>(null);
+   const section1Ref = useRef<HTMLDivElement>(null);
+   const section2Ref = useRef<HTMLDivElement>(null);
+   const section3Ref = useRef<HTMLDivElement>(null);
+   const lenisRef = useRef<Lenis | null>(null);
 
+   useEffect(() => {
 
-    mm.add("(min-width: 768px)", () => {
-      gsap.to(sectionRef.current, {
-        backgroundPosition: '50% 50%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-          pin: true
-        }
+      lenisRef.current = new Lenis({
+         duration: 1.2,
+         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+         orientation: 'vertical',
+         gestureOrientation: 'vertical',
+         smoothWheel: true,
+         wheelMultiplier: 1,
+
+         touchMultiplier: 2,
       });
-    });
 
 
-    mm.add("(max-width: 767px)", () => {
-      gsap.to(sectionRef.current, {
-        backgroundPosition: '50% 30%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-          pin: false
-        }
+      function raf(time: number) {
+         lenisRef.current?.raf(time);
+         requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+
+      if (!containerRef.current) return;
+
+      const tl = gsap.timeline({
+         scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1,
+            pin: true,
+         },
       });
-    });
 
-    return () => mm.revert();
-  }, []);
+      tl.to(section1Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      });
 
-  return (
+      tl.to(section2Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      }, '>');
 
-  );
+      tl.to(section3Ref.current, {
+         yPercent: -100,
+         ease: 'none',
+      }, '>');
+
+
+      return () => {
+         lenisRef.current?.destroy();
+         tl.kill();
+         ScrollTrigger.getAll().forEach(t => t.kill());
+      };
+   }, []);
+
+   return (
+      <>
+         <ParallaxNavigation />
+         {/* <EnhancedParallaxNavigation /> */}
+         <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
+            {/* First Section */}
+            <div
+               id="web"
+               ref={section1Ref}
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               <div className="relative h-full">
+                  <Image
+                     src="/assets/images/first.webp"
+                     alt="Web Development"
+                     fill
+                     className="object-cover"
+                     priority
+                  />
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
+                        Creating modern, responsive web applications with cutting-edge technologies.
+                     </p>
+                     <Link
+                        href="/portfolio/web-development"
+                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        View Projects
+                     </Link>
+                  </div>
+               </div>
+            </div>
+
+            {/* Second Section */}
+            <div
+               id="ui"
+               ref={section2Ref}
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               <div className="relative h-full">
+                  <Image
+                     src="/assets/images/second.webp"
+                     alt="UI Design"
+                     fill
+                     className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+                        Crafting beautiful user interfaces that deliver exceptional experiences.
+                     </p>
+                     <Link
+                        href="/portfolio/ui-design"
+                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        See Designs
+                     </Link>
+                  </div>
+               </div>
+            </div>
+
+            {/* Third Section with Multiple Images */}
+            <div
+               id="multimedia"
+               ref={section3Ref}
+               className="fixed top-0 right-0 left-0 h-[200vh] z-10"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               {[
+                  {
+                     src: '/assets/images/third.webp',
+                     title: 'Video Editing',
+                     description: 'Professional video editing and post-production services.',
+                     link: '/portfolio/multimedia/video'
+                  },
+                  {
+                     src: '/assets/images/fourth.webp',
+                     title: 'Motion Graphics',
+                     description: 'Engaging motion graphics and visual effects.',
+                     link: '/portfolio/multimedia/motion'
+                  },
+                  {
+                     src: '/assets/images/fifth.webp',
+                     title: 'Sound Design',
+                     description: 'Immersive audio experiences and sound engineering.',
+                     link: '/portfolio/multimedia/sound'
+                  }
+               ].map((item, index) => (
+                  <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
+                     style={{ top: `${index * 100}vh` }}>
+                     <div className="relative h-full">
+                        <Image
+                           src={item.src}
+                           alt={item.title}
+                           fill
+                           className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                           <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+                           <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+                              {item.description}
+                           </p>
+                           <Link
+                              href={item.link}
+                              className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                           >
+                              Learn More
+                           </Link>
+                        </div>
+                     </div>
+                  </div>
+               ))}
+            </div>
+         </div>
+      </>
+
+   );
 }
+/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/components/portfolio/PortfolioLayout.tsx
 
 ```tsx
-/* src/components/portfolio/PortfolioLayout.tsx */
-'use client'
-import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Lenis from '@studio-freight/lenis'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export default function PortfolioLayout({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<Lenis | null>(null)
-
-  useEffect(() => {
-
-    lenisRef.current = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-    })
 
 
-    gsap.ticker.add((time) => {
-      lenisRef.current?.raf(time * 1000)
-    })
 
 
-    return () => {
-      lenisRef.current?.destroy()
-      gsap.ticker.remove((time) => {
-        lenisRef.current?.raf(time * 1000)
-      })
-    }
-  }, [])
-
-  return <div className="portfolio-container">{children}</div>
-}
 
 
-```
-
-# src/components/portfolio/ProjectCard.tsx
-
-```tsx
-/* src/components/portfolio/ProjectCard.tsx */
-'use client';
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-
-export function ProjectCard() {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const mm = gsap.matchMedia();
 
 
-    mm.add("(min-width: 768px)", () => {
-      gsap.from(cardRef.current, {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        scrollTrigger: {
-          trigger: cardRef.current,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none reverse'
-        }
-      });
-    });
 
 
-    mm.add("(max-width: 767px)", () => {
-      gsap.from(cardRef.current, {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: cardRef.current,
-          start: 'top bottom',
-          toggleActions: 'play none none reverse'
-        }
-      });
-    });
-
-    return () => mm.revert();
-  }, []);
-
-  return (
-
-  );
-}
-```
-
-# src/components/portfolio/ProjectSection.tsx
-
-```tsx
-/* src/components/portfolio/ProjectSection.tsx */
-'use client'
-import { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-
-export function ProjectSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return
 
 
-    gsap.from(section.children, {
-      y: 100,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.2,
-      scrollTrigger: {
-        trigger: section,
-        start: 'top center+=100',
-        end: 'bottom center',
-        toggleActions: 'play none none reverse'
-      }
-    })
-  }, [])
 
-  return (
-    <section
-      ref={sectionRef}
-      className="py-20 bg-gray-100 dark:bg-gray-900"
-    >
-      {/* Add your project cards/content here */}
-    </section>
-  )
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```
@@ -23965,46 +26020,6 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 export const supabaseClient = createClientComponentClient()
 ```
 
-# src/lib/portfolio-theme.ts
-
-```ts
-/*-= src/styles/theme.ts : originall from Portfolio 2025 =-*/
-
-export type {
-   ThemeMode,
-   ColorWithShades,
-   ColorShades,
-   BorderColors,
-   ColorPalette,
-   Typography,
-   Theme
- } from './types'
-
- export {
-   colors,
-   baseTheme,
-   lightTheme,
-   darkTheme,
-   theme,
-   getColor,
-   getBackgroundColor,
-   getTextColor,
-   getBorderColor,
-   getFontFamily,
-   getFontWeight,
-   getFontSize,
-   applyFontStyle
- } from './theme-config'
-
-
-
-
-
-
-
-
-```
-
 # src/lib/supabase.ts
 
 ```ts
@@ -24105,490 +26120,6 @@ export const blogApi = {
 
       return true
    }
-}
-
-```
-
-# src/lib/theme-config.ts
-
-```ts
-
-
-
-
-
-
-
-import {
-   ThemeMode,
-   ColorWithShades,
-   ColorShades,
-   BorderColors,
-
-
-   Theme
-} from "./portfolio-theme";
-
-type HeadingSizes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-type BodySizes = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
-
-
-export const baseTheme = {
-   typography: {
-      heading: {
-         fontFamily: '"Libre Baskerville", serif',
-         weights: {
-            regular: 400,
-            medium: 500,
-            bold: 700
-         },
-         sizes: {
-            h1: '2.5rem',
-            h2: '2rem',
-            h3: '1.75rem',
-            h4: '1.5rem',
-            h5: '1.25rem',
-            h6: '1rem'
-         }
-      },
-      body: {
-         fontFamily: '"Open Sans", sans-serif',
-         weights: {
-            regular: 400,
-            medium: 500,
-            bold: 700
-         },
-         sizes: {
-            xs: '0.75rem',
-            sm: '0.875rem',
-            base: '1rem',
-            lg: '1.125rem',
-            xl: '1.25rem'
-         }
-      }
-   }
-} as const;
-
-
-export const colors = {
-   primary: {
-      100: '#EBE5F6',
-      200: '#D7CCED',
-      300: '#C3B2E3',
-      400: '#AF99DA',
-      500: '#8465C3',
-      600: '#6A51C0',
-      700: '#503DBD',
-      800: '#3629BA',
-      900: '#1C15B7'
-
-   },
-   secondary: {
-      100: '#E6FEFF',
-      200: '#CCFEFF',
-      300: '#B3FDFF',
-      400: '#99FCFF',
-      500: '#3AF1F9',
-      600: '#2ED8E0',
-      700: '#22BFC6',
-      800: '#16A6AD',
-      900: '#0A8D93'
-   },
-   accent: {
-      100: '#FFE9E3',
-      200: '#FFD3C8',
-      300: '#FFBDAC',
-      400: '#FFA791',
-      500: '#F46A47',
-      600: '#DB503D',
-      700: '#C23633',
-      800: '#A91C29',
-      900: '#90021F'
-   },
-   success: {
-      100: '#F0F7E6',
-      200: '#E1EFCC',
-      300: '#D2E7B3',
-      400: '#C3DF99',
-      500: '#A2C465',
-      600: '#88AB4B',
-      700: '#6F9231',
-      800: '#557917',
-      900: '#3C5F00'
-   },
-   warning: {
-      100: '#FFF5EB',
-      200: '#FFEBD7',
-      300: '#FFE1C3',
-      400: '#FFD7AF',
-      500: '#FAD8B4',
-      600: '#E1BF9A',
-      700: '#C8A680',
-      800: '#AF8D66',
-      900: '#96744C'
-   },
-   danger: {
-      100: '#FFE5E8',
-      200: '#FFCCD1',
-      300: '#FFB2BA',
-      400: '#FF99A3',
-      500: '#F5536A',
-      600: '#DC3950',
-      700: '#C21F36',
-      800: '#A9051C',
-      900: '#900002'
-   },
-   gray: {
-      100: '#F7F7F7',
-      200: '#E6E6E6',
-      300: '#D5D5D5',
-      400: '#C4C4C4',
-      500: '#676767',
-      600: '#525252',
-      700: '#3D3D3D',
-      800: '#282828',
-      900: '#131313'
-   },
-
-   border: {
-      light: {
-         primary: '#0F66AF'
-      },
-      dark: {
-         primary: '#0D94A0'
-      }
-   }
-};
-
-
-export const lightTheme: Theme = {
-   isDarkTheme: false,
-   colors: {
-      ...colors,
-      backgrounds: {
-         light: '#EBE5F6',
-         dark: '#121212',
-         nav: 'rgba(255, 255, 255, 0.8)'
-      },
-      text: {
-         light: {
-            primary: 'red',
-            secondary: 'yellow',
-            accent: 'magenta',
-            disabled: '#CCCCCC',
-            svgColor1: "red",
-            svgColor2: "blue",
-            svgColor3: "magenta",
-            svgColor4: "cyan",
-            svgColor5: "green",
-         },
-         dark: {
-            primary: '',
-            secondary: '',
-            accent: '',
-            svgColor1: "",
-            svgColor2: "",
-            svgColor3: "",
-            svgColor4: "",
-            svgColor5: "",
-            disabled: ''
-         }
-      },
-      border: colors.border
-   },
-   typography: baseTheme.typography,
-   sizes: {
-      navHeight: '80px'
-   },
-   navBackground: 'rgba(255, 255, 255, 0.8)',
-   textSecondary: '#8F8F8F',
-   border: '#E5E7EB',
-   error: '#DC2626'
-};
-
-export const darkTheme: Theme = {
-   isDarkTheme: true,
-   colors: {
-      ...colors,
-      backgrounds: {
-         light: '#121212',
-         dark: '#000000',
-
-         nav: "#C21F36"
-      },
-      text: {
-         light: {
-            primary: '',
-            secondary: '',
-            accent: '',
-            svgColor1: "",
-            svgColor2: "",
-            svgColor3: "",
-            svgColor4: "",
-            svgColor5: "",
-            disabled: ''
-         },
-         dark: {
-            primary: 'yellowGreen',
-
-            secondary: '#0d94a0cc',
-            accent: 'yellowgreen',
-            disabled: '#6E6E6E',
-            svgColor1: "#C4C4C4",
-            svgColor2: "#900002",
-            svgColor3: "#6F9231",
-            svgColor4: "orange",
-            svgColor5: "green",
-         }
-      },
-      border: colors.border
-   },
-   typography: baseTheme.typography,
-   sizes: {
-      navHeight: '80px'
-   },
-   navBackground: "#FAD8B4",
-   textSecondary: '#E0E0E0',
-   border: '#374151',
-   error: '#EF4444'
-};
-
-
-export const theme = lightTheme;
-
-
-
-
-
-
-
-export const getColor = (
-   colorName: ColorWithShades,
-   shade: keyof ColorShades = 500
-): string => {
-   const color = theme.colors[colorName];
-
-   if (!isColorShades(color)) {
-      throw new Error(`Color ${colorName} does not have shades`);
-   }
-   return color[shade];
-};
-
-
-
-
-
-const isColorShades = (color: unknown): color is ColorShades => {
-   return typeof color === 'object' &&
-      color !== null &&
-      '500' in color;
-};
-
-
-
-
-
-export const getBackgroundColor = (
-   mode: ThemeMode,
-   type: 'default' | 'nav' = 'default'
-): string => {
-   if (type === 'nav') {
-      return theme.colors.backgrounds.nav;
-   }
-   return theme.colors.backgrounds[mode];
-};
-
-export const getTextColor = (
-   mode: ThemeMode,
-   variant: "primary" | "secondary" | "disabled"
-): string => {
-   return theme.colors.text[mode][variant];
-};
-
-export const getBorderColor = (mode: ThemeMode, variant: keyof BorderColors): string => {
-   return theme.colors.border[mode][variant];
-};
-
-export const getFontFamily = (
-   type: "heading" | "body"
-): string => {
-   return theme.typography[type].fontFamily;
-};
-
-export const getFontWeight = (
-   type: "heading" | "body",
-   weight: "regular" | "medium" | "bold"
-): number => {
-   return theme.typography[type].weights[weight];
-};
-
-export const getFontSize = (
-   type: "heading" | "body",
-   size: HeadingSizes | BodySizes
-): string => {
-   if (type === "heading" && isHeadingSize(size)) {
-      return theme.typography.heading.sizes[size];
-   }
-   if (type === "body" && isBodySize(size)) {
-      return theme.typography.body.sizes[size];
-   }
-   throw new Error(`Invalid size ${size} for type ${type}`);
-};
-
-
-const isHeadingSize = (size: HeadingSizes | BodySizes): size is HeadingSizes => {
-   return ["h1", "h2", "h3", "h4", "h5", "h6"].includes(size);
-};
-
-const isBodySize = (size: HeadingSizes | BodySizes): size is BodySizes => {
-   return ["xs", "sm", "base", "lg", "xl"].includes(size);
-};
-
-
-export const applyFontStyle = (type: "heading" | "body", weight: "regular" | "medium" | "bold", size: HeadingSizes | BodySizes): string => {
-   return `
-    font-family: ${getFontFamily(type)};
-    font-weight: ${getFontWeight(type, weight)};
-    font-size: ${getFontSize(type, size)};
-  `;
-};
-
-```
-
-# src/lib/types.ts
-
-```ts
-export interface BaseInterface {
-   someProperty: string;
-
- }
-
-export type ThemeMode = 'light' | 'dark';
-
-
-export type ColorWithShades = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'danger' | 'gray';
-
-
-export interface ColorShades {
-   100: string;
-   200: string;
-   300: string;
-   400: string;
-   500: string;
-   600: string;
-   700: string;
-   800: string;
-   900: string;
-}
-
-export interface BorderColors {
-   primary: string;
-
-
-
- }
-
-export interface ColorPalette {
-   primary: ColorShades;
-   secondary: ColorShades;
-   accent: ColorShades;
-   success: ColorShades;
-   warning: ColorShades;
-   danger: ColorShades;
-   gray: ColorShades;
-   backgrounds: {
-      light: string;
-      dark: string;
-      nav: string;
-   };
-   text: {
-      light: {
-         primary: string;
-         secondary: string;
-         accent: string;
-         disabled: string;
-         svgColor1: string;
-         svgColor2: string;
-         svgColor3: string;
-         svgColor4: string;
-         svgColor5: string;
-      };
-      dark: {
-         primary: string;
-         secondary: string;
-         accent: string;
-         disabled: string;
-         svgColor1: string;
-         svgColor2: string;
-         svgColor3: string;
-         svgColor4: string;
-         svgColor5: string;
-      };
-   };
-   border: {
-      light: BorderColors;
-      dark: BorderColors;
-    }
-}
-
-export interface Typography {
-   heading: {
-      fontFamily: string;
-      weights: {
-         regular: number;
-         medium: number;
-         bold: number;
-      };
-      sizes: {
-         h1: string;
-         h2: string;
-         h3: string;
-         h4: string;
-         h5: string;
-         h6: string;
-      };
-   };
-   body: {
-      fontFamily: string;
-      weights: {
-         regular: number;
-         medium: number;
-         bold: number;
-      };
-      sizes: {
-         xs: string;
-         sm: string;
-         base: string;
-         lg: string;
-         xl: string;
-      };
-   };
-}
-
-export interface Theme {
-   isDarkTheme: boolean;
-   colors: ColorPalette;
-
-
-
-
-
-
-   typography: Typography;
-   sizes: {
-      navHeight: string;
-   };
-   navBackground: string;
-   textSecondary: string;
-
-   border: string;
-
-
-
-
-   error: string;
-   backgroundColor?: string;
-   backgroundBlendMode?: string;
 }
 
 ```

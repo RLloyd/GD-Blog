@@ -1,20 +1,24 @@
 
 /*-= src/app/portfolio/page.tsx =-*/
-import React from 'react'
+// import React from 'react'
 // import { PortfolioSection } from './layout'
 import { PortfolioSection } from '../layout'
 import ParallaxScroll from '@/components/parallaxScroll/ParallaxScroll'
 
-const page = () => {
+export default function PortfolioPage() {
+   return (
+     <PortfolioSection>
+       <ParallaxScroll />
+     </PortfolioSection>
+   );
+ }
 
-  return (
-
-   <PortfolioSection>
-      <ParallaxScroll />
-   </PortfolioSection>
-
-  )
-}
-
-export default page
+// const page = () => {
+//   return (
+//    <PortfolioSection>
+//       <ParallaxScroll />
+//    </PortfolioSection>
+//   )
+// }
+// export default page
 
