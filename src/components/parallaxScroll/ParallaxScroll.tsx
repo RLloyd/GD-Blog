@@ -12,14 +12,13 @@ Maintained all our existing functionality including:
 Added the ParallaxNavigation component : 12.17.2024
 ===========================================================================-*/
 'use client';
-import { useEffect, useRef } from 'react';
+import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { ParallaxNavigation } from '../ParallaxNavigation';
-import EnhancedParallaxNavigation from '../EnhancedParallaxNavigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -106,7 +105,7 @@ export default function ParallaxScroll() {
                      className="object-cover"
                      priority
                   />
-                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                  <div data-component="sectionFirstOverlayContainer" className="absolute inset-0 bg-orange-500/50 flex flex-col items-center justify-center text-white">
                      <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
                         Creating modern, responsive web applications with cutting-edge technologies.
@@ -135,7 +134,7 @@ export default function ParallaxScroll() {
                      fill
                      className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                  <div data-component="sectionSecondOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
                      <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                         Crafting beautiful user interfaces that deliver exceptional experiences.
@@ -186,7 +185,14 @@ export default function ParallaxScroll() {
                            fill
                            className="object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                        {/* <div data-component="sectionThirdtOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white"> */}
+                        <div data-component="sectionThirdtOverlayContainer"
+                           className="absolute inset-0
+                              bg-linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent)
+                              flex flex-col items-center justify-center
+                              text-white"
+                              >
+                           {/* <div className="h-10 bg-gradient-to-b from-red-500 to-blue-500"></div> */}
                            <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                               {item.description}

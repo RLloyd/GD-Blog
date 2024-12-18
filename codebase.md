@@ -1744,13 +1744,133 @@ xxx
 # public/notes/misc2.tsx
 
 ```tsx
-/*-= src/components/xxx.tsx =-*/
-/*-=========================================================================
+/*-= src/components/ParallaxNavigation.tsx =-*/
+/*-= Scroll Position Based ParallaxNavigation =-*/
+/*-============================================================
 Prompt:
+We tried this solution before using threshold & rootMargin. It didn't work because the third section is so much longer than the other section.
+Right now the second hilter is delayed by a bit and third dot hiliter is delayed by a lot.
 
-===========================================================================-*/
+You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:
+Key changes:
 
-/*-|================================================================================|-*/
+Switched from IntersectionObserver to scroll position calculations
+Uses a scroll listener with absolute positions to determine the active section
+Calculates section boundaries based on their actual positions in the document
+Determines active section based on where viewport midpoint intersects with sections
+Uses passive scroll listener for better performance
+
+This approach should:
+
+Start with first dot highlighted
+Update dots with minimal delay as you scroll through sections
+Work correctly with the longer third section
+Be more responsive to scroll position changes
+
+The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
+================================================================-*/
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+
+export function ParallaxNavigation() {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const pathname = usePathname();
+
+  const sections = [
+    { id: 'web', index: 0, label: 'Web Dev', path: '/portfolio/web-development', color: 'bg-accent-500' },
+    { id: 'ui', index: 1, label: 'UI Design', path: '/portfolio/ui-design', color: 'bg-secondary-500' },
+    { id: 'multimedia', index: 2, label: 'Multimedia', path: '/portfolio/multimedia', color: 'bg-success-500' }
+  ];
+
+  useEffect(() => {
+
+    const pathSection = sections.find(s => pathname === s.path);
+    if (pathSection) {
+      setActiveSection(pathSection.id);
+      return;
+    }
+
+
+    setActiveSection(sections[0].id);
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+
+        let maxVisibility = 0;
+        let mostVisibleSection = null;
+
+        entries.forEach((entry) => {
+          const intersectionRatio = entry.intersectionRatio;
+          if (intersectionRatio > maxVisibility) {
+            maxVisibility = intersectionRatio;
+            mostVisibleSection = entry.target.id;
+          }
+        });
+
+        if (mostVisibleSection) {
+          setActiveSection(mostVisibleSection);
+        }
+      },
+      {
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+        rootMargin: '-10% 0px -10% 0px'
+      }
+    );
+
+
+    sections.forEach(section => {
+      const element = document.getElementById(section.id);
+      if (element && observerRef.current) {
+        observerRef.current.observe(element);
+      }
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [pathname]);
+
+  return (
+    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
+      <div className="flex flex-col gap-6">
+        {sections.map((section) => (
+          <div key={section.id} className="group relative flex items-center justify-end">
+            {/* Label */}
+            <div className="absolute right-full mr-4 px-2 py-1 rounded-md
+              text-white text-sm whitespace-nowrap bg-gray-900/90
+              transition-opacity duration-200
+              opacity-0 group-hover:opacity-100">
+              {section.label}
+            </div>
+
+            {/* Active indicator line */}
+            {activeSection === section.id && (
+              <div className={`absolute right-full mr-2 w-6 h-0.5
+                transition-all duration-300 ${section.color}`} />
+            )}
+
+            {/* Navigation dot */}
+            <Link
+              href={section.path}
+              className={`w-3 h-3 rounded-full transition-all duration-300
+                ${activeSection === section.id
+                  ? `scale-125 ${section.color}`
+                  : 'bg-white/50 hover:bg-white/80'}`}
+              aria-label={section.label}
+            />
+          </div>
+        ))}
+      </div>
+    </nav>
+  );
+}
+/*-|=================================================================|-*/
 
 ```
 
@@ -4020,6 +4140,158 @@ import "highlight.js/styles/github-dark.css";
 
 ```
 
+# public/project-summaries/Parallax navigation solution.md
+
+```md
+Here's a comprehensive documentation of the parallax navigation solution:
+
+# Building a Smooth Section Navigation for Parallax Scrolling
+
+## The Challenge
+
+When implementing a fixed dot navigation for a parallax scrolling website, we encountered several challenges:
+
+1. Initial State Problem: Navigation needed to start with the first dot highlighted
+2. Timing Issues: Section transitions needed to sync perfectly with scroll position
+3. Variable Section Lengths: The third section was significantly longer than others
+4. Performance Concerns: Navigation updates needed to be smooth and efficient
+
+## The Evolution of Solutions
+
+### Initial Approach: IntersectionObserver
+
+We first tried using IntersectionObserver with thresholds and root margins:
+
+\`\`\`typescript
+new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setActiveSection(entry.target.id);
+      }
+    });
+  },
+  {
+    threshold: [0, 0.25, 0.5, 0.75, 1],
+    rootMargin: '-10% 0px -10% 0px'
+  }
+);
+\`\`\`
+
+This approach had issues:
+- Inconsistent timing with section transitions
+- Struggled with the longer third section
+- Delayed highlighting of navigation dots
+
+### The Solution: Scroll Position Calculation
+
+The winning solution uses scroll position relative to section boundaries:
+
+1. Calculate the viewport's midpoint:
+\`\`\`typescript
+const scrollPosition = window.scrollY + (window.innerHeight * 0.5);
+\`\`\`
+
+2. Get absolute positions of each section:
+\`\`\`typescript
+const absoluteTop = window.scrollY + rect.top;
+const absoluteBottom = absoluteTop + rect.height;
+\`\`\`
+
+3. Determine active section based on scroll position:
+\`\`\`typescript
+if (scrollPosition >= absoluteTop && scrollPosition <= absoluteBottom) {
+  setActiveSection(id);
+  break;
+}
+\`\`\`
+
+## Key Implementation Details
+
+### State Management
+\`\`\`typescript
+const [activeSection, setActiveSection] = useState<string | null>(null);
+\`\`\`
+
+### Section Configuration
+\`\`\`typescript
+const sections = [
+  { id: 'web', label: 'Web Dev', color: 'bg-accent-500' },
+  { id: 'ui', label: 'UI Design', color: 'bg-secondary-500' },
+  { id: 'multimedia', label: 'Multimedia', color: 'bg-success-500' }
+];
+\`\`\`
+
+### Scroll Handler
+\`\`\`typescript
+const handleScroll = () => {
+  const scrollPosition = window.scrollY + (window.innerHeight * 0.5);
+
+  const sectionElements = sections.map(section => ({
+    id: section.id,
+    element: document.getElementById(section.id),
+  }));
+
+  for (const { id, element } of sectionElements) {
+    if (!element) continue;
+
+    const rect = element.getBoundingClientRect();
+    const absoluteTop = window.scrollY + rect.top;
+    const absoluteBottom = absoluteTop + rect.height;
+
+    if (scrollPosition >= absoluteTop && scrollPosition <= absoluteBottom) {
+      setActiveSection(id);
+      break;
+    }
+  }
+};
+\`\`\`
+
+### Performance Optimization
+\`\`\`typescript
+window.addEventListener('scroll', handleScroll, { passive: true });
+\`\`\`
+
+## Benefits of This Approach
+
+1. **Accuracy**: Navigation perfectly syncs with visible sections
+2. **Performance**: Efficient scroll handling with passive listener
+3. **Flexibility**: Works with sections of any length
+4. **Responsiveness**: Immediate updates to navigation state
+5. **Maintainability**: Clear, straightforward code structure
+
+## Best Practices
+
+1. Use passive scroll listeners for better performance
+2. Calculate positions relative to viewport for accuracy
+3. Clean up event listeners on component unmount
+4. Handle both scroll-based and path-based navigation
+5. Provide smooth transitions with CSS
+
+## Visual Feedback Implementation
+
+\`\`\`typescript
+<Link
+  href={section.path}
+  className={`w-3 h-3 rounded-full transition-all duration-300
+    ${activeSection === section.id
+      ? `scale-125 ${section.color}`
+      : 'bg-white/50 hover:bg-white/80'}`}
+  aria-label={section.label}
+/>
+\`\`\`
+
+## Lessons Learned
+
+1. Sometimes simpler solutions (scroll position) work better than complex ones (IntersectionObserver)
+2. Consider edge cases like varying section lengths
+3. Test with real-world content and scroll behaviors
+4. Focus on user experience and smooth transitions
+5. Prioritize performance with optimized event listeners
+
+This solution provides a robust foundation for implementing fixed dot navigation in parallax scrolling websites, with smooth transitions and accurate section tracking.
+```
+
 # public/project-summaries/ParallaxScroll Implementation.md
 
 ```md
@@ -4798,6 +5070,7 @@ This is a binary file of the type: Binary
 	--page-width: 1080px;
    --tw-translate-x: none;
    --tw-translate-y: none;
+   --tw-section-overlay: rgba(255, 0, 0, 0.5);
 }
 
 body {
@@ -4887,66 +5160,8 @@ body {
 
  /* Solved the full screen width issue with GSAP parallax scrolling */
  .myMainContainer {
-   transform: none !important;
+   /* transform: none !important; */
  }
-
-/*
-@layer base {
-	html {
-		min-height: 100vh;
-	}
-
-	body {
-		@apply min-h-screen flex flex-col;
-		@apply bg-primary-50/20 min-h-screen text-primary-900;
-		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
-	}
-
-	main {
-		@apply flex-1;
-	}
-
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
-	}
-
-	h1 {
-		@apply text-4xl mb-6;
-	}
-	h2 {
-		@apply text-3xl mb-5;
-	}
-	h3 {
-		@apply text-2xl mb-4;
-	}
-	h4 {
-		@apply text-xl mb-3;
-	}
-	h5 {
-		@apply text-lg mb-2;
-	}
-	h6 {
-		@apply text-base mb-2;
-	}
-}
-
-.prose {
-	@apply max-w-none;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-	@apply font-baskerville text-primary-600 dark:text-primary-400;
-} */
 
 ```
 
@@ -5005,265 +5220,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 # src/app/page.tsx
 
 ```tsx
-
 /*-= src/app/page.tsx =-*/
-import ParallaxSection from '@/components/parallax/ParallaxSection'
-import HomePage from '@/components/parallax2/HomePage'
-import Parallax from '@/components/parallax3/Parallax3'
-import React from 'react'
-import { PortfolioSection } from './layout'
-import { MultiRevealSection } from '@/components/parallax4/MultiRevealSection'
-import Parallax5 from '@/components/parallax5/Parallax5'
 import ParallaxScroll from '@/components/parallaxScroll/ParallaxScroll'
+import { PortfolioSection } from './layout'
+
+/*** Page component that renders the main portfolio page.
+ * @returns {ReactElement} The main portfolio page component **/
 
 const page = () => {
-
-
-   const sections = [
-      { images: ['/assets/images/first.webp'] },
-      { images: ['/assets/images/second.webp'] },
-
-      { images: ['/assets/images/third.webp', '/assets/images/fourth.webp', '/assets/images/fifth.webp'] },
-   ];
-
-  return (
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   <PortfolioSection>
-      <ParallaxScroll />
-   </PortfolioSection>
-
-
-
-
-  )
+   return (
+      <PortfolioSection>
+         <ParallaxScroll />
+      </PortfolioSection>
+   )
 }
 
 export default page
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ```
@@ -22215,114 +22187,31 @@ export default Parallax5;
 # src/components/ParallaxNavigation.tsx
 
 ```tsx
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*-|================================================================================|-*/
-
-
 /*-= src/components/ParallaxNavigation.tsx =-*/
-/*-=========================================================================
+/*-= Scroll Position Based ParallaxNavigation =-*/
+/*-============================================================
 Prompt:
-Still nope! It select the first dot for a milliseconds then hilite the last dot.
+We tried this solution before using threshold & rootMargin. It didn't work because the third section is so much longer than the other section.
+Right now the second hilter is delayed by a bit and third dot hiliter is delayed by a lot.
 
-Let's try a different approach by detecting which section is actually visible on initial load instead of trying to skip observations. Here's the modified version:
+You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:
+Key changes:
 
-The key changes:
+Switched from IntersectionObserver to scroll position calculations
+Uses a scroll listener with absolute positions to determine the active section
+Calculates section boundaries based on their actual positions in the document
+Determines active section based on where viewport midpoint intersects with sections
+Uses passive scroll listener for better performance
 
-Added findVisibleSection function to check what's actually visible in the viewport on load
-Set initial active section based on the visible section
-Maintains the same scroll behavior after initial load
+This approach should:
 
-This should correctly identify and highlight the first dot when the page loads because the first section will be visible in the viewport.
-===========================================================================-*/
+Start with first dot highlighted
+Update dots with minimal delay as you scroll through sections
+Work correctly with the longer third section
+Be more responsive to scroll position changes
+
+The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
+================================================================-*/
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22330,7 +22219,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 export function ParallaxNavigation() {
-  const [activeSection, setActiveSection] = useState('web');
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const pathname = usePathname();
 
   const sections = [
@@ -22341,103 +22230,80 @@ export function ParallaxNavigation() {
 
   useEffect(() => {
 
-    const section = sections.find(s => pathname === s.path);
-    if (section) {
-      setActiveSection(section.id);
+    const pathSection = sections.find(s => pathname === s.path);
+    if (pathSection) {
+      setActiveSection(pathSection.id);
       return;
     }
 
 
-    const findVisibleSection = () => {
-      for (const section of sections) {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= window.innerHeight/2 && rect.bottom >= window.innerHeight/2) {
-            return section.id;
-          }
+    setActiveSection(sections[0].id);
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + (window.innerHeight * 0.5);
+
+
+      const sectionElements = sections.map(section => ({
+        id: section.id,
+        element: document.getElementById(section.id),
+      }));
+
+
+      for (const { id, element } of sectionElements) {
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        const absoluteTop = window.scrollY + rect.top;
+        const absoluteBottom = absoluteTop + rect.height;
+
+        if (scrollPosition >= absoluteTop && scrollPosition <= absoluteBottom) {
+          setActiveSection(id);
+          break;
         }
       }
-      return 'web';
     };
 
 
-    setActiveSection(findVisibleSection());
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
 
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const sectionId = entry.target.id;
-          const currentIndex = sections.find(s => s.id === sectionId)?.index || 0;
-
-          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-
-            const nextSection = sections[currentIndex + 1];
-            if (nextSection) {
-              setActiveSection(nextSection.id);
-            }
-          } else if (entry.isIntersecting) {
-
-            setActiveSection(sectionId);
-          }
-        });
-      },
-      {
-        threshold: [0, 1],
-        rootMargin: '-20px 0px -20px 0px'
-      }
-    );
-
-    sections.forEach(section => {
-      const element = document.getElementById(section.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [pathname]);
 
   return (
-    <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6">
-      {sections.map((section) => (
-        <div key={section.id} className="group relative flex items-center">
-          <div className="absolute right-full mr-4 px-2 py-1 rounded
-            bg-black/80 text-white text-sm opacity-0 group-hover:opacity-100
-            transition-opacity whitespace-nowrap">
-            {section.label}
-          </div>
+    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
+      <div className="flex flex-col gap-6">
+        {sections.map((section) => (
+          <div key={section.id} className="group relative flex items-center justify-end">
+            <div className="absolute right-full mr-4 px-2 py-1 rounded-md
+              text-white text-sm whitespace-nowrap bg-gray-900/90
+              transition-opacity duration-200
+              opacity-0 group-hover:opacity-100">
+              {section.label}
+            </div>
 
-          <Link
-            href={section.path}
-            className={`w-3 h-3 rounded-full transition-all duration-300
-              ${activeSection === section.id
-                ? `w-4 h-4 ${section.color}`
-                : 'bg-white/50 hover:bg-white/80'}`}
-            aria-label={section.label}
-          />
-        </div>
-      ))}
-    </div>
+            {activeSection === section.id && (
+              <div className={`absolute right-full mr-2 w-6 h-0.5
+                transition-all duration-300 ${section.color}`} />
+            )}
+
+            <Link
+              href={section.path}
+              className={`w-3 h-3 rounded-full transition-all duration-300
+                ${activeSection === section.id
+                  ? `scale-125 ${section.color}`
+                  : 'bg-white/50 hover:bg-white/80'}`}
+              aria-label={section.label}
+            />
+          </div>
+        ))}
+      </div>
+    </nav>
   );
 }
-/*-|================================================================================|-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*-|=================================================================|-*/
 
 
 
@@ -22975,14 +22841,13 @@ Maintained all our existing functionality including:
 Added the ParallaxNavigation component : 12.17.2024
 ===========================================================================-*/
 'use client';
-import { useEffect, useRef } from 'react';
+import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { ParallaxNavigation } from '../ParallaxNavigation';
-import EnhancedParallaxNavigation from '../EnhancedParallaxNavigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23069,7 +22934,7 @@ export default function ParallaxScroll() {
                      className="object-cover"
                      priority
                   />
-                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                  <div data-component="sectionFirstOverlayContainer" className="absolute inset-0 bg-orange-500/50 flex flex-col items-center justify-center text-white">
                      <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
                         Creating modern, responsive web applications with cutting-edge technologies.
@@ -23098,7 +22963,7 @@ export default function ParallaxScroll() {
                      fill
                      className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                  <div data-component="sectionSecondOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
                      <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                         Crafting beautiful user interfaces that deliver exceptional experiences.
@@ -23149,7 +23014,14 @@ export default function ParallaxScroll() {
                            fill
                            className="object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                        {/* <div data-component="sectionThirdtOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white"> */}
+                        <div data-component="sectionThirdtOverlayContainer"
+                           className="absolute inset-0
+                              bg-linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent)
+                              flex flex-col items-center justify-center
+                              text-white"
+                              >
+                           {/* <div className="h-10 bg-gradient-to-b from-red-500 to-blue-500"></div> */}
                            <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                               {item.description}

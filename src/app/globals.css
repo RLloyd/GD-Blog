@@ -9,6 +9,7 @@
 	--page-width: 1080px;
    --tw-translate-x: none;
    --tw-translate-y: none;
+   --tw-section-overlay: rgba(255, 0, 0, 0.5);
 }
 
 body {
@@ -98,63 +99,5 @@ body {
 
  /* Solved the full screen width issue with GSAP parallax scrolling */
  .myMainContainer {
-   transform: none !important;
+   /* transform: none !important; */
  }
-
-/*
-@layer base {
-	html {
-		min-height: 100vh;
-	}
-
-	body {
-		@apply min-h-screen flex flex-col;
-		@apply bg-primary-50/20 min-h-screen text-primary-900;
-		@apply dark:bg-gradient-to-t from-primary-950 to-primary-900 min-h-screen dark:text-primary-50;
-	}
-
-	main {
-		@apply flex-1;
-	}
-
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		@apply font-baskerville text-primary-600 dark:text-primary-400 font-bold;
-	}
-
-	h1 {
-		@apply text-4xl mb-6;
-	}
-	h2 {
-		@apply text-3xl mb-5;
-	}
-	h3 {
-		@apply text-2xl mb-4;
-	}
-	h4 {
-		@apply text-xl mb-3;
-	}
-	h5 {
-		@apply text-lg mb-2;
-	}
-	h6 {
-		@apply text-base mb-2;
-	}
-}
-
-.prose {
-	@apply max-w-none;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-	@apply font-baskerville text-primary-600 dark:text-primary-400;
-} */
