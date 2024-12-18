@@ -2,7 +2,7 @@
 /*-= Scroll Position Based ParallaxNavigation =-*/
 /*-============================================================
 Prompt:
-We tried this solution before using threshold & rootMargin. It didn't work because the third section is so much longer than the other section.
+We tried this solution before using threshold & rootMargin. (referring to previous codes) It didn't work because the third section is so much longer than the other section.
 Right now the second hilter is delayed by a bit and third dot hiliter is delayed by a lot.
 
 You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:

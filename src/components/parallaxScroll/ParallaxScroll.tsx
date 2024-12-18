@@ -105,9 +105,14 @@ export default function ParallaxScroll() {
                      className="object-cover"
                      priority
                   />
-                  <div data-component="sectionFirstOverlayContainer" className="absolute inset-0 bg-orange-500/50 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
+                  <div data-component="sectionFirstOverlayContainer"
+                     className="absolute inset-0
+                        flex flex-col items-center justify-center
+                        text-white
+                        bg-black/50
+                        dark:bg-gradient-to-b from-red-500/50 to-blue-500/25">
+                     <h1 className="text-6xl font-garamond mb-4">Web Dev</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
                         Creating modern, responsive web applications with cutting-edge technologies.
                      </p>
                      <Link
@@ -134,7 +139,8 @@ export default function ParallaxScroll() {
                      fill
                      className="object-cover"
                   />
-                  <div data-component="sectionSecondOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
+                  <div data-component="sectionSecondOverlayContainer"
+                     className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
                      <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                         Crafting beautiful user interfaces that deliver exceptional experiences.
@@ -173,7 +179,8 @@ export default function ParallaxScroll() {
                      src: '/assets/images/fifth.webp',
                      title: 'Sound Design',
                      description: 'Immersive audio experiences and sound engineering.',
-                     link: '/portfolio/multimedia/sound'
+                     // link: '/portfolio/multimedia/sound'
+                     link: '/blog/loaders-component'
                   }
                ].map((item, index) => (
                   <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"

@@ -98,6 +98,7 @@ body {
  }
 
  /* Solved the full screen width issue with GSAP parallax scrolling */
+ /* Only when testing using Toggle device toolbar: On */
  .myMainContainer {
-   /* transform: none !important; */
+   transform: none !important;
  }
