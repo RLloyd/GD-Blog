@@ -118,7 +118,7 @@ export const portfolioSections: Section[] = [
             path: '/portfolio/multimedia/sound',
             color: 'bg-success-500',
             component: {
-               name: 'VideoShowcase'
+               name: 'SoftwareSkillsProfile'
             }
          }
       ]
