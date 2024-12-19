@@ -52,6 +52,8 @@ yarn-error.log*
 next-env.d.ts
 
 public/notes/*
+
+Garbage/*
 ```
 
 # cleanup.sh
@@ -1603,7 +1605,15 @@ This is a binary file of the type: Image
 
 This is a binary file of the type: Image
 
+# public/assets/images/fifthX.webp
+
+This is a binary file of the type: Image
+
 # public/assets/images/first.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/firstX.webp
 
 This is a binary file of the type: Image
 
@@ -1730,15 +1740,107 @@ Bridge Color Palette:
 
 ```
 
+# public/notes/Design-Ideas.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+
+</style>
+
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+# On the Portfolio section:
+## 3 sections:
+   - SAAS: link to detailed page FIS, Zenmonics,
+   - UI Design & Dev: link to detailed page: show: OwnPhones, Bacardi, Konvict Clothing, Clean Energy, Youth Dance Festival of NJ, HBCBSNJ, Spirits App template
+   - Blog Articles: link to blog main dashboard
+      - Styleguides: link to blog styleguides
+      - Software Skills & About: link to blog softwares, resume, about this site
+
+# On the Blog section:
+- Re-design the main dashboard to be similar design to the Portfolio section.
+- On initial load, show a full screen on latest tech blog article
+- Using parallax scrolling reveal all the other posts underneath the main page
+- All posts will be in the same container that will scroll as one
+
+## 4 sections:
+   - Tech
+   - MashMedia Studio: Videos, Presentations, Synchronous
+   - Styleguides:
+      - Animations
+      - Parallax
+      - Carousel
+      - Branding: Typography, Color Palette, Buttons
+      - Modal
+      - Forms
+      - Cards
+      - Hero
+   - Personal: Food, Travel, Family
+
+```
+
 # public/notes/misc.tsx
 
 ```tsx
-/*-=  src/components/ParallaxNavigation.tsx =-*/
-/*-= xxx =-*/
-/*-=========================================================================
-xxx
-===========================================================================-*/
+/* src/app/portfolio/ui-design/page.tsx */
+'use client';
+import { PortfolioSection } from '@/app/layout';
+import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
 
+export default function UIDesignPage() {
+  const sectionData = portfolioSections.find(section => section.id === 'ui');
+
+  if (!sectionData || isMultimediaSection(sectionData)) {
+    notFound();
+  }
+
+  const DynamicComponent = dynamic(
+    () => import('@/components/portfolio-components/UIDesignGallery').then(mod => mod.default),
+    { loading: () => <div>Loading component...</div> }
+  );
+
+  return (
+    <PortfolioSection>
+      <div className="min-h-screen bg-black text-white">
+        <div className="relative h-[50vh] mb-16">
+          <Image
+            src={sectionData.image}
+            alt={sectionData.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-garamond mb-4">{sectionData.title}</h1>
+            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+              {sectionData.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <DynamicComponent />
+        </div>
+      </div>
+    </PortfolioSection>
+  );
+}
 ```
 
 # public/notes/misc2.tsx
@@ -4086,6 +4188,135 @@ src/lib/supabase.ts
 
 ```
 
+# public/project-summaries/GD-Portfolio-Blog-Site-Structure.md
+
+```md
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Base styles */
+body {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #2D3748;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #FFFDF7;
+}
+
+</style>
+
+<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+# Next.js Blog & Portfolio Project Structure
+
+## Core Directories Structure
+\`\`\`
+src/
+├── app/                 # Main application routes
+│   ├── blog/            # Blog section routes
+│   │   ├── [slug]/      # Individual blog post pages
+│   │   ├── edit/        # Post editing pages
+│   │   ├── new/         # New post creation
+│   │   └── drafts/      # Draft posts management
+│   ├── portfolio/       # Portfolio section routes
+│   │   ├── [category]/  # Category-specific pages
+│   │   └── multimedia/  # Multimedia project pages
+│   └── layout.tsx       # Root layout
+├── components/          # Shared components
+├── contexts/            # Context providers
+├── data/                # Static data and configurations
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility functions and API
+└── types/               # TypeScript type definitions
+\`\`\`
+
+## Files to Keep
+
+### Core Configuration Files
+- `next.config.ts`
+- `tailwind.config.ts`
+- `tsconfig.json`
+- `package.json`
+- `.env.local`
+
+### Blog Components (Keep)
+\`\`\`
+src/components/blog/
+├── dashboard/          # Blog dashboard components
+├── BlogPostContent.tsx # Post content display
+├── PostForm.tsx        # Post creation form
+├── AuthorInfo.tsx      # Author information display
+├── Comments.tsx        # Comments functionality
+└── Reactions.tsx       # Post reactions system
+\`\`\`
+
+### Portfolio Components (Keep)
+\`\`\`
+src/components/parallaxScroll/
+└── ParallaxScroll.tsx # Main parallax scroll component
+
+src/components/
+└── ParallaxNavigation.tsx # Portfolio navigation
+\`\`\`
+
+## Files to Remove
+
+### Unused Portfolio Components
+\`\`\`
+src/components/portfolio/            # Remove entire folder
+src/components/home/                 # Remove entire folder
+src/lib/portfolio-theme.ts          # Remove
+src/lib/theme-config.ts             # Remove
+src/lib/types.ts                    # Remove
+\`\`\`
+
+### Unused Blog Components
+\`\`\`
+src/components/blog-components/     # Remove entire folder
+src/components/data-list-components/# Remove entire folder
+src/components/modal-components/    # Remove entire folder
+src/components/ImageWithFallback.tsx# Remove
+\`\`\`
+
+### Documentation and Notes (Optional to Remove)
+\`\`\`
+public/notes/                      # Development notes
+public/project-summaries/          # Project documentation
+\`\`\`
+
+### Cleanup Tasks
+1. Remove all references to styled-components
+2. Clean up unused imports in remaining files
+3. Remove test and example components
+4. Remove duplicate components
+5. Clean up unused assets in public folder
+
+## Structure Notes
+
+### Blog Section
+- Uses Supabase for data storage
+- Markdown and component-based posts
+- Complete CRUD operations
+- Draft system
+- Comments and reactions
+
+### Portfolio Section
+- Static content with dynamic loading
+- Parallax scrolling effects
+- Category-based organization
+- Multimedia showcase capabilities
+
+### Shared Infrastructure
+- Next.js 13+ App Router
+- Tailwind CSS for styling
+- TypeScript for type safety
+- Supabase authentication
+- Dark/light theme system
+```
+
 # public/project-summaries/Markdown Implementation.md
 
 ```md
@@ -5159,8 +5390,9 @@ body {
  }
 
  /* Solved the full screen width issue with GSAP parallax scrolling */
+ /* Only when testing using Toggle device toolbar: On */
  .myMainContainer {
-   /* transform: none !important; */
+   transform: none !important;
  }
 
 ```
@@ -5168,6 +5400,7 @@ body {
 # src/app/layout.tsx
 
 ```tsx
+/*------= Root Layout =------*/
 /*-= src/app/layout.tsx =-*/
 import { Providers } from "./providers";
 import "./globals.css";
@@ -5247,134 +5480,355 @@ export default page
 /*-= Portfolio Category Page =-*/
 /*-=========================================================================
 The key changes are:
-
-Added proper import of PortfolioSection from root layout
-Wrapped the entire content with PortfolioSection
-Maintained consistent font usage with font-garamond and font-nunitosans classes
-Added support for all categories including multimedia subcategories
-Used consistent styling with the main portfolio page
+   Added proper import of PortfolioSection from root layout
+   Wrapped the entire content with PortfolioSection
+   Maintained consistent font usage with font-garamond and font-nunitosans classes
+   Added support for all categories including multimedia subcategories
+   Used consistent styling with the main portfolio page
 ===========================================================================-*/
+/* src/app/portfolio/[category]/page.tsx */
+'use client';
+import { PortfolioSection } from '@/app/layout';
+import { isMultimediaSection, portfolioSections } from '@/data/portfolioData';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { PortfolioSection } from '@/app/layout';
+import { use } from 'react';
 
 interface Props {
-  params: {
+  params: Promise<{
     category: string;
-  }
+  }>;
 }
 
-const categoryData: Record<string, {
-  title: string;
-  description: string;
-  image: string;
-  content: React.ReactNode;
-}> = {
-  'web-development': {
-    title: 'Web Development',
-    description: 'Modern web applications built with cutting-edge technologies.',
-    image: '/assets/images/first.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Add your web development projects here */}
-      </div>
-    )
-  },
-  'ui-design': {
-    title: 'UI Design',
-    description: 'Beautiful user interfaces that deliver exceptional experiences.',
-    image: '/assets/images/second.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Add your UI design projects here */}
-      </div>
-    )
-  },
-  'multimedia': {
-    title: 'Multimedia Production',
-    description: 'Comprehensive multimedia solutions for modern storytelling.',
-    image: '/assets/images/third.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Add your multimedia projects here */}
-      </div>
-    )
-  },
-  'video': {
-    title: 'Video Editing',
-    description: 'Professional video editing and post-production services.',
-    image: '/assets/images/third.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Add your video projects here */}
-      </div>
-    )
-  },
-  'motion': {
-    title: 'Motion Graphics',
-    description: 'Engaging motion graphics and visual effects.',
-    image: '/assets/images/fourth.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Add your motion graphics projects here */}
-      </div>
-    )
-  },
-  'sound': {
-    title: 'Sound Design',
-    description: 'Immersive audio experiences and sound engineering.',
-    image: '/assets/images/fifth.webp',
-    content: (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Add your sound design projects here */}
-      </div>
-    )
-  }
-};
-
 export default function CategoryPage({ params }: Props) {
-  const data = categoryData[params.category];
+  const resolvedParams = use(params);
 
-  if (!data) {
+  const sectionData = portfolioSections.find(section => {
+    if (section.id === resolvedParams.category) return true;
+    if (isMultimediaSection(section)) {
+      return section.subsections.some(sub => sub.id === resolvedParams.category);
+    }
+    return false;
+  });
+
+  if (!sectionData) {
     notFound();
   }
+
+  const data = isMultimediaSection(sectionData)
+    ? sectionData.subsections.find(sub => sub.id === resolvedParams.category) || sectionData
+    : sectionData;
+
+  const DynamicComponent = data.component?.name
+    ? dynamic(() => import(`@/components/portfolio-components/${data.component.name}`), {
+        loading: () => <div>Loading component...</div>
+      })
+    : null;
 
   return (
     <PortfolioSection>
       <div className="min-h-screen bg-black text-white">
-        <div className="relative h-[50vh] mb-16">
-          <Image
-            src={data.image}
-            alt={data.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-            <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
-            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
-              {data.description}
-            </p>
+        {('image' in data) && (
+          <div className="relative h-[50vh] mb-16">
+            <Image
+              src={data.image}
+              alt={data.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+              <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
+              <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+                {data.description}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="max-w-7xl mx-auto px-4 py-16">
-          {data.content}
+          {DynamicComponent && (
+            <DynamicComponent {...(data.component?.props || {})} />
+          )}
         </div>
       </div>
     </PortfolioSection>
   );
 }
-/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/app/portfolio/layout.tsx
 
 ```tsx
 /*-= src/app/portfolio/layout.tsx =-*/
-import React from 'react';
 import { ParallaxNavigation } from '@/components/ParallaxNavigation';
-import { EnhancedParallaxNavigation } from '@/components/EnhancedParallaxNavigation';
+import React from 'react';
 
 export default function PortfolioLayout({ children, }: { children: React.ReactNode }) {
    return (
@@ -5392,90 +5846,68 @@ export default function PortfolioLayout({ children, }: { children: React.ReactNo
 ```tsx
 /*-= src/app/portfolio/multimedia/[category]/page.tsx =-*/
 /*-|================================================================================|-*/
+/* src/app/portfolio/multimedia/[category]/page.tsx */
+'use client';
+import { PortfolioSection } from '@/app/layout';
+import { isMultimediaSection, portfolioSections } from '@/data/portfolioData';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { use } from 'react';
 
 interface Props {
-   params: {
-      category: string;
-   }
+  params: Promise<{
+    category: string;
+  }>;
 }
-
-const categoryData: Record<string, {
-   title: string;
-   description: string;
-   image: string;
-   content: React.ReactNode;
-}> = {
-   video: {
-      title: 'Video Editing',
-      description: 'Professional video editing and post-production services.',
-      image: '/assets/images/third.webp',
-      content: (
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Add your video projects here */}
-         </div>
-      )
-   },
-   motion: {
-      title: 'Motion Graphics',
-      description: 'Engaging motion graphics and visual effects.',
-      image: '/assets/images/fourth.webp',
-      content: (
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Add your motion graphics projects here */}
-            <iframe id="ytplayer" type="text/html" width="720" height="405"
-               src="https://www.youtube.com/watch?v=R16RDhbeKD8"
-               frameborder="0" allowfullscreen>
-            </iframe>
-         </div>
-      )
-   },
-   sound: {
-      title: 'Sound Design',
-      description: 'Immersive audio experiences and sound engineering.',
-      image: '/assets/images/fifth.webp',
-      content: (
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Add your sound design projects here */}
-         </div>
-      )
-   }
-};
 
 export default function MultimediaCategoryPage({ params }: Props) {
-   const data = categoryData[params.category];
+  const resolvedParams = use(params);
 
-   if (!data) {
-      notFound();
-   }
+  const multimediaSection = portfolioSections.find(section =>
+    isMultimediaSection(section) && section.id === 'multimedia'
+  );
 
-   return (
+  if (!isMultimediaSection(multimediaSection)) {
+    notFound();
+  }
+
+  const categoryData = multimediaSection.subsections.find(
+    subsection => subsection.id === resolvedParams.category
+  );
+
+  if (!categoryData) {
+    notFound();
+  }
+
+  return (
+    <PortfolioSection>
       <div className="min-h-screen bg-black text-white">
-         <div className="relative h-[50vh] mb-16">
-            <Image
-               src={data.image}
-               alt={data.title}
-               fill
-               className="object-cover"
-               priority
-            />
-            <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-               <h1 className="text-6xl font-garamond mb-4">{data.title}</h1>
-               <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
-                  {data.description}
-               </p>
-            </div>
-         </div>
+        <div className="relative h-[50vh] mb-16">
+          <Image
+            src={categoryData.image}
+            alt={categoryData.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-garamond mb-4">{categoryData.title}</h1>
+            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+              {categoryData.description}
+            </p>
+          </div>
+        </div>
 
-         <div className="max-w-7xl mx-auto px-4 py-16">
-            {data.content}
-         </div>
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          {categoryData.component && (
+            <div>{/* Component content will be rendered here */}</div>
+          )}
+        </div>
       </div>
-   );
+    </PortfolioSection>
+  );
 }
 
-/*-|================================================================================|-*/
 
 
 
@@ -5531,7 +5963,93 @@ export default function MultimediaCategoryPage({ params }: Props) {
 
 
 
-/*-|================================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # src/app/portfolio/page.tsx
@@ -5564,7 +6082,160 @@ export default function PortfolioPage() {
 
 ```
 
+# src/app/portfolio/ui-design/page.tsx
+
+```tsx
+/* src/app/portfolio/ui-design/page.tsx */
+'use client';
+import { PortfolioSection } from '@/app/layout';
+import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
+
+export default function UIDesignPage() {
+  const sectionData = portfolioSections.find(section => section.id === 'ui');
+
+  if (!sectionData || isMultimediaSection(sectionData)) {
+    notFound();
+  }
+
+  const DynamicComponent = dynamic(
+    () => import('@/components/portfolio-components/UIDesignGallery').then(mod => mod.default),
+    { loading: () => <div>Loading component...</div> }
+  );
+
+  return (
+    <PortfolioSection>
+      <div className="min-h-screen bg-black text-white">
+        <div className="relative h-[50vh] mb-16">
+          <Image
+            src={sectionData.image}
+            alt={sectionData.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <h1 className="text-6xl font-garamond mb-4">{sectionData.title}</h1>
+            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+              {sectionData.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <DynamicComponent />
+        </div>
+      </div>
+    </PortfolioSection>
+  );
+}
+```
+
 # src/app/portfolio/web-development/page.tsx
+
+```tsx
+/* src/app/portfolio/web-development/page.tsx */
+'use client';
+import { PortfolioSection } from '@/app/layout';
+import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
+import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
+
+export default function WebDevelopmentPage() {
+   const sectionData = portfolioSections.find(section => section.id === 'web');
+
+   if (!sectionData || isMultimediaSection(sectionData)) {
+      notFound();
+   }
+
+
+   const DynamicComponent = dynamic(
+
+
+      () => import('@/components/portfolio-components/WebDevShowcase').then(mod => mod.default),
+      { loading: () => <div>Loading component...</div> }
+   );
+
+   return (
+      <PortfolioSection>
+         <div className="min-h-screen bg-black text-white">
+            <div className="relative h-[50vh] mb-16">
+               <Image
+                  src={sectionData.image}
+                  alt={sectionData.title}
+                  fill
+                  className="object-cover"
+                  priority
+               />
+               <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+                  <h1 className="text-6xl font-garamond mb-4">{sectionData.title}</h1>
+                  <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
+                     {sectionData.description}
+                  </p>
+               </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 py-16">
+               <DynamicComponent />
+            </div>
+         </div>
+      </PortfolioSection>
+   );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/app/portfolio/web-development/pageXXX.tsx
 
 ```tsx
 /*-= src/app/portfolio/web-development/page.tsx =-*/
@@ -13928,454 +14599,6 @@ The new navigation features:
 
 ```
 
-# src/components/home/FullHeightSection.tsx
-
-```tsx
-/* src/components/home/FullHeightSection.tsx */
-'use client';
-import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import Image from 'next/image';
-
-interface FullHeightSectionProps {
-  title: string;
-  subtitle?: string;
-  image: string;
-  backgroundColor: string;
-  align?: 'left' | 'right' | 'center';
-  children?: React.ReactNode;
-}
-
-export function FullHeightSection({
-  title,
-  subtitle,
-  image,
-  backgroundColor,
-  align = 'center',
-  children
-}: FullHeightSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const content = contentRef.current;
-    const imageWrapper = imageRef.current;
-
-    if (!section || !content || !imageWrapper) return;
-
-    gsap.set(content, { yPercent: 30, opacity: 0 });
-    gsap.set(imageWrapper, { scale: 1.2 });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top center',
-        end: 'bottom center',
-        scrub: 1
-      }
-    });
-
-    tl.to(content, {
-      yPercent: 0,
-      opacity: 1,
-      duration: 1
-    })
-    .to(imageWrapper, {
-      scale: 1,
-      duration: 1
-    }, 0);
-
-    return () => {
-      tl.kill();
-    };
-  }, []);
-
-  const alignmentClasses = {
-    left: 'items-start text-left',
-    right: 'items-end text-right',
-    center: 'items-center text-center'
-  };
-
-  return (
-   <section
-      ref={sectionRef}
-      className="relative min-h-screen flex items-center overflow-hidden"
-      >
-      {/* Image container with lower z-index */}
-      <div
-        ref={imageRef}
-        className="absolute inset-0 w-full h-full z-0"
-      >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        {/* Colored overlay on top of image */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundColor: backgroundColor,
-            opacity: 0.07
-          }}
-        />
-      </div>
-
-      {/* Content with higher z-index */}
-      <div
-        ref={contentRef}
-        className={`relative z-10 container mx-auto px-4 py-20 flex flex-col ${alignmentClasses[align]}`}
-      >
-        <h2 className="text-5xl sm:text-7xl font-garamond text-white mb-6">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-2xl">
-            {subtitle}
-          </p>
-        )}
-        {children}
-      </div>
-    </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  );
-}
-
-
-```
-
-# src/components/home/RevealSection.tsx
-
-```tsx
-/* src/components/home/RevealSection.tsx */
-'use client';
-import { useRef, useEffect } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Image from 'next/image';
-
-gsap.registerPlugin(ScrollTrigger);
-
-interface RevealSectionProps {
-  image: string;
-  title: string;
-  subtitle?: string;
-  index: number;
-}
-
-export function RevealSection({ image, title, subtitle, index }: RevealSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const content = contentRef.current;
-    if (!section || !content) return;
-
-    gsap.set(section, {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100vh',
-      zIndex: -index
-    });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: `${index * 100}vh top`,
-        end: `${(index + 1) * 100}vh top`,
-        scrub: 1,
-        pin: true,
-        pinSpacing: false,
-      }
-    });
-
-    tl.fromTo(content, {
-      opacity: index === 0 ? 1 : 0,
-      y: 50
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 0.5
-    })
-    .to(content, {
-      opacity: 0,
-      y: -50,
-      duration: 0.5
-    }, "+=0.5");
-
-    return () => {
-      tl.kill();
-    };
-  }, [index]);
-
-  return (
-    <div ref={sectionRef} className="overflow-hidden">
-      <div className="absolute inset-0">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-black/30" />
-      </div>
-      <div
-        ref={contentRef}
-        className="relative z-10 h-screen flex flex-col items-center justify-center text-white px-4 text-center"
-      >
-        <h2 className="text-6xl md:text-7xl font-garamond mb-4">{title}</h2>
-        {subtitle && (
-          <p className="text-xl md:text-2xl font-nunitosans max-w-2xl">{subtitle}</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
 # src/components/ImageUpload.tsx
 
 ```tsx
@@ -16297,5959 +16520,65 @@ export default MultiStepModal;
 
 ```
 
-# src/components/parallax/ParallaxSection.tsx
-
-```tsx
-/* src/components/parallax/ParallaxSection.tsx */
-'use client';
-
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Image from 'next/image';
-
-gsap.registerPlugin(ScrollTrigger);
-
-interface GridContentProps {
-   number: string;
-   title: string;
-   description: string;
-}
-
-const GridContent = ({ number, title, description }: GridContentProps) => {
-   return (
-      <div className="flex gap-2 mt-4 pt-2 border-t border-primary-100">
-         <div className="text-3xl md:text-4xl font-light w-16 leading-none">
-            {number}
-         </div>
-         <div>
-            <p className="text-xs uppercase">{title}</p>
-            <button className="text-left text-xl font-light hover:text-primary-600 transition-colors">
-               {description}
-            </button>
-         </div>
-      </div>
-   );
-};
-
-interface CarouselProps {
-   images: string[];
-   interval?: number;
-}
-
-const Carousel = ({ images, interval = 5000 }: CarouselProps) => {
-   const carouselRef = useRef<HTMLDivElement>(null);
-
-   useEffect(() => {
-      const carousel = carouselRef.current;
-      if (!carousel) return;
-
-      let currentSlide = 0;
-      const slides = carousel.children;
-      const numSlides = slides.length;
-
-      gsap.set(slides, { opacity: 0 });
-      gsap.set(slides[0], { opacity: 1 });
-
-      const slideshow = setInterval(() => {
-         gsap.to(slides[currentSlide], { opacity: 0, duration: 1 });
-         currentSlide = (currentSlide + 1) % numSlides;
-         gsap.to(slides[currentSlide], { opacity: 1, duration: 1 });
-      }, interval);
-
-      return () => clearInterval(slideshow);
-   }, [interval]);
-
-   return (
-      <div ref={carouselRef} className="relative w-full aspect-[16/9]">
-         {images.map((src, index) => (
-            <div key={index} className="absolute inset-0">
-               <Image
-                  src={src}
-                  alt={`Slide ${index + 1}`}
-                  fill
-                  className="object-cover rounded-lg"
-                  priority={index === 0}
-               />
-            </div>
-         ))}
-      </div>
-   );
-};
-
-export default function ParallaxSection() {
-   const containerRef = useRef<HTMLDivElement>(null);
-
-
-   useEffect(() => {
-      if (!containerRef.current) return;
-
-      const tl = gsap.timeline({
-         scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 1,
-         },
-      });
-
-
-      tl.fromTo('.parallax-1',
-         { y: 100 },
-         { y: -200 }
-      )
-         .fromTo('.parallax-2',
-            { y: 220 },
-            { y: -400 },
-            '<'
-         )
-         .fromTo('.parallax-3',
-            { y: 950, scale: 0.15 },
-            { y: -2000, scale: 2.25 },
-            '<'
-         );
-
-      return () => {
-         tl.kill();
-      };
-   }, []);
-
-   return (
-      <div ref={containerRef} className="relative h-[4000px] w-11/12 mx-auto">
-         <div className="relative h-[1600px] z-10">
-            {/* Parallax Images */}
-            <div className="sticky top-[50px] z-[1] parallax-1">
-               <Image
-                  src="/assets/images/parallax1.jpg"
-                  alt="Parallax 1"
-                  width={1920}
-                  height={1080}
-                  className="rounded-lg"
-               />
-            </div>
-
-            <div className="sticky top-[70px] z-[2] parallax-2">
-               <Image
-                  src="/assets/images/parallax2.jpg"
-                  alt="Parallax 2"
-                  width={800}
-                  height={600}
-                  className="rounded-lg"
-               />
-            </div>
-
-            <div className="sticky top-0 z-[5] parallax-3">
-               <Image
-                  src="/assets/images/parallax3.jpg"
-                  alt="Parallax 3"
-                  width={800}
-                  height={600}
-                  className="rounded-lg"
-               />
-            </div>
-         </div>
-
-         <div className="bg-primary-50 p-4 rounded-lg">
-            <div className="flex flex-col lg:flex-row gap-4">
-               <div className="lg:sticky lg:top-1/2 lg:h-fit-content">
-                  <h1 className="text-4xl font-light text-primary-500">Carousel</h1>
-                  <Carousel
-                     images={[
-                        '/assets/images/carousel1.jpg',
-                        '/assets/images/carousel2.jpg',
-                        '/assets/images/carousel3.jpg'
-                     ]}
-                  />
-               </div>
-
-               <div className="relative w-full md:w-[500px] text-left text-primary-900">
-                  <h2 className="text-2xl font-light text-primary-400 uppercase tracking-wide mt-12 mb-4">
-                     Multi Column Parallax
-                  </h2>
-
-                  <GridContent
-                     number="1"
-                     title="Position"
-                     description="Parallax is the apparent shift in the position of an object."
-                  />
-                  {/* Add more GridContent components as needed */}
-               </div>
-            </div>
-         </div>
-      </div>
-   );
-}
-```
-
-# src/components/parallax2/HomePage.tsx
-
-```tsx
-/*-= src/components/parallax2/HomePage.tsx =-*/
-/*-= Fixed Portfolio Page with Image Component =-*/
-'use client';
-import { useEffect } from 'react';
-import Lenis from '@studio-freight/lenis';
-import { RevealSection } from '@/components/parallax2/RevealSection';
-import Image from 'next/image';
-
-export default function HomePage() {
-   useEffect(() => {
-      const lenis = new Lenis({
-         duration: 1.2,
-         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-         orientation: 'vertical',
-         gestureOrientation: 'vertical',
-         smoothWheel: true,
-         wheelMultiplier: 1,
-         smoothTouch: false,
-         touchMultiplier: 2,
-      });
-
-      function raf(time: number) {
-         lenis.raf(time);
-         requestAnimationFrame(raf);
-      }
-
-      requestAnimationFrame(raf);
-
-      return () => {
-         lenis.destroy();
-      };
-   }, []);
-
-   const sections = [
-      {
-         image: "/assets/images/hero.webp",
-         title: "Welcome"
-      },
-      {
-         image: "/assets/images/second.webp",
-         title: "Portfolio"
-      },
-      {
-         image: "/assets/images/third.webp",
-         title: "About",
-         additionalImages: [
-            "/assets/images/fourth.webp",
-            "/assets/images/third.webp",
-            "/assets/images/fifth.webp"
-         ]
-      }
-   ];
-
-
-
-
-
-
-
-   return (
-
-
-
-      <div className="homepageContainer relative">
-         {/* Main parallax sections */}
-         <div style={{ height: `${sections.length * 100}vh` }}>
-            <RevealSection sections={sections} />
-         </div>
-      </div>
-   );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax2/RevealSection.tsx
-
-```tsx
-/*-= src/components/parallax2/RevealSection.tsx =-*/
-/*-= Went back to version before git backup =-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax3/Carousel.tsx
-
-```tsx
-/*-= src/components/parallax3/Carousel.tsx =-*/
-/*-= Claude's version =-*/
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
-
-interface CarouselProps {
-  autoSlide?: boolean;
-  autoSlideInterval?: number;
-}
-
-const carouselImages = [
-  '/assets/images/carousel1.jpg',
-  '/assets/images/carousel2.jpg',
-  '/assets/images/carousel3.png',
-];
-
-const Carousel: React.FC<CarouselProps> = ({
-  autoSlide = false,
-  autoSlideInterval = 3000
-}) => {
-  const [current, setCurrent] = useState(0);
-
-  const prev = () => {
-    setCurrent(current => (
-      current === 0 ? carouselImages.length - 1 : current - 1
-    ));
-  };
-
-  const next = () => {
-    setCurrent(current => (
-      current === carouselImages.length - 1 ? 0 : current + 1
-    ));
-  };
-
-  useEffect(() => {
-    if (!autoSlide) return;
-
-    const slideInterval = setInterval(next, autoSlideInterval);
-    return () => clearInterval(slideInterval);
-  }, [autoSlide, autoSlideInterval]);
-
-  return (
-    <div className="overflow-hidden relative rounded-lg">
-      <div className="flex relative aspect-[16/9]">
-        {carouselImages.map((src, index) => (
-          <motion.div
-            key={src}
-            className="min-w-full relative"
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: current === index ? 1 : 0,
-              x: `${(index - current) * 100}%`
-            }}
-            transition={{ duration: 0.5 }}
-          >
-            <Image
-              src={src}
-              alt={`Slide ${index + 1}`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={index === 0}
-            />
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="absolute inset-0 flex items-center justify-between p-4">
-        <button
-          onClick={prev}
-          className="p-1 rounded-full bg-black/50 text-white hover:bg-black/75 transition-colors"
-        >
-          <BiChevronLeft size={24} />
-        </button>
-        <button
-          onClick={next}
-          className="p-1 rounded-full bg-black/50 text-white hover:bg-black/75 transition-colors"
-        >
-          <BiChevronRight size={24} />
-        </button>
-      </div>
-
-      {/* Dots */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-        {carouselImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrent(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === current ? 'bg-white' : 'bg-white/50'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Carousel;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax3/Layout.tsx
-
-```tsx
-import React from 'react';
-
-
-type LayoutProps = {
-   children: React.ReactNode;
-}
-
-const Layout = ({ children }: LayoutProps) => {
-   return (
-      <>
-         {/* <Navbar /> */}
-         {children}
-         {/* <Footer /> */}
-      </>
-   );
-}
-
-export default Layout;
-```
-
-# src/components/parallax3/MultiColumnCaroParallax.tsx
-
-```tsx
-/*-= src/components/parallax3/MultiColumnCaroParallax.tsx =-=*/
-/*-= Claude's version =-=*/
-import React from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import Carousel from './Carousel';
-
-interface GridContentProps {
-  numero: string;
-  title: string;
-  buttonLabel: string;
-}
-
-const GridContentTemplate: React.FC<GridContentProps> = ({ numero, title, buttonLabel }) => (
-  <div className="flex gap-4 my-6 pt-[0.6rem] border-t border-primary-100">
-    <div className="font-light text-[2rem] md:text-[3rem] leading-none w-[4rem]">
-      {numero}
-    </div>
-    <div>
-      <p className="text-xs uppercase">{title}</p>
-      <button className="text-[1.65rem] font-light text-left hover:text-primary-600 transition-colors">
-        {buttonLabel}
-      </button>
-    </div>
-  </div>
-);
-
-const MultiColumnCaroParallax: React.FC = () => {
-  return (
-    <div className="flex flex-col lg:flex-row gap-4 relative h-auto">
-      {/* Carousel Section */}
-      <div className="lg:sticky lg:top-1/2 lg:h-fit-content">
-        <h1 className="text-left text-primary-500 font-light mb-4">Carousel</h1>
-        <Carousel autoSlide autoSlideInterval={5000} />
-      </div>
-
-      {/* Content Section */}
-      <div className="relative text-left lg:w-[500px] text-primary-900">
-        <h1 className="text-primary-400 text-[1.5rem] uppercase mb-3">
-          Multi Column Parallax
-        </h1>
-
-        <GridContentTemplate
-          numero="1"
-          title="Position"
-          buttonLabel="Parallax is the apparent shift in the position of an object."
-        />
-        <GridContentTemplate
-          numero="2"
-          title="Observation"
-          buttonLabel="Observed by looking at an object first with one eye closed, then with the other."
-        />
-        <GridContentTemplate
-          numero="3"
-          title="Astronomy"
-          buttonLabel="In astronomy, parallax measures the distance of nearby stars from Earth."
-        />
-
-        <div className="my-10 relative aspect-video">
-          <Image
-            src="/assets/images/carousel-07.jpg"
-            alt="Parallax explanation"
-            fill
-            className="object-cover rounded-lg"
-          />
-        </div>
-
-        <GridContentTemplate
-          numero="4"
-          title="Distance"
-          buttonLabel="Earth's orbit allows calculation of its distance based on the angle of apparent shift."
-        />
-        <GridContentTemplate
-          numero="5"
-          title="Imaging"
-          buttonLabel="Parallax is crucial in 3D imaging and photography."
-        />
-        <GridContentTemplate
-          numero="6"
-          title="Illusion"
-          buttonLabel="It creates the illusion of depth by presenting slightly different images to each eye."
-        />
-
-        <div className="mt-10 relative aspect-video">
-          <Image
-            src="/assets/images/carousel-08.jpg"
-            alt="Depth illustration"
-            fill
-            className="object-cover rounded-lg"
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default MultiColumnCaroParallax;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax3/Parallax3.tsx
-
-```tsx
-"use client";
-
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import Image from "next/image";
-import ParallaxUno from './ParallaxUno'
-import ParallaxDos from './ParallaxDos'
-import ParallaxTres from './ParallaxTres'
-import MultiColumnCaroParallax from './MultiColumnCaroParallax'
-
-
-const MotionBox = motion.div;
-
-
-interface LayoutProps {
-   children: React.ReactNode;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-   return (
-      <>
-         {/* <Navbar /> */}
-         {children}
-         {/* <Footer /> */}
-      </>
-   );
-};
-
-
-const Parallax: React.FC = () => {
-   const containerRef = useRef<HTMLDivElement | null>(null);
-
-   const { scrollYProgress } = useScroll({
-      target: containerRef,
-      offset: ["start end", "end start"],
-   });
-
-   const yImg1 = useTransform(scrollYProgress, [0, 1], ["100px", "-200px"]);
-   const yImg2 = useTransform(scrollYProgress, [0, 1], ["220px", "-400px"]);
-   const yImg3 = useTransform(scrollYProgress, [0, 1], ["950px", "-2000px"]);
-   const sImg3 = useTransform(scrollYProgress, [0.05, 1], [0.15, 2.25]);
-
-   return (
-      <Layout>
-         {/* Main Container */}
-         <div
-            className="relative h-[4000px] w-[100%] mx-auto main-container border-2 border-accent-700"
-
-
-
-            ref={containerRef}
-         >
-            {/* Parallax Group 1 */}
-            <div className="relative h-[1600px] z-10 parallax-group-1">
-               {/* Image 01 Parallax Uno */}
-               <MotionBox
-                  className="paralxUnoParentContainer sticky top-[50px] z-1 image-wrapper w-screen border-4 border-primary-800 rounded-2xl"
-                  style={{ y: yImg1 }}
-               >
-                  <ParallaxUno />
-               </MotionBox>
-
-               {/* Image 02: Parallax Dos */}
-               <MotionBox
-                  className="paralxDosParentContainer sticky top-[70px] z-2 image-wrapper w-screen border-4 border-primary-800 rounded-2xl"
-                  style={{ y: yImg2 }}
-               >
-                  <ParallaxDos />
-               </MotionBox>
-
-               {/* Image 03: Parallax Tres */}
-               <MotionBox
-                  className="sticky top-0 z-5 image-wrapper w-screen border-4 border-primary-800 rounded-2xl"
-                  style={{ y: yImg3, scale: sImg3 }}
-               >
-                  <ParallaxTres />
-               </MotionBox>
-            </div>
-
-            {/* Parallax Group 2 */}
-            <div className="parallax-group-2 w-screen border-4 border-primary-800 rounded-2xl">
-               <div className="bg-primary-50 p-4 rounded-xl group-wrapper">
-                  <div className="relative flex flex-col lg:flex-row gap-4 caro-group-wrapper">
-                     <MotionBox
-                        className="relative text-left text-primary-900"
-                        style={{
-                           width: "auto",
-                           maxWidth: "500px",
-                           margin: "0 auto",
-                        }}
-                     >
-                        <h1 className="text-primary-400 text-[1.5rem] uppercase my-[3rem]">
-                           Multi Column Parallax
-                        </h1>
-
-                        <MultiColumnCaroParallax />
-
-                        {/* <GridContentTemplate
-                  numero="1"
-                  title="Position"
-                  buttonLabel="Parallax is the apparent shift in the position of an object."
-                />
-                <GridContentTemplate
-                  numero="2"
-                  title="Observation"
-                  buttonLabel="Observed by looking at an object first with one eye closed, then with the other."
-                />
-                <GridContentTemplate
-                  numero="3"
-                  title="Astronomy"
-                  buttonLabel="In astronomy, parallax measures the distance of nearby stars from Earth."
-                />
-                <div className="my-10">
-                  <Image
-                    src="/path/to/carousel07.jpg"
-                    alt="Carousel Image 07"
-                    width={500}
-                    height={300}
-                    className="image-src"
-                  />
-                </div>
-                <GridContentTemplate
-                  numero="4"
-                  title="Distance"
-                  buttonLabel="Earth's orbit allows calculation of its distance based on the angle of apparent shift."
-                />
-                <GridContentTemplate
-                  numero="5"
-                  title="Imaging"
-                  buttonLabel="Parallax is crucial in 3D imaging and photography."
-                />
-                <GridContentTemplate
-                  numero="6"
-                  title="Illusion"
-                  buttonLabel="It creates the illusion of depth by presenting slightly different images to each eye."
-                />
-                <div className="mt-0">
-                  <Image
-                    src="/path/to/carousel08.jpg"
-                    alt="Carousel Image 08"
-                    width={500}
-                    height={300}
-                    className="image-src"
-                  />
-                </div> */}
-                     </MotionBox>
-                  </div>
-                  <div className="mt-20">
-                     {/* <ParallaxCinco /> */}
-                  </div>
-               </div>
-            </div>
-         </div>
-      </Layout>
-   );
-};
-
-export default Parallax;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax3/ParallaxDos.tsx
-
-```tsx
-"use client";
-
-import { useEffect } from "react";
-
-interface H1HeaderProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-const H1Header: React.FC<H1HeaderProps> = ({ children, className }) => {
-  return (
-    <h1
-      className={`text-[2.5rem] md:text-[4rem] font-extrabold md:w-[600px] leading-[1.2] ${
-        className || ""
-      }`}
-    >
-      {children}
-    </h1>
-  );
-};
-
-const ParallaxDos: React.FC = () => {
-  useEffect(() => {
-    document.title = "Parallax Page";
-  }, []);
-
-  return (
-    <div className="paralxDosContainer flex flex-col items-center h-[650px] bg-primary-50 dark:bg-primary-800 rounded-[1rem]">
-      <p className="text-[1rem] uppercase my-[2rem] tracking-[5px]">
-        Parallax
-      </p>
-      <H1Header>
-        Visual Appeal
-      </H1Header>
-      <p className="text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] font-normal w-[80%] leading-[1.3] text-center">
-        By moving different layers of content at different speeds as the user scrolls, it creates an illusion of depth, making the interface feel immersive and interactive.
-      </p>
-    </div>
-  );
-};
-
-export default ParallaxDos;
-```
-
-# src/components/parallax3/ParallaxTres.tsx
-
-```tsx
-"use client";
-
-import Image from "next/image";
-import { FaArrowRight } from "react-icons/fa";
-
-
-interface HeroData {
-  imageIntro: string;
-  shortIntro: string;
-  pageTitle: string;
-  description: string;
-  buttonLabel: string;
-  buttonLink: string;
-  linkTarget: string;
-}
-
-const d1HeroData: HeroData = {
-  imageIntro: "/path-to-hero-image.jpg",
-  shortIntro: "Explore the Parallax Effect",
-  pageTitle: "Parallax Tres",
-  description:
-    "Parallax scrolling creates depth and interactivity, bringing your pages to life.",
-  buttonLabel: "Learn More",
-  buttonLink: "/learn-more",
-  linkTarget: "_self",
-};
-
-
-interface PrimaryAccentButtonProps {
-  label: string;
-  link: string;
-  target: string;
-  icon: React.ReactNode;
-}
-
-const PrimaryAccentButton: React.FC<PrimaryAccentButtonProps> = ({
-  label,
-  link,
-  target,
-  icon,
-}) => {
-  return (
-    <a
-      href={link}
-      target={target}
-      className="flex items-center gap-2 bg-primary-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-primary-600 transition-all"
-    >
-      {label} {icon}
-    </a>
-  );
-};
-
-const ParallaxTres: React.FC = () => {
-  return (
-    <div className="flex flex-col items-center bg-primary-200 dark:bg-primary-500 rounded-lg overflow-hidden h-[630px] relative">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <Image
-          src={d1HeroData.imageIntro}
-          alt="Parallax Background"
-          layout="fill"
-          objectFit="cover"
-          className="rounded-lg"
-        />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 p-6 text-center max-w-4xl flex flex-col items-center">
-        {/* Short Intro */}
-        <p className="text-sm uppercase tracking-wide text-primary-900 dark:text-primary-100 mb-4">
-          {d1HeroData.shortIntro}
-        </p>
-
-        {/* Title */}
-        <h1 className="text-3xl md:text-5xl font-bold text-primary-900 dark:text-primary-100 mb-4">
-          {d1HeroData.pageTitle}
-        </h1>
-
-        {/* Description */}
-        <p className="text-base md:text-lg text-primary-700 dark:text-primary-300 mb-6">
-          {d1HeroData.description}
-        </p>
-
-        {/* Button */}
-        <PrimaryAccentButton
-          label={d1HeroData.buttonLabel}
-          link={d1HeroData.buttonLink}
-          target={d1HeroData.linkTarget}
-          icon={<FaArrowRight />}
-        />
-      </div>
-    </div>
-  );
-};
-
-export default ParallaxTres;
-```
-
-# src/components/parallax3/ParallaxUno.tsx
-
-```tsx
-"use client";
-
-import { useEffect } from "react";
-import Image from "next/image";
-
-interface H1HeaderProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-const H1Header: React.FC<H1HeaderProps> = ({ children, className }) => {
-  return (
-    <h1
-      className={`text-[2.25rem] md:text-[3rem] font-normal md:w-[600px] leading-[1.2] ${
-        className || ""
-      }`}
-    >
-      {children}
-    </h1>
-  );
-};
-
-interface ImageSrcStyleProps {
-  src: string;
-  alt: string;
-  className?: string;
-}
-
-const ImageSrcStyle: React.FC<ImageSrcStyleProps> = ({ src, alt, className }) => {
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      width={300}
-      height={300}
-      className={`m-[2rem] border border-primary-400 shadow-2xl ${className || ""}`}
-    />
-  );
-};
-
-const ParallaxUno: React.FC = () => {
-  useEffect(() => {
-    document.title = "Parallax Page";
-  }, []);
-
-  return (
-    <div className="flex flex-col items-center h-[650px] bg-primary-200 dark:bg-primary-500 rounded-[1rem]">
-      <p className="text-[1rem] uppercase my-[2rem]">
-        Visual Appeal
-      </p>
-      <H1Header>
-        Parallax scrolling adds a dynamic element to web pages
-      </H1Header>
-      <ImageSrcStyle
-        src="/path/to/loaderImg.png"
-        alt="Loader Image"
-      />
-    </div>
-  );
-};
-
-export default ParallaxUno;
-```
-
-# src/components/parallax4/MultiRevealSection.tsx
-
-```tsx
-'use client';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import Image from 'next/image';
-
-interface RevealSectionProps {
-  sections: Array<{
-    images: string[];
-  }>;
-}
-
-export function MultiRevealSection({ sections }: RevealSectionProps) {
-  const { scrollYProgress } = useScroll();
-
-
-  const sectionHeight = 1 / sections.length;
-
-  return (
-    <div className="relative w-screen h-[300vh] overflow-hidden bg-black">
-      {sections.map((section, index) => {
-        const start = index * sectionHeight;
-        const end = (index + 1) * sectionHeight;
-
-
-        const y = useTransform(scrollYProgress, [start, end], ['0%', '-100%']);
-        const opacity = useTransform(scrollYProgress, [start, end - 0.1], [1, 0]);
-
-        return (
-          <motion.div
-            key={index}
-            style={{
-              y,
-              opacity,
-            }}
-            className="absolute inset-0 w-full h-screen z-[10]"
-          >
-            {section.images.length === 1 ? (
-
-              <Image
-                src={section.images[0]}
-                alt={`Section ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="100vw"
-                priority={index === 0}
-              />
-            ) : (
-
-              <div className="grid grid-cols-3 gap-4 h-full w-full">
-                {section.images.map((img, imgIndex) => (
-                  <div key={imgIndex} className="relative h-full w-full">
-                    <Image
-                      src={img}
-                      alt={`Section ${index + 1} - Image ${imgIndex + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="33vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```
-
-# src/components/parallax5/Parallax5.js
-
-```js
-
-   /*-=Sample code=-*/
-   import { H1Header, ImageSrcStyle, LinkButton } from "@/assets/styles/Styles";
-   import { useScroll, useTransform } from "framer-motion";
-   import { Box, Flex, Text, useColorMode } from "@chakra-ui/react";
-   import StyleguideSubMenus  from "@components/styleguide/StyleguideSubMenus";
-   import { useRef }          from "react";
-   import { MotionBox }       from "@assets/variables/Variables";
-   import Carousel            from "../carousel/Carousel";
-   import ParallaxCinco       from "./parallaxComponents/ParallaxCinco";
-   import ParallaxDos         from "./parallaxComponents/ParallaxDos";
-   import ParallaxTres        from "./parallaxComponents/ParallaxTres";
-   import ParallaxUno         from "./parallaxComponents/ParallaxUno";
-   import Copy2Clipboard      from "@components/hilights/Copy2Clipboard";
-   import CodeHilite from "@components/hilights/CodeHilite";
-   import carousel01 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-01.webp";
-   import carousel02 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-02.webp";
-   import carousel03 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-03.webp";
-   import carousel04 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-04.webp";
-   import carousel05 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-05.webp";
-   import carousel07 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-07.webp";
-   import carousel08 from "@images/styleguide/Carousel/carousel-filipinas/carousel-filipinas-08.webp";
-   import Layout     from "@/components/Layout";
-
-   const carouselImages = [
-      {image: carousel01},
-      {image: carousel02},
-      {image: carousel03},
-      {image: carousel04},
-      {image: carousel05}
-   ];
-
-   const Parallax = () => {
-      const containerRef = useRef(null);
-      const {scrollYProgress} = useScroll({
-         target: containerRef,
-         offset: ["start end", "end start"],
-      })
-      const yImg1 =  useTransform(scrollYProgress, [0, 1],   ["100px", "-200px"]);
-      const yImg2 =  useTransform(scrollYProgress, [0, 1],   ["220px", "-400px"]);
-      const yImg3 =  useTransform(scrollYProgress, [0, 1],   ["950px", "-2000px"]);
-      const sImg3 =  useTransform(scrollYProgress, [.05, 1], [.15, 2.25]);
-
-      return (
-         <Layout>
-            <MotionBox className={"subMenuWrapper"}
-               position = {"sticky"}
-               top      = {"-34px"}
-               zIndex   = {"5000"}
-               >
-               <StyleguideSubMenus />
-            </MotionBox>
-
-            <Box className="mainContainer"
-               position = {"relative"}
-               height   = {"4000px"}
-               width    = {"90%"}
-               margin   = {"0 auto"}
-               >
-               <Box className="parallaxGroup1Container"
-                  position = {"relative"}
-                  height   = {"1600px"}
-                  zIndex   = {"10"}
-                  >
-                  {/* Image 01 */}
-                  <MotionBox className={"image1Wrapper"}
-                     style    = {{ y:yImg1 }}
-                     position = {"sticky"}
-                     top      = {"50px"}
-                     zIndex   = {"1"}
-                     >
-                     <ParallaxUno/>
-                  </MotionBox>
-                  {/* Image 02 */}
-                  <MotionBox
-                     style    = {{y:yImg2}}
-                     position = {"sticky"}
-                     top      = {"70px"}
-                     zIndex   = {"2"}
-                     >
-                     <ParallaxDos/>
-                  </MotionBox>
-
-                  {/* Image 03 */}
-                  <MotionBox
-                     style    = {{y:yImg3, scale:sImg3}}
-                     position = {"sticky"}
-                     top      = {"0px"}
-                     zIndex   = {"5"}
-                     >
-                     <ParallaxTres/>
-                  </MotionBox>
-               </Box>
-
-               <Box className="parallaxGroup2Container">
-                  <Box  className="parallaxGroup2Wrapper"
-                     bg={"primary.50"}
-                     padding={"1rem"}
-                     borderRadius={"1rem"}
-                     >
-                     <Box className={"caroParaGroupWrapper"}
-                        display={"flex"}
-                        flexDirection={{base:"column", lg:"row"}}
-                        gap={4}
-                        position={"relative"}
-                        height={"auto"}
-                        >
-                        <MotionBox className={"carouselWrapper"}
-                           position={{base:"relative", lg:"sticky"}}
-                           height={"fit-content"}
-                           top={{base:"0px", lg:"50vh"}}
-                           >
-                           <H1Header
-                              fontWeight={"light"}
-                              textAlign={"left"}
-                              color={"primary.500"}
-                              >
-                              Carousel
-                           </H1Header>
-                           <Carousel autoSlide={true} autoSlideInterval={5000}>
-                              {carouselImages.map((img, index) => (
-                                 <ImageSrcStyle key={index} src={img.image} />)
-                              )}
-                           </Carousel>
-                        </MotionBox>
-                        <MotionBox className={"rightLayoutWrapper"}
-                           position={"relative"}
-                           textAlign={"left"}
-                           width={{base:"auto", md:"500px"}}
-                           top={"0px"}
-                           color={"primary.900"}
-                           >
-                           <H1Header color={"primary.400"} fontSize="1.5rem" letterSpacing="1px" textTransform="uppercase" margin="3rem 0 1rem">Multi Column Parallax</H1Header>
-                           <GridContentTemplate numero="1" title="Position" buttonLabel="Parallax is the apparent shift in the position of an object."/>
-                           <GridContentTemplate numero="2" title="Observation" buttonLabel="Observed by looking at an object first with one eye closed, then with the other."/>
-                           <GridContentTemplate numero="3" title="Astronomy" buttonLabel="In astronomy, parallax measures the distance of nearby stars from Earth."/>
-                           <Box margin={"0 0 10rem"}>
-                              <ImageSrcStyle src={carousel07}/>
-                           </Box>
-                           <GridContentTemplate numero="4" title="Distance" buttonLabel="Earth's orbit allows calculation of its distance based on the angle of apparent shift."/>
-                           <GridContentTemplate numero="5" title="Imaging" buttonLabel="Parallax is crucial in 3D imaging and photography."/>
-                           <GridContentTemplate numero="6" title="Illusion" buttonLabel="It creates the illusion of depth by presenting slightly different images to each eye."/>
-                           <Box margin={"0 0 0"}>
-                              <ImageSrcStyle src={carousel08}/>
-                           </Box>
-                        </MotionBox>
-                     </Box>
-                     <Box margin={"5rem 0 0"}>
-                        <ParallaxCinco/>
-                     </Box>
-                  </Box>
-               </Box>
-            </Box>
-         </Layout>
-      )
-   }
-   export default Parallax
-
-   const GridContentTemplate = (props :any) => {
-      const { numero, title, buttonLabel } = props;
-      return (
-         <Flex gap={2} margin={"1rem 0 6rem"} paddingTop={".6rem"} borderTop={"1px solid"} borderColor={"primary.100"}>
-            <Box
-               fontSize={{base:"2rem", md:"3rem"} }
-               fontWeight={"light"} width={"4rem"} lineHeight={1} border={"0px solid"}>{numero}
-            </Box>
-            <Box>
-               <Text fontSize={".75rem"} textTransform={"uppercase"}>{title}</Text>
-               <LinkButton
-                  textAlign      = {"left"}
-                  fontSize       = {"1.65rem"}
-                  fontWeight     = {"light"}
-                  textwrap       = {"balance"}
-                  textTransform  = {"none"}
-                  padding        = {"0"}
-                  margin         = {"0"}
-                  style          = {{textWrap:"balance"}}
-                  label          = {buttonLabel}
-                  />
-            </Box>
-         </Flex>
-      )
-   }
-```
-
-# src/components/parallax5/Parallax5.tsx
-
-```tsx
-/*-= src/components/parallax5/Parallax5.tsx =-*/
-/*-= Converted from Chakra version =-*/
-
-'use client';
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import Image from 'next/image';
-
-const MotionBox = motion.div;
-
-interface LayoutProps {
-   children: React.ReactNode;
-}
-
-interface GridContentProps {
-  numero: string;
-  title: string;
-  buttonLabel: string;
-}
-
-const GridContentTemplate: React.FC<GridContentProps> = ({ numero, title, buttonLabel }) => {
-  return (
-    <div className="flex gap-2 my-4 pt-2 border-t border-primary-100">
-      <div className="text-2xl md:text-3xl font-light w-16 leading-none">
-        {numero}
-      </div>
-      <div>
-        <p className="text-xs uppercase">{title}</p>
-        <button className="text-left text-[1.65rem] font-light hover:text-primary-600 transition-colors">
-          {buttonLabel}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-   return (
-      <>
-         {/* <Navbar /> */}
-         {children}
-         {/* <Footer /> */}
-      </>
-   );
-};
-
-
-const Parallax5: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const yImg1 = useTransform(scrollYProgress, [0, 1], ["100px", "-200px"]);
-  const yImg2 = useTransform(scrollYProgress, [0, 1], ["220px", "-400px"]);
-  const yImg3 = useTransform(scrollYProgress, [0, 1], ["950px", "-2000px"]);
-  const sImg3 = useTransform(scrollYProgress, [.05, 1], [.15, 2.25]);
-
-  return (
-   <Layout>
-      <div ref={containerRef} className="relative h-[4000px] w-[90%] mx-auto">
-         <div className="relative h-[1600px] z-10">
-
-         {/* Image 01 */}
-         <MotionBox
-            style={{ y: yImg1 }}
-            className="sticky top-[50px] z-[1]"
-         >
-            <div className="
-               flex flex-col items-center
-               h-[750px] w-screen
-               mx-0 px-0
-               left-0
-               border-2 border-primary-100
-               bg-primary-50 dark:bg-accent-500
-               rounded-lg
-               z-[12]"
-               >
-               {/* ParallaxUno content */}
-            </div>
-         </MotionBox>
-
-         {/* Image 02 */}
-         <MotionBox
-            style={{ y: yImg2 }}
-            className="sticky top-[70px] z-[1]"
-         >
-            <div className="flex flex-col items-center h-[650px] bg-primary-50 dark:bg-primary-800/50 rounded-lg">
-               {/* ParallaxDos content */}
-            </div>
-         </MotionBox>
-
-         {/* Image 03 */}
-         <MotionBox
-            style={{ y: yImg3, scale: sImg3 }}
-            className="sticky top-0 z-[5]"
-         >
-            <div className="flex flex-col items-center h-[650px] bg-primary-50 dark:bg-success-500 rounded-lg">
-               {/* ParallaxTres content */}
-            </div>
-         </MotionBox>
-         </div>
-
-         <div className="bg-primary-50 p-4 rounded-lg">
-         <div className="flex flex-col lg:flex-row gap-4">
-            <div className="lg:sticky lg:top-1/2 lg:h-fit-content">
-               <h1 className="text-4xl font-light text-primary-500">Carousel</h1>
-               {/* Carousel component */}
-            </div>
-
-            <div className="relative w-full md:w-[500px] text-left text-primary-900">
-               <h2 className="text-2xl font-light text-primary-400 uppercase tracking-wide mt-12 mb-4">
-               Multi Column Parallax
-               </h2>
-
-               <GridContentTemplate
-               numero="1"
-               title="Position"
-               buttonLabel="Parallax is the apparent shift in the position of an object."
-               />
-               {/* Add more GridContentTemplate components as needed */}
-            </div>
-         </div>
-         </div>
-      </div>
-    </Layout>
-  );
-};
-
-export default Parallax5;
-```
-
 # src/components/ParallaxNavigation.tsx
 
 ```tsx
 /*-= src/components/ParallaxNavigation.tsx =-*/
-/*-= Scroll Position Based ParallaxNavigation =-*/
 /*-============================================================
 Prompt:
-We tried this solution before using threshold & rootMargin. It didn't work because the third section is so much longer than the other section.
-Right now the second hilter is delayed by a bit and third dot hiliter is delayed by a lot.
+We tried this solution before using threshold & rootMargin. (referring to previous codes) It didn't work because the third section is so much longer than the other section.
 
 You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:
-Key changes:
 
-Switched from IntersectionObserver to scroll position calculations
-Uses a scroll listener with absolute positions to determine the active section
-Calculates section boundaries based on their actual positions in the document
-Determines active section based on where viewport midpoint intersects with sections
-Uses passive scroll listener for better performance
+Key changes:
+   Switched from IntersectionObserver to scroll position calculations
+   Uses a scroll listener with absolute positions to determine the active section
+   Calculates section boundaries based on their actual positions in the document
+   Determines active section based on where viewport midpoint intersects with sections
+   Uses passive scroll listener for better performance
 
 This approach should:
+   Start with first dot highlighted
+   Update dots with minimal delay as you scroll through sections
+   Work correctly with the longer third section
+   Be more responsive to scroll position changes
 
-Start with first dot highlighted
-Update dots with minimal delay as you scroll through sections
-Work correctly with the longer third section
-Be more responsive to scroll position changes
+   The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
 
-The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
+   |-=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=-|
+
+Updated code: 12.18.2024
+Prompt:
+   src/components/ParallaxNavigation.tsx, sections{} should be using data from src/data/portfolioData.ts. We need to add color property.
+   We also need to be able to add components in the detailed pages. Similar to what we did in blog section creating post type using component.
+Key changes:
+   Update to use data from src/data/portfolioData.ts
 ================================================================-*/
 'use client';
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { portfolioSections } from '@/data/portfolioData';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export function ParallaxNavigation() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const pathname = usePathname();
 
-  const sections = [
-    { id: 'web', index: 0, label: 'Web Dev', path: '/portfolio/web-development', color: 'bg-accent-500' },
-    { id: 'ui', index: 1, label: 'UI Design', path: '/portfolio/ui-design', color: 'bg-secondary-500' },
-    { id: 'multimedia', index: 2, label: 'Multimedia', path: '/portfolio/multimedia', color: 'bg-success-500' }
-  ];
-
   useEffect(() => {
-
-    const pathSection = sections.find(s => pathname === s.path);
+    const pathSection = portfolioSections.find(s => pathname === s.path);
     if (pathSection) {
       setActiveSection(pathSection.id);
       return;
     }
 
-
-    setActiveSection(sections[0].id);
+    setActiveSection(portfolioSections[0].id);
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + (window.innerHeight * 0.5);
 
-
-      const sectionElements = sections.map(section => ({
-        id: section.id,
-        element: document.getElementById(section.id),
-      }));
-
-
-      for (const { id, element } of sectionElements) {
+      for (const section of portfolioSections) {
+        const element = document.getElementById(section.id);
         if (!element) continue;
 
         const rect = element.getBoundingClientRect();
@@ -22257,12 +16586,11 @@ export function ParallaxNavigation() {
         const absoluteBottom = absoluteTop + rect.height;
 
         if (scrollPosition >= absoluteTop && scrollPosition <= absoluteBottom) {
-          setActiveSection(id);
+          setActiveSection(section.id);
           break;
         }
       }
     };
-
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
@@ -22275,13 +16603,13 @@ export function ParallaxNavigation() {
   return (
     <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
       <div className="flex flex-col gap-6">
-        {sections.map((section) => (
+        {portfolioSections.map((section) => (
           <div key={section.id} className="group relative flex items-center justify-end">
             <div className="absolute right-full mr-4 px-2 py-1 rounded-md
               text-white text-sm whitespace-nowrap bg-gray-900/90
               transition-opacity duration-200
               opacity-0 group-hover:opacity-100">
-              {section.label}
+              {section.title}
             </div>
 
             {activeSection === section.id && (
@@ -22295,7 +16623,7 @@ export function ParallaxNavigation() {
                 ${activeSection === section.id
                   ? `scale-125 ${section.color}`
                   : 'bg-white/50 hover:bg-white/80'}`}
-              aria-label={section.label}
+              aria-label={section.title}
             />
           </div>
         ))}
@@ -22303,431 +16631,8 @@ export function ParallaxNavigation() {
     </nav>
   );
 }
+
 /*-|=================================================================|-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -22848,6 +16753,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { ParallaxNavigation } from '../ParallaxNavigation';
+import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22914,33 +16820,43 @@ export default function ParallaxScroll() {
       };
    }, []);
 
+   const webSection = portfolioSections[0];
+   const uiSection = portfolioSections[1];
+   const multimediaSection = portfolioSections[2];
+
+   if (!isMultimediaSection(multimediaSection) ||
+      isMultimediaSection(webSection) ||
+      isMultimediaSection(uiSection)) {
+      throw new Error('Invalid portfolio section configuration');
+   }
+
    return (
       <>
          <ParallaxNavigation />
-         {/* <EnhancedParallaxNavigation /> */}
          <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
-            {/* First Section */}
+
+            {/* First Section =----------------------------------------------*/}
             <div
-               id="web"
+               id={webSection.id}
                ref={section1Ref}
                className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-            >
+               >
                <div className="relative h-full">
                   <Image
-                     src="/assets/images/first.webp"
-                     alt="Web Development"
+                     src={webSection.image}
+                     alt={webSection.title}
                      fill
                      className="object-cover"
                      priority
                   />
-                  <div data-component="sectionFirstOverlayContainer" className="absolute inset-0 bg-orange-500/50 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">Web Development</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-accent-500">
-                        Creating modern, responsive web applications with cutting-edge technologies.
+                  <div className="absolute inset-0 bg-primary-800/70 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">{webSection.title}</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+                        {webSection.description}
                      </p>
                      <Link
-                        href="/portfolio/web-development"
+                        href={webSection.path}
                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
                      >
                         View Projects
@@ -22949,85 +16865,60 @@ export default function ParallaxScroll() {
                </div>
             </div>
 
-            {/* Second Section */}
+            {/* Second Section =----------------------------------------------*/}
             <div
-               id="ui"
+               id={uiSection.id}
                ref={section2Ref}
-               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-            >
+               >
                <div className="relative h-full">
                   <Image
-                     src="/assets/images/second.webp"
-                     alt="UI Design"
+                     src={uiSection.image}
+                     alt={uiSection.title}
                      fill
                      className="object-cover"
+                     priority
                   />
-                  <div data-component="sectionSecondOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
-                        Crafting beautiful user interfaces that deliver exceptional experiences.
+                  <div className="absolute inset-0 bg-primary-800/70 flex flex-col items-center justify-center text-white">
+                     <h1 className="text-6xl font-garamond mb-4">{uiSection.title}</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+                        {uiSection.description}
                      </p>
                      <Link
-                        href="/portfolio/ui-design"
+                        href={uiSection.path}
                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
                      >
-                        See Designs
+                        View Projects
                      </Link>
                   </div>
                </div>
             </div>
 
-            {/* Third Section with Multiple Images */}
+            {/* Third Section with Multiple Images =----------------------------------------------*/}
             <div
-               id="multimedia"
+               id={multimediaSection.id}
                ref={section3Ref}
                className="fixed top-0 right-0 left-0 h-[200vh] z-10"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-            >
-               {[
-                  {
-                     src: '/assets/images/third.webp',
-                     title: 'Video Editing',
-                     description: 'Professional video editing and post-production services.',
-                     link: '/portfolio/multimedia/video'
-                  },
-                  {
-                     src: '/assets/images/fourth.webp',
-                     title: 'Motion Graphics',
-                     description: 'Engaging motion graphics and visual effects.',
-                     link: '/portfolio/multimedia/motion'
-                  },
-                  {
-                     src: '/assets/images/fifth.webp',
-                     title: 'Sound Design',
-                     description: 'Immersive audio experiences and sound engineering.',
-                     link: '/portfolio/multimedia/sound'
-                  }
-               ].map((item, index) => (
+               >
+               {multimediaSection.subsections.map((item, index) => (
                   <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
                      style={{ top: `${index * 100}vh` }}>
                      <div className="relative h-full">
                         <Image
-                           src={item.src}
+                           src={item.image}
                            alt={item.title}
                            fill
                            className="object-cover"
                         />
-                        {/* <div data-component="sectionThirdtOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white"> */}
-                        <div data-component="sectionThirdtOverlayContainer"
-                           className="absolute inset-0
-                              bg-linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent)
-                              flex flex-col items-center justify-center
-                              text-white"
-                              >
-                           {/* <div className="h-10 bg-gradient-to-b from-red-500 to-blue-500"></div> */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/95 to-transparent flex flex-col items-center justify-center text-white">
                            <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                               {item.description}
                            </p>
                            <Link
-                              href={item.link}
+                              href={item.path}
                               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
                            >
                               Learn More
@@ -23037,6 +16928,7 @@ export default function ParallaxScroll() {
                   </div>
                ))}
             </div>
+
          </div>
       </>
 
@@ -23542,52 +17434,66 @@ export default function ParallaxScroll() {
 
 ```
 
-# src/components/portfolio/PortfolioLayout.tsx
+# src/components/portfolio-components/UIDesignGallery.tsx
 
 ```tsx
+/* src/components/portfolio-components/UIDesignGallery.tsx */
+export default function UIDesignGallery() {
+   return (
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">UI Project 1</h3>
+         <p className="text-gray-400">Description of UI project 1</p>
+       </div>
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">UI Project 2</h3>
+         <p className="text-gray-400">Description of UI project 2</p>
+       </div>
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">UI Project 3</h3>
+         <p className="text-gray-400">Description of UI project 3</p>
+       </div>
+     </div>
+   );
+ }
+```
 
+# src/components/portfolio-components/VideoShowcase.tsx
 
+```tsx
+ /* src/components/portfolio-components/VideoShowcase.tsx */
+ export default function VideoShowcase() {
+   return (
+     <div>
+       <h2>Video Projects</h2>
+       {/* Video content */}
+     </div>
+   );
+ }
+```
 
+# src/components/portfolio-components/WebDevShowcase.tsx
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```tsx
+/* src/components/portfolio-components/WebDevShowcase.tsx */
+export default function WebDevShowcase() {
+   return (
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">Project 1</h3>
+         <p className="text-gray-400">Description of project 1</p>
+       </div>
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">Project 2</h3>
+         <p className="text-gray-400">Description of project 2</p>
+       </div>
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">Project 3</h3>
+         <p className="text-gray-400">Description of project 3</p>
+       </div>
+     </div>
+   );
+ }
 ```
 
 # src/components/PostCard.tsx
@@ -25328,6 +19234,258 @@ export const navStyles = {
    link: "hover:text-gray-600 dark:hover:text-gray-300",
    button: "bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
 } as const;
+
+```
+
+# src/data/portfolioData.ts
+
+```ts
+/*-= src/data/portfolioData.ts =-*/
+/*-=========================================================================
+Components that imports this data:
+   typescriptCopy
+   import { portfolioSections } from '@/data/portfolioData';
+
+   import { portfolioSections } from '@/data/portfolioData';
+
+Refactor the data structure:
+   Data is managed in one place
+   Changes only need to be made once
+   We maintain consistency across components
+   TypeScript can properly type the data structure
+===========================================================================-*/
+import { StaticImageData } from 'next/image';
+
+
+
+
+
+
+import webDevImage from '../../public/assets/images/first.webp';
+import uiDesignImage from '../../public/assets/images/second.webp';
+import videoImage from '../../public/assets/images/third.webp';
+import motionImage from '../../public/assets/images/fourth.webp';
+import soundImage from '../../public/assets/images/fifth.webp';
+
+interface BaseSection {
+  id: string;
+  title: string;
+  description: string;
+  path: string;
+  color: string;
+  component?: {
+    name: string;
+    props?: Record<string, unknown>;
+  };
+}
+
+interface PortfolioSection extends BaseSection {
+  image: StaticImageData;
+}
+
+interface MultimediaSection extends BaseSection {
+  subsections: PortfolioSection[];
+}
+
+export type Section = PortfolioSection | MultimediaSection;
+
+export const portfolioSections: Section[] = [
+  {
+    id: 'web',
+    title: 'SAAS Development',
+    description: 'Creating modern, responsive web applications with cutting-edge technologies.',
+    image: webDevImage,
+    path: '/portfolio/web-development',
+    color: 'bg-primary-500',
+    component: {
+      name: 'WebDevShowcase'
+    }
+  },
+  {
+    id: 'ui',
+    title: 'UI Design',
+    description: 'Crafting beautiful user interfaces that deliver exceptional experiences.',
+    image: uiDesignImage,
+    path: '/portfolio/ui-design',
+    color: 'bg-secondary-500',
+    component: {
+      name: 'UIDesignGallery'
+    }
+  },
+  {
+    id: 'multimedia',
+    title: 'Multimedia',
+    description: 'Multimedia production services',
+    path: '/portfolio/multimedia',
+    color: 'bg-success-500',
+      subsections: [
+         {
+            id: 'video',
+            title: 'Video Editing',
+            description: 'Professional video editing and post-production services.',
+            image: videoImage,
+            path: '/portfolio/multimedia/video',
+            color: 'bg-success-500',
+            component: {
+               name: 'VideoShowcase'
+            }
+         },
+         {
+            id: 'motion',
+            title: 'Motion Graphics',
+            description: 'Engaging motion graphics and visual effects.',
+            image: motionImage,
+            path: '/portfolio/multimedia/motion',
+            color: 'bg-secondary-500',
+            component: {
+               name: 'VideoShowcase'
+            }
+         },
+         {
+            id: 'sound',
+            title: 'Sound Design',
+            description: 'Immersive audio experiences and sound engineering.',
+            image: soundImage,
+            path: '/portfolio/multimedia/sound',
+            color: 'bg-success-500',
+            component: {
+               name: 'VideoShowcase'
+            }
+         }
+      ]
+   }
+];
+
+
+export function isMultimediaSection(section: Section): section is MultimediaSection {
+   return 'subsections' in section;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```
 

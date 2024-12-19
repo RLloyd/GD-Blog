@@ -12,12 +12,14 @@ Maintained all our existing functionality including:
 Added the ParallaxNavigation component : 12.17.2024
 ===========================================================================-*/
 'use client';
+import { isMultimediaSection, portfolioSections } from '@/data/portfolioData';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { SlArrowDown } from 'react-icons/sl';
 import { ParallaxNavigation } from '../ParallaxNavigation';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -28,11 +30,20 @@ export default function ParallaxScroll() {
    const section2Ref = useRef<HTMLDivElement>(null);
    const section3Ref = useRef<HTMLDivElement>(null);
    const lenisRef = useRef<Lenis | null>(null);
+   // const [isMobile, setIsMobile] = useState(false);
 
+   /*-= Marites: GSAP React Animation Explanation =-*/
    useEffect(() => {
+      // Responsiveness on displayin title
+      // const checkMobile = () => {
+      //    setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
+      // };
+      // checkMobile();
+      // window.addEventListener('resize', checkMobile);
+
       // Initialize Lenis
       lenisRef.current = new Lenis({
-         duration: 1.2,
+         duration: 2,
          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // ease out expo
          orientation: 'vertical',
          gestureOrientation: 'vertical',
@@ -52,29 +63,38 @@ export default function ParallaxScroll() {
       // GSAP Animation
       if (!containerRef.current) return;
 
+      // Reset initial positions
+      //   gsap.set(section2Ref.current, { yPercent: 100 });
+      //   gsap.set(section3Ref.current, { yPercent: 200 });
+
       const tl = gsap.timeline({
          scrollTrigger: {
             trigger: containerRef.current,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 1,
+            scrub: 2,
             pin: true,
+            // invalidateOnRefresh: true,
          },
       });
-
       tl.to(section1Ref.current, {
          yPercent: -100,
          ease: 'none',
+         duration: 3,
       });
 
       tl.to(section2Ref.current, {
          yPercent: -100,
          ease: 'none',
+         delay: 0.5,
+         duration: 1.5,
       }, '>');
 
       tl.to(section3Ref.current, {
          yPercent: -100,
          ease: 'none',
+         delay: 0.5,
+         duration: 3,
       }, '>');
 
       // Cleanup
@@ -82,41 +102,100 @@ export default function ParallaxScroll() {
          lenisRef.current?.destroy();
          tl.kill();
          ScrollTrigger.getAll().forEach(t => t.kill());
+         // window.removeEventListener('resize', checkMobile);
       };
    }, []);
+
+   const webSection = portfolioSections[0];
+   const uiSection = portfolioSections[1];
+   const multimediaSection = portfolioSections[2];
+
+   if (!isMultimediaSection(multimediaSection) ||
+      isMultimediaSection(webSection) ||
+      isMultimediaSection(uiSection)) {
+      throw new Error('Invalid portfolio section configuration');
+   }
 
    return (
       <>
          <ParallaxNavigation />
-         {/* <EnhancedParallaxNavigation /> */}
          <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
-            {/* First Section */}
+            {/*-----= First Section ===--------------------------------*/}
             <div
-               id="web"
+               id={webSection.id}
                ref={section1Ref}
-               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
-               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+               // className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+               // style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+               className="fixed top-0 right-0 h-screen bg-black z-30 m-0 w-screen left-1/2 -translate-x-1/2"
             >
                <div className="relative h-full">
                   <Image
-                     src="/assets/images/first.webp"
-                     alt="Web Development"
+                     src={webSection.image}
+                     alt={webSection.title}
                      fill
                      className="object-cover"
                      priority
                   />
-                  <div data-component="sectionFirstOverlayContainer"
-                     className="absolute inset-0
-                        flex flex-col items-center justify-center
-                        text-white
-                        bg-black/50
-                        dark:bg-gradient-to-b from-red-500/50 to-blue-500/25">
-                     <h1 className="text-6xl font-garamond mb-4">Web Dev</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
-                        Creating modern, responsive web applications with cutting-edge technologies.
+                  <div className="absolute inset-0
+                     bg-primary-500/50
+                     dark:bg-gradient-to-b from-black to-black/10
+                     flex flex-col items-center justify-center text-white
+                     ">
+                     {/*--= Web Title =-------------------------------------=*/}
+                     {/* Hide title on mobile */}
+                     <h1 className="hidden md:block text-6xl font-garamond mb-4">
+                        {webSection.title}
+                     </h1>
+                     {/* Show mobile title */}
+                     <h1 className="md:hidden text-6xl font-garamond mb-4">
+                        {webSection.titleMobile || webSection.title} {/* Fallback to main title if no mobile title */}
+                     </h1>
+                     {/*=--------------------------------------------------=*/}
+                     <p className="text-2xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+                        {webSection.description}
                      </p>
                      <Link
-                        href="/portfolio/web-development"
+                        href={webSection.path}
+                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        View Projects
+                     </Link>
+
+                     <p className='absolute bottom-4 text-4xl'><SlArrowDown /></p>
+                  </div>
+               </div>
+            </div>
+
+            {/*-----= Second Section ===--------------------------------*/}
+            <div
+               id={uiSection.id}
+               ref={section2Ref}
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
+               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+            >
+               <div className="relative h-full">
+                  <Image
+                     src={uiSection.image}
+                     alt={uiSection.title}
+                     fill
+                     className="object-cover"
+                     priority
+                  />
+                  {/* dark:bg-gradient-to-b from-secondary-500/70 to-secondary-50/50 */}
+                  {/* bg-orange-500/10 */}
+                  <div className="absolute inset-0
+                     flex flex-col items-center justify-center text-white
+                     bg-primary-50/50
+                     dark:bg-gradient-to-b from-white/20 to-white/10
+                     ">
+                     <h1 className="text-6xl font-garamond
+                        bg-gradient-to-r from-indigo-500 to-pink-600 bg-clip-text text-transparent
+                        mb-4">{uiSection.title}</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-700">
+                        {uiSection.description}
+                     </p>
+                     <Link
+                        href={uiSection.path}
                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
                      >
                         View Projects
@@ -125,89 +204,42 @@ export default function ParallaxScroll() {
                </div>
             </div>
 
-            {/* Second Section */}
+            {/*-----= Third Section with Multiple Images ===--------------------------------*/}
             <div
-               id="ui"
-               ref={section2Ref}
-               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
-               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-            >
-               <div className="relative h-full">
-                  <Image
-                     src="/assets/images/second.webp"
-                     alt="UI Design"
-                     fill
-                     className="object-cover"
-                  />
-                  <div data-component="sectionSecondOverlayContainer"
-                     className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">UI Design</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
-                        Crafting beautiful user interfaces that deliver exceptional experiences.
-                     </p>
-                     <Link
-                        href="/portfolio/ui-design"
-                        className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
-                     >
-                        See Designs
-                     </Link>
-                  </div>
-               </div>
-            </div>
-
-            {/* Third Section with Multiple Images */}
-            <div
-               id="multimedia"
+               id={multimediaSection.id}
                ref={section3Ref}
                className="fixed top-0 right-0 left-0 h-[200vh] z-10"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
             >
-               {[
-                  {
-                     src: '/assets/images/third.webp',
-                     title: 'Video Editing',
-                     description: 'Professional video editing and post-production services.',
-                     link: '/portfolio/multimedia/video'
-                  },
-                  {
-                     src: '/assets/images/fourth.webp',
-                     title: 'Motion Graphics',
-                     description: 'Engaging motion graphics and visual effects.',
-                     link: '/portfolio/multimedia/motion'
-                  },
-                  {
-                     src: '/assets/images/fifth.webp',
-                     title: 'Sound Design',
-                     description: 'Immersive audio experiences and sound engineering.',
-                     // link: '/portfolio/multimedia/sound'
-                     link: '/blog/loaders-component'
-                  }
-               ].map((item, index) => (
+               {multimediaSection.subsections.map((item, index) => (
                   <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
                      style={{ top: `${index * 100}vh` }}>
                      <div className="relative h-full">
                         <Image
-                           src={item.src}
+                           src={item.image}
                            alt={item.title}
                            fill
                            className="object-cover"
                         />
-                        {/* <div data-component="sectionThirdtOverlayContainer" className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white"> */}
-                        <div data-component="sectionThirdtOverlayContainer"
-                           className="absolute inset-0
-                              bg-linear-gradient(to bottom, rgba(0, 0, 0, 0.95), transparent)
-                              flex flex-col items-center justify-center
-                              text-white"
-                              >
-                           {/* <div className="h-10 bg-gradient-to-b from-red-500 to-blue-500"></div> */}
-                           <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/95 to-transparent flex flex-col items-center justify-center text-white">
+                           {/* <h1 className="text-6xl font-garamond mb-4">{item.title}</h1> */}
+                           {/*--= Third Section Title =-------------------------------------=*/}
+                           {/* Hide title on mobile */}
+                           <h1 className="hidden md:block text-6xl font-garamond mb-4">
+                              {item.title}
+                           </h1>
+                           {/* Show mobile title */}
+                           <h1 className="md:hidden text-6xl font-garamond mb-4">
+                              {item.titleMobile || item.title} {/* Fallback to main title if no mobile title */}
+                           </h1>
+                           {/*=--------------------------------------------------=*/}
                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                               {item.description}
                            </p>
                            <Link
-                              href={item.link}
+                              href={item.path}
                               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
-                           >
+                              >
                               Learn More
                            </Link>
                         </div>
@@ -217,10 +249,250 @@ export default function ParallaxScroll() {
             </div>
          </div>
       </>
-
    );
 }
 /*-|================================================================================|-*/
+
+// /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
+// /*-= ParallaxScroll with Lenis =-*/
+// /*-=========================================================================
+// Key changes made:
+// Added Lenis initialization with custom configuration
+// Connected Lenis to GSAP's requestAnimationFrame loop
+// Added proper cleanup in the useEffect hook
+// Maintained all our existing functionality including:
+//    - The myMainContainer class fix
+//    - The h-[200vh] height for the third section
+//    - All the section content and animations
+// Added the ParallaxNavigation component : 12.17.2024
+// ===========================================================================-*/
+// 'use client';
+// import Lenis from '@studio-freight/lenis';
+// import { gsap } from 'gsap';
+// import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// import Image from 'next/image';
+// import Link from 'next/link';
+// import { useEffect, useRef } from 'react';
+// import { ParallaxNavigation } from '../ParallaxNavigation';
+// import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
+
+// gsap.registerPlugin(ScrollTrigger);
+
+// export default function ParallaxScroll() {
+//    const containerRef = useRef<HTMLDivElement>(null);
+//    const section1Ref = useRef<HTMLDivElement>(null);
+//    const section2Ref = useRef<HTMLDivElement>(null);
+//    const section3Ref = useRef<HTMLDivElement>(null);
+//    const lenisRef = useRef<Lenis | null>(null);
+
+//    useEffect(() => {
+//       // Initialize Lenis
+//       lenisRef.current = new Lenis({
+//          duration: 1.2,
+//          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // ease out expo
+//          orientation: 'vertical',
+//          gestureOrientation: 'vertical',
+//          smoothWheel: true,
+//          wheelMultiplier: 1,
+//          // smoothTouch: false,
+//          touchMultiplier: 2,
+//       });
+
+//       // Connect Lenis to GSAP
+//       function raf(time: number) {
+//          lenisRef.current?.raf(time);
+//          requestAnimationFrame(raf);
+//       }
+//       requestAnimationFrame(raf);
+
+//       // GSAP Animation
+//       if (!containerRef.current) return;
+
+//           // Reset initial positions
+//    //   gsap.set(section2Ref.current, { yPercent: 100 });
+//    //   gsap.set(section3Ref.current, { yPercent: 200 });
+
+//       const tl = gsap.timeline({
+//          scrollTrigger: {
+//             trigger: containerRef.current,
+//             start: 'top top',
+//             end: 'bottom bottom',
+//             scrub: 1,
+//             pin: true,
+//             // invalidateOnRefresh: true,
+//          },
+//       });
+//       tl.to(section1Ref.current, {
+//          yPercent: -100,
+//          ease: 'none',
+//       });
+
+//       tl.to(section2Ref.current, {
+//          yPercent: -100,
+//          ease: 'none',
+//       }, '>');
+
+//       tl.to(section3Ref.current, {
+//          yPercent: -100,
+//          ease: 'none',
+//       }, '>');
+
+// tl.to(section1Ref.current, {
+//    yPercent: -100,
+//    ease: 'none',
+// });
+
+// // tl.to(section2Ref.current, {
+// //    yPercent: -100,
+// //    ease: 'none',
+// // }, "<");
+// tl.to(section2Ref.current, {
+//    yPercent: -100,
+//    ease: "none",
+//  }, "<");
+
+// // tl.to(section3Ref.current, {
+// //    yPercent: -100,
+// //    ease: 'none',
+// // }, '>');
+// tl.to(section2Ref.current, {
+//    yPercent: 0,
+//    ease: "none",
+//  }, "<");
+
+//  tl.to(section2Ref.current, {
+//    yPercent: -100,
+//    ease: "none",
+//  }, ">");
+
+//  tl.to(section3Ref.current, {
+//    yPercent: 0,
+//    ease: "none",
+//  }, "<");
+
+// Cleanup
+//       return () => {
+//          lenisRef.current?.destroy();
+//          tl.kill();
+//          ScrollTrigger.getAll().forEach(t => t.kill());
+//       };
+//    }, []);
+
+//    const webSection = portfolioSections[0];
+//    const uiSection = portfolioSections[1];
+//    const multimediaSection = portfolioSections[2];
+
+//    if (!isMultimediaSection(multimediaSection) ||
+//       isMultimediaSection(webSection) ||
+//       isMultimediaSection(uiSection)) {
+//       throw new Error('Invalid portfolio section configuration');
+//    }
+
+//    return (
+//       <>
+//          <ParallaxNavigation />
+//          <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
+
+//             {/* First Section =----------------------------------------------*/}
+//             <div
+//                id={webSection.id}
+//                ref={section1Ref}
+//                className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+//                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//                >
+//                <div className="relative h-full">
+//                   <Image
+//                      src={webSection.image}
+//                      alt={webSection.title}
+//                      fill
+//                      className="object-cover"
+//                      priority
+//                   />
+//                   <div className="absolute inset-0 bg-primary-800/70 flex flex-col items-center justify-center text-white">
+//                      <h1 className="text-6xl font-garamond mb-4">{webSection.title}</h1>
+//                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+//                         {webSection.description}
+//                      </p>
+//                      <Link
+//                         href={webSection.path}
+//                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//                      >
+//                         View Projects
+//                      </Link>
+//                   </div>
+//                </div>
+//             </div>
+
+//             {/* Second Section =----------------------------------------------*/}
+//             <div
+//                id={uiSection.id}
+//                ref={section2Ref}
+//                className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+//                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//                >
+//                <div className="relative h-full">
+//                   <Image
+//                      src={uiSection.image}
+//                      alt={uiSection.title}
+//                      fill
+//                      className="object-cover"
+//                      priority
+//                   />
+//                   <div className="absolute inset-0 bg-secondary-800/70 flex flex-col items-center justify-center text-white">
+//                      <h1 className="text-6xl font-garamond mb-4">{uiSection.title}</h1>
+//                      <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+//                         {uiSection.description}
+//                      </p>
+//                      <Link
+//                         href={uiSection.path}
+//                         className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//                      >
+//                         View Projects
+//                      </Link>
+//                   </div>
+//                </div>
+//             </div>
+
+//             {/* Third Section with Multiple Images =----------------------------------------------*/}
+//             <div
+//                id={multimediaSection.id}
+//                ref={section3Ref}
+//                className="fixed top-0 right-0 left-0 h-[200vh] z-10"
+//                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+//                >
+//                {multimediaSection.subsections.map((item, index) => (
+//                   <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
+//                      style={{ top: `${index * 100}vh` }}>
+//                      <div className="relative h-full">
+//                         <Image
+//                            src={item.image}
+//                            alt={item.title}
+//                            fill
+//                            className="object-cover"
+//                         />
+//                         <div className="absolute inset-0 bg-gradient-to-b from-black/95 to-transparent flex flex-col items-center justify-center text-white">
+//                            <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+//                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
+//                               {item.description}
+//                            </p>
+//                            <Link
+//                               href={item.path}
+//                               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+//                            >
+//                               Learn More
+//                            </Link>
+//                         </div>
+//                      </div>
+//                   </div>
+//                ))}
+//             </div>
+
+//          </div>
+//       </>
+
+//    );
+// }
+// /*-|================================================================================|-*/
 // /*-= src/components/parallaxScroll/ParallaxScroll.tsx =-*/
 // /*-= Enhanced ParallaxScroll Component • 8 =-*/
 // /*-=========================================================================
