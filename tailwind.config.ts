@@ -161,7 +161,10 @@ export default {
             'spin-custom': 'spin 4s ease-in-out infinite',
             // 'spin-custom': 'spin 4s ease-in-out 7',
             'loader': 'loader 1s linear infinite',
-         }
+         },
+         boxShadow: {
+            'custom': '0px 28px 98px 56px rgba(0, 0, 0, 0.5)',
+          },
       },
    },
    plugins: [typography],

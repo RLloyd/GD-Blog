@@ -42,3 +42,5 @@ next-env.d.ts
 public/notes/*
 
 Garbage/*
+
+public/assets/images/softwares/wf/*

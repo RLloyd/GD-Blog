@@ -54,6 +54,8 @@ next-env.d.ts
 public/notes/*
 
 Garbage/*
+
+public/assets/images/softwares/wf/*
 ```
 
 # cleanup.sh
@@ -1649,11 +1651,279 @@ This is a binary file of the type: Image
 
 This is a binary file of the type: Image
 
-# public/assets/images/sixth.webp
+# public/assets/images/secondX.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/secondxx.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Affinity-Designer.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Affinity-Photo.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Angular.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Blender.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Bootstrap.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Chakra.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Cinema-4D.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/CSS.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/DaVinci.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Ellipses.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/etc.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Figma.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Firebase.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/framer-motion.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/GIT.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/gsap.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/HTML.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Illustrator.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/JavaScript.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Jira.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/JSON.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Less.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/MSOffice.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/NodeJS.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Photoshop.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/react.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/SCSS.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Tailwind.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/TypeScript.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/VSCode.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/Wavemaker.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Affinity_Designer_2-logo.svg.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Angular.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Angular2.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Blender_logo_no_text.svg.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/bootstrap.jpeg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/chakra.jpeg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Cinema-4D-Logo.jpg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/cinema4D.jpg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/css.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/DaVinci_Resolve_Studio.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/figma.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/firebase.jpg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/framer-motion.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/GIT.jpeg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/gsap.svg
+
+This is a file of the type: SVG Image
+
+# public/assets/images/softwares/wf/html.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/illustrator.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/javascript.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Jira.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/json.svg.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/less.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/maxon.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/MSOffice.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/nodejs.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/photoshop.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/react.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/sass.svg
+
+This is a file of the type: SVG Image
+
+# public/assets/images/softwares/wf/Screenshot 2024-06-10 at 8.33.39 AM.png
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/serif-affinity-photo_xhnu.1920.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/Sofwares-Arsenal.psd
+
+This is a binary file of the type: Binary
+
+# public/assets/images/softwares/wf/tailwind.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/typescript.jpg
+
+This is a binary file of the type: Image
+
+# public/assets/images/softwares/wf/vscode.png
 
 This is a binary file of the type: Image
 
 # public/assets/images/third.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/veil-1.webp
+
+This is a binary file of the type: Image
+
+# public/assets/images/veil-2.webp
 
 This is a binary file of the type: Image
 
@@ -1795,184 +2065,70 @@ body {
 # public/notes/misc.tsx
 
 ```tsx
-/* src/app/portfolio/ui-design/page.tsx */
-'use client';
-import { PortfolioSection } from '@/app/layout';
-import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import { notFound } from 'next/navigation';
+/*-= src/components/blog-parallax/BlogParallax.tsx =-*/
+/*-= xxx =-*/
+/*-============================================================
+Updated code: 12.20.2024
+Key changes made:
 
-export default function UIDesignPage() {
-  const sectionData = portfolioSections.find(section => section.id === 'ui');
+================================================================-*/
+useEffect(() => {
+   lenisRef.current = new Lenis({
+       duration: 1.8,
+       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+       smoothWheel: true,
+       wheelMultiplier: 0.8,
+       touchMultiplier: 1.5,
+   });
 
-  if (!sectionData || isMultimediaSection(sectionData)) {
-    notFound();
-  }
+   const raf = (time: number) => {
+       lenisRef.current?.raf(time);
+       requestAnimationFrame(raf);
+   };
+   requestAnimationFrame(raf);
 
-  const DynamicComponent = dynamic(
-    () => import('@/components/portfolio-components/UIDesignGallery').then(mod => mod.default),
-    { loading: () => <div>Loading component...</div> }
-  );
+   const mm = gsap.matchMedia();
+   const updateAnimation = () => {
+       mm.add("(min-width: 1px)", () => {
+           const tl = gsap.timeline({
+               scrollTrigger: {
+                   trigger: containerRef.current,
+                   start: 'top top',
+                   end: 'bottom bottom',
+                   scrub: 1.2,
+                   pin: true,
+                   anticipatePin: 1,
+                   invalidateOnRefresh: true,
+                   ease: "power1.inOut"
+               },
+           });
 
-  return (
-    <PortfolioSection>
-      <div className="min-h-screen bg-black text-white">
-        <div className="relative h-[50vh] mb-16">
-          <Image
-            src={sectionData.image}
-            alt={sectionData.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-            <h1 className="text-6xl font-garamond mb-4">{sectionData.title}</h1>
-            <p className="text-xl max-w-2xl text-center font-nunitosans px-4">
-              {sectionData.description}
-            </p>
-          </div>
-        </div>
+           tl.to(featuredRef.current, {
+               yPercent: -100,
+               ease: "power2.inOut",
+               duration: 2.5,
+           }).to(allPostsRef.current, {
+               y: (index, target) => -(target.scrollHeight - window.innerHeight),
+               ease: "power2.inOut",
+               duration: 2.5,
+           }, '-=1.5');
+       });
+   };
 
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <DynamicComponent />
-        </div>
-      </div>
-    </PortfolioSection>
-  );
-}
+   updateAnimation();
+   window.addEventListener('resize', updateAnimation);
+
+   return () => {
+       mm.revert();
+       window.removeEventListener('resize', updateAnimation);
+       lenisRef.current?.destroy();
+   };
+}, []);
 ```
 
 # public/notes/misc2.tsx
 
 ```tsx
-/*-= src/components/ParallaxNavigation.tsx =-*/
-/*-= Scroll Position Based ParallaxNavigation =-*/
-/*-============================================================
-Prompt:
-We tried this solution before using threshold & rootMargin. It didn't work because the third section is so much longer than the other section.
-Right now the second hilter is delayed by a bit and third dot hiliter is delayed by a lot.
-
-You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:
-Key changes:
-
-Switched from IntersectionObserver to scroll position calculations
-Uses a scroll listener with absolute positions to determine the active section
-Calculates section boundaries based on their actual positions in the document
-Determines active section based on where viewport midpoint intersects with sections
-Uses passive scroll listener for better performance
-
-This approach should:
-
-Start with first dot highlighted
-Update dots with minimal delay as you scroll through sections
-Work correctly with the longer third section
-Be more responsive to scroll position changes
-
-The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
-================================================================-*/
-'use client';
-
-import { useState, useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-
-export function ParallaxNavigation() {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const pathname = usePathname();
-
-  const sections = [
-    { id: 'web', index: 0, label: 'Web Dev', path: '/portfolio/web-development', color: 'bg-accent-500' },
-    { id: 'ui', index: 1, label: 'UI Design', path: '/portfolio/ui-design', color: 'bg-secondary-500' },
-    { id: 'multimedia', index: 2, label: 'Multimedia', path: '/portfolio/multimedia', color: 'bg-success-500' }
-  ];
-
-  useEffect(() => {
-
-    const pathSection = sections.find(s => pathname === s.path);
-    if (pathSection) {
-      setActiveSection(pathSection.id);
-      return;
-    }
-
-
-    setActiveSection(sections[0].id);
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-
-        let maxVisibility = 0;
-        let mostVisibleSection = null;
-
-        entries.forEach((entry) => {
-          const intersectionRatio = entry.intersectionRatio;
-          if (intersectionRatio > maxVisibility) {
-            maxVisibility = intersectionRatio;
-            mostVisibleSection = entry.target.id;
-          }
-        });
-
-        if (mostVisibleSection) {
-          setActiveSection(mostVisibleSection);
-        }
-      },
-      {
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-        rootMargin: '-10% 0px -10% 0px'
-      }
-    );
-
-
-    sections.forEach(section => {
-      const element = document.getElementById(section.id);
-      if (element && observerRef.current) {
-        observerRef.current.observe(element);
-      }
-    });
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [pathname]);
-
-  return (
-    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
-      <div className="flex flex-col gap-6">
-        {sections.map((section) => (
-          <div key={section.id} className="group relative flex items-center justify-end">
-            {/* Label */}
-            <div className="absolute right-full mr-4 px-2 py-1 rounded-md
-              text-white text-sm whitespace-nowrap bg-gray-900/90
-              transition-opacity duration-200
-              opacity-0 group-hover:opacity-100">
-              {section.label}
-            </div>
-
-            {/* Active indicator line */}
-            {activeSection === section.id && (
-              <div className={`absolute right-full mr-2 w-6 h-0.5
-                transition-all duration-300 ${section.color}`} />
-            )}
-
-            {/* Navigation dot */}
-            <Link
-              href={section.path}
-              className={`w-3 h-3 rounded-full transition-all duration-300
-                ${activeSection === section.id
-                  ? `scale-125 ${section.color}`
-                  : 'bg-white/50 hover:bg-white/80'}`}
-              aria-label={section.label}
-            />
-          </div>
-        ))}
-      </div>
-    </nav>
-  );
-}
-/*-|=================================================================|-*/
 
 ```
 
@@ -3421,8 +3577,26 @@ src/
       "typescript.tsserver.maxMemory": 4096
 	},
 
+### December 19, 2024
+- Re-factor ParallaxScroll, ParallaxNavigation, PortfolioData
+
+- Re-design the Blog section to be more like the Portfolio style with parallax scroll
+
+### December 20, 2024
+- Work on the BlogParallax.tsx: The allPostsRef & containerRef are not in-synch. ✅ Done!
+- Use GSAP:
+   const mm = gsap.matchMedia();
+   const updateAnimation = () => { ...
+      }).to(allPostsRef.current, {
+               y: (index, target) => -(target.scrollHeight - window.innerHeight),
+      ... } ✅ Working!
+- Add missing softwares in SoftwareSkills.tsx. ✅ Done!
+- We need to adjust the allPostRef scrolling entry: it's abrupt
+- We need to use image loader for the featuredRef and skeleton loader for the allPostsRef
+
+
 ### Search and Replace using Regex in codebase.md file
-- /* src/(.+) : Search for anything that starts with
+- /* src/(.+) : Search for anything that starts with /* src/... */ */
 - /* src/$1 */ : Replace with /* src/... */
 -
 
@@ -5205,6 +5379,7 @@ import { CategoryId } from "@/data/categories";
 import { GridSize } from "@/components/BlogDashboard-Old";
 import { unstable_noStore } from "next/cache";
 import BlogDashboard from "@/components/blog/dashboard";
+import BlogParallaxPage from "./parallax/page";
 
 
 type FeaturedSetup = {
@@ -5265,13 +5440,123 @@ export default async function BlogList() {
 				<h1 className='text-3xl font-bold'>Blog Posts</h1>
 			</div>
 
-			<BlogDashboard
-				posts={posts}
-				featuredSetup={featuredSetup}
-			/>
+			{/* <BlogDashboard posts={posts} featuredSetup={featuredSetup} /> */}
+
+         <BlogParallaxPage />
+
 		</div>
 	);
 }
+
+```
+
+# src/app/blog/parallax/page.tsx
+
+```tsx
+/* src/app/blog/parallax/page.tsx */
+import { supabaseClient } from "@/lib/auth";
+import { unstable_noStore } from "next/cache";
+import { BlogSection } from "@/app/layout";
+import BlogParallax from "@/components/blog-parallax/BlogParallax";
+
+export default async function BlogParallaxPage() {
+  unstable_noStore();
+
+  const { data: posts, error } = await supabaseClient
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error loading posts:", error);
+    return <div>Error loading posts</div>;
+  }
+
+  const featuredPost = posts.find(post => post.published);
+  const remainingPosts = posts.filter(post => post.id !== featuredPost?.id && post.published);
+
+  return (
+    <BlogSection>
+      <BlogParallax
+        featuredPost={featuredPost}
+        posts={remainingPosts}
+      />
+    </BlogSection>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```
 
@@ -5426,7 +5711,7 @@ export const PortfolioSection = ({ children }: { children: React.ReactNode }) =>
 );
 
 export const BlogSection = ({ children }: { children: React.ReactNode }) => (
-   <section className="blogSectionContainer relative w-full">
+   <section data-component="BlogSection" className="blogSectionContainer relative w-full">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
          {children}
       </div>
@@ -5845,12 +6130,21 @@ export default function PortfolioLayout({ children, }: { children: React.ReactNo
 
 ```tsx
 /*-= src/app/portfolio/multimedia/[category]/page.tsx =-*/
-/*-|================================================================================|-*/
-/* src/app/portfolio/multimedia/[category]/page.tsx */
+/*--------------------------------------------------------------------------=|
+Here's the fixed multimedia category page with proper dynamic component loading:
+
+This will properly:
+   Load the VideoShowcase component dynamically
+   Pass the category prop to the component
+   Show a loading state while the component is being loaded
+   Handle cases where no component is specified
+|=----------------------------------------------------------------------------*/
+
 'use client';
 import { PortfolioSection } from '@/app/layout';
 import { isMultimediaSection, portfolioSections } from '@/data/portfolioData';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 
@@ -5867,7 +6161,7 @@ export default function MultimediaCategoryPage({ params }: Props) {
     isMultimediaSection(section) && section.id === 'multimedia'
   );
 
-  if (!isMultimediaSection(multimediaSection)) {
+  if (!multimediaSection || !isMultimediaSection(multimediaSection)) {
     notFound();
   }
 
@@ -5878,6 +6172,12 @@ export default function MultimediaCategoryPage({ params }: Props) {
   if (!categoryData) {
     notFound();
   }
+
+  const DynamicComponent = categoryData.component?.name
+    ? dynamic(() => import(`@/components/portfolio-components/${categoryData.component.name}`), {
+        loading: () => <div>Loading component...</div>
+      })
+    : null;
 
   return (
     <PortfolioSection>
@@ -5899,8 +6199,8 @@ export default function MultimediaCategoryPage({ params }: Props) {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 py-16">
-          {categoryData.component && (
-            <div>{/* Component content will be rendered here */}</div>
+          {DynamicComponent && (
+            <DynamicComponent category={resolvedParams.category} />
           )}
         </div>
       </div>
@@ -5908,77 +6208,7 @@ export default function MultimediaCategoryPage({ params }: Props) {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*-|================================================================================|-*/
 
 
 
@@ -10009,6 +10239,1840 @@ export default LoaderComponentPost;
 
 ```
 
+# src/components/blog-parallax/BlogParallax.tsx
+
+```tsx
+/*-= src/components/blog-parallax/BlogParallax.tsx =-*/
+/*-= xxx =-*/
+/*-============================================================
+Updated code: 12.20.2024
+Key changes made:
+
+================================================================-*/
+/* Latest from codebase: src/components/blog-parallax/BlogParallax.tsx */
+"use client";
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
+import Link from 'next/link';
+import Lenis from '@studio-freight/lenis';
+import { categories } from '@/data/categories';
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface Post {
+   id: string;
+   title: string;
+   excerpt?: string;
+   cover_image?: string;
+   slug: string;
+   category: string;
+}
+
+interface BlogParallaxProps {
+   featuredPost: Post;
+   posts: Post[];
+}
+
+export default function BlogParallax({ featuredPost, posts }: BlogParallaxProps) {
+   const containerRef = useRef<HTMLDivElement>(null);
+   const featuredRef = useRef<HTMLDivElement>(null);
+   const allPostsRef = useRef<HTMLDivElement>(null);
+   const lenisRef = useRef<Lenis | null>(null);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   useEffect(() => {
+
+      lenisRef.current = new Lenis({
+
+
+
+
+
+
+
+         duration: 1.8,
+         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+
+
+
+         orientation: 'vertical',
+         gestureOrientation: 'vertical',
+         smoothWheel: true,
+         wheelMultiplier: 1,
+
+         touchMultiplier: 2,
+      });
+      const raf = (time: number) => {
+         lenisRef.current?.raf(time);
+         requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+
+      if (!containerRef.current) return;
+
+      const mm = gsap.matchMedia();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      const updateAnimation = () => {
+         mm.add("(min-width: 1px)", () => {
+            const tl = gsap.timeline({
+               scrollTrigger: {
+                  trigger: containerRef.current,
+                  start: 'top top',
+                  end: 'bottom bottom',
+                  scrub: 2,
+                  pin: true,
+
+
+
+               },
+            });
+
+            tl.to(featuredRef.current, {
+               yPercent: -100,
+               ease: "power2.inOut",
+
+               duration: 0.5,
+            })
+
+
+
+
+
+            tl.to(allPostsRef.current, {
+               y: (index, target) => -(target.scrollHeight - window.innerHeight),
+               ease: "power2.inOut",
+               duration: 2.5,
+
+            }, '-=1.5');
+         });
+      };
+
+      updateAnimation();
+      window.addEventListener('resize', updateAnimation);
+
+      return () => {
+         mm.revert();
+         window.removeEventListener('resize', updateAnimation);
+         lenisRef.current?.destroy();
+      };
+   }, []);
+
+   return (
+      <div ref={containerRef} className="myMainContainer relative h-[100vh] w-full overflow-visible bg-accent-800">
+         {/* <div ref={containerRef} className="myMainContainer relative h-[300vh] w-full overflow-hidden bg-primary-950"> */}
+
+         {/* Featured Post Section */}
+         <div
+            ref={featuredRef}
+            className="fixed top-0 right-0 h-screen z-30 m-0 w-screen left-1/2 -translate-x-1/2"
+         >
+            <div className="relative h-full">
+               {featuredPost.cover_image && (
+                  <Image
+                     src={featuredPost.cover_image}
+                     alt={featuredPost.title}
+                     fill
+                     className="object-cover"
+                     priority
+                  />
+               )}
+               <div className="absolute inset-0 bg-gradient-to-t from-primary-950 to-transparent flex flex-col items-center justify-center text-white px-4">
+                  <div className="max-w-4xl mx-auto text-center relative bottom-[-30rem]">
+                     <span className={`text-sm ${categories.find(c => c.id === featuredPost.category)?.textColor}`}>
+                        {categories.find(c => c.id === featuredPost.category)?.name}
+                     </span>
+                     <h1 className="text-4xl md:text-6xl font-garamond mb-4">{featuredPost.title}</h1>
+                     {featuredPost.excerpt && (
+                        <p className="text-xl mb-8 max-w-2xl mx-auto font-nunitosans text-primary-50">
+                           {featuredPost.excerpt}
+                        </p>
+                     )}
+                     <Link
+                        href={`/blog/${featuredPost.slug}`}
+                        className="px-8 py-3 bg-white text-primary-950 rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+                     >
+                        Read More
+                     </Link>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         {/* All Posts Section */}
+         <div
+            ref={allPostsRef}
+            className="fixed top-0 right-0 h-screen z-20 m-0 w-screen left-1/2 -translate-x-1/2"
+         >
+            {/* <div className="min-h-screen bg-primary-900 p-8">
+          <div className="max-w-7xl mx-auto"> */}
+            {/* <div className="h-screenX overflow-y-auto py-16 bg-primary-900"> */}
+            <div className="max-w-7xl mx-auto px-4 py-16 bg-primary-900">
+               <div className="max-w-7xl mx-auto px-4">
+                  <h2 className="text-3xl font-garamond text-white mb-8">Latest Posts</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                     {posts.map((post) => (
+                        <Link
+                           key={post.id}
+                           href={`/blog/${post.slug}`}
+                           className="group bg-primary-800/50 rounded-lg overflow-hidden hover:bg-primary-800/70 transition-colors"
+                        >
+                           {post.cover_image && (
+                              <div className="aspect-video relative">
+                                 <Image
+                                    src={post.cover_image}
+                                    alt={post.title}
+                                    fill
+                                    className="object-cover"
+                                 />
+                              </div>
+                           )}
+                           <div className="p-4">
+                              <span className={`text-sm ${categories.find(c => c.id === post.category)?.textColor}`}>
+                                 {categories.find(c => c.id === post.category)?.name}
+                              </span>
+                              <h3 className="text-xl font-garamond text-white mb-2">{post.title}</h3>
+                              {post.excerpt && (
+                                 <p className="text-primary-100 line-clamp-2">{post.excerpt}</p>
+                              )}
+                           </div>
+                        </Link>
+                     ))}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
 # src/components/blog/AuthorInfo.tsx
 
 ```tsx
@@ -11114,6 +13178,493 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/BlogParallax.tsx
+
+```tsx
+/*-= src/components/BlogParallax.tsx =-*/
+/*-= Blog Parallax Component =-*/
+/*-============================================================
+Created on: December 19, 2024
+================================================================-*/
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
+import Link from 'next/link';
+import Lenis from '@studio-freight/lenis';
+import { categories } from '@/data/categories';
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface Post {
+  id: string;
+  title: string;
+  excerpt?: string;
+  cover_image?: string;
+  slug: string;
+  category: string;
+}
+
+interface BlogParallaxProps {
+  featuredPost: Post;
+  posts: Post[];
+}
+
+export default function BlogParallax({ featuredPost, posts }: BlogParallaxProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const featuredRef = useRef<HTMLDivElement>(null);
+  const allPostsRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+
+  useEffect(() => {
+    lenisRef.current = new Lenis({
+      duration: 2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    function raf(time: number) {
+      lenisRef.current?.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    if (!containerRef.current) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 2,
+        pin: true,
+      },
+    });
+
+    tl.to(featuredRef.current, {
+      yPercent: -100,
+      ease: 'none',
+      duration: 3,
+    });
+
+    return () => {
+      lenisRef.current?.destroy();
+      tl.kill();
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} className="myMainContainer relative h-[200vh] w-full overflow-hidden bg-primary-950">
+      {/* Featured Post Section */}
+      <div
+        ref={featuredRef}
+        className="fixed top-0 right-0 h-screen bg-primary-950 z-30 m-0 w-screen left-1/2 -translate-x-1/2"
+      >
+        <div className="relative h-full">
+          {featuredPost.cover_image && (
+            <Image
+              src={featuredPost.cover_image}
+              alt={featuredPost.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-primary-950 to-transparent flex flex-col items-center justify-center text-white px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <span className={`text-sm ${categories.find(c => c.id === featuredPost.category)?.textColor}`}>
+                {categories.find(c => c.id === featuredPost.category)?.name}
+              </span>
+              <h1 className="text-4xl md:text-6xl font-garamond mb-4">{featuredPost.title}</h1>
+              {featuredPost.excerpt && (
+                <p className="text-xl mb-8 max-w-2xl mx-auto font-nunitosans text-primary-50">
+                  {featuredPost.excerpt}
+                </p>
+              )}
+              <Link
+                href={`/blog/${featuredPost.slug}`}
+                className="px-8 py-3 bg-white text-primary-950 rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
+              >
+                Read More
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* All Posts Grid */}
+      <div
+        ref={allPostsRef}
+        className="fixed top-0 right-0 h-screen z-20"
+        style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <h2 className="text-3xl font-garamond text-white mb-8">Latest Posts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group bg-primary-900/50 rounded-lg overflow-hidden hover:bg-primary-900/70 transition-colors"
+              >
+                {post.cover_image && (
+                  <div className="aspect-video relative">
+                    <Image
+                      src={post.cover_image}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <div className="p-4">
+                  <span className={`text-sm ${categories.find(c => c.id === post.category)?.textColor}`}>
+                    {categories.find(c => c.id === post.category)?.name}
+                  </span>
+                  <h3 className="text-xl font-garamond text-white mb-2">{post.title}</h3>
+                  {post.excerpt && (
+                    <p className="text-primary-100 line-clamp-2">{post.excerpt}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 
@@ -16524,55 +19075,52 @@ export default MultiStepModal;
 
 ```tsx
 /*-= src/components/ParallaxNavigation.tsx =-*/
+/*-= Enhanced ParallaxNavigation with Subsection Dots =-*/
 /*-============================================================
-Prompt:
-We tried this solution before using threshold & rootMargin. (referring to previous codes) It didn't work because the third section is so much longer than the other section.
-
-You're right - the varying section lengths, especially the much longer third section, make the threshold/rootMargin approach unreliable. Let's try a different approach that uses scroll position relative to each section's top position:
-
-Key changes:
-   Switched from IntersectionObserver to scroll position calculations
-   Uses a scroll listener with absolute positions to determine the active section
-   Calculates section boundaries based on their actual positions in the document
-   Determines active section based on where viewport midpoint intersects with sections
-   Uses passive scroll listener for better performance
-
-This approach should:
-   Start with first dot highlighted
-   Update dots with minimal delay as you scroll through sections
-   Work correctly with the longer third section
-   Be more responsive to scroll position changes
-
-   The key improvement is using absolute positions and scroll position to determine the active section, which should be more reliable than trying to use intersection observers with the varying section lengths.
-
-   |-=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=-|
-
-Updated code: 12.18.2024
-Prompt:
-   src/components/ParallaxNavigation.tsx, sections{} should be using data from src/data/portfolioData.ts. We need to add color property.
-   We also need to be able to add components in the detailed pages. Similar to what we did in blog section creating post type using component.
-Key changes:
-   Update to use data from src/data/portfolioData.ts
+Updated code: 12.19.2024
+Key changes made:
+   • Added activeSubsection state to track the current multimedia subsection
+   • Updated the effect to handle both main sections and subsections
+   • Added subsection dots that appear when the multimedia section is active
+   • Styled subsection dots to be slightly smaller than main dots
+   • Each subsection dot has its own hover label and active state
+   • Maintained the existing scroll-based activation logic
+   • Kept all the smooth transitions and animations
+   • Excluded the first subsection (blog) from the navigation dots
 ================================================================-*/
+
 'use client';
 
-import { portfolioSections } from '@/data/portfolioData';
+import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export function ParallaxNavigation() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeSubsection, setActiveSubsection] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    const pathSection = portfolioSections.find(s => pathname === s.path);
+
+    const pathSection = portfolioSections.find(s => {
+      if (isMultimediaSection(s)) {
+        const subsectionMatch = s.subsections.find(sub => pathname === sub.path);
+        if (subsectionMatch) {
+          setActiveSubsection(subsectionMatch.id);
+          return true;
+        }
+      }
+      return pathname === s.path;
+    });
+
     if (pathSection) {
       setActiveSection(pathSection.id);
       return;
     }
 
     setActiveSection(portfolioSections[0].id);
+
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + (window.innerHeight * 0.5);
@@ -16587,6 +19135,23 @@ export function ParallaxNavigation() {
 
         if (scrollPosition >= absoluteTop && scrollPosition <= absoluteBottom) {
           setActiveSection(section.id);
+
+
+          if (isMultimediaSection(section)) {
+            for (const subsection of section.subsections) {
+              const subElement = document.getElementById(subsection.id);
+              if (!subElement) continue;
+
+              const subRect = subElement.getBoundingClientRect();
+              const subAbsoluteTop = window.scrollY + subRect.top;
+              const subAbsoluteBottom = subAbsoluteTop + subRect.height;
+
+              if (scrollPosition >= subAbsoluteTop && scrollPosition <= subAbsoluteBottom) {
+                setActiveSubsection(subsection.id);
+                break;
+              }
+            }
+          }
           break;
         }
       }
@@ -16601,38 +19166,300 @@ export function ParallaxNavigation() {
   }, [pathname]);
 
   return (
-    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
+    <nav data-component="ParallaxNavigation"
+      className="fixed right-8 top-1/2 -translate-y-1/2 z-50 border rounded-full py-4 px-2 border-gray-400/75">
       <div className="flex flex-col gap-6">
-        {portfolioSections.map((section) => (
-          <div key={section.id} className="group relative flex items-center justify-end">
-            <div className="absolute right-full mr-4 px-2 py-1 rounded-md
-              text-white text-sm whitespace-nowrap bg-gray-900/90
-              transition-opacity duration-200
-              opacity-0 group-hover:opacity-100">
-              {section.title}
+        {portfolioSections.map((section) => {
+          const isMultimedia = isMultimediaSection(section);
+          const path = isMultimedia ? section.subsections[0].path : section.path;
+
+          return (
+            <div key={section.id} className="relative">
+              {/* Main section dot */}
+              <div className="group relative flex items-center justify-end">
+                {/* Label */}
+                <div className="absolute right-full mr-4 px-2 py-1 rounded-md
+                  text-white text-sm whitespace-nowrap bg-gray-900/90
+                  transition-opacity duration-200
+                  opacity-0 group-hover:opacity-100">
+                  {section.title}
+                </div>
+
+                {/* Active indicator line */}
+                {activeSection === section.id && (
+                  <div className={`absolute right-full mr-2 w-0 h-0.5
+                    transition-all duration-300 ${section.color}`} />
+                )}
+
+                {/* Navigation dot */}
+                <Link
+                  href={path}
+                  className={`w-3 h-3 rounded-full transition-all duration-300
+                    ${activeSection === section.id
+                      ? `scale-125 ${section.color}`
+                      : 'bg-white/50 hover:bg-white/80'}`}
+                  aria-label={section.title}
+                />
+              </div>
+
+              {/* Subsection dots for multimedia */}
+              {isMultimedia && activeSection === section.id && (
+                <div className="mt-5 space-y-4 flex flex-col items-center">
+                  {section.subsections.slice(1).map((subsection) => (
+                    <div key={subsection.id} className="group relative flex items-center justify-end">
+                      {/* Subsection label */}
+                      <div className="absolute right-full mr-4 px-2 py-1 rounded-md
+                        text-white text-sm whitespace-nowrap bg-gray-900/90
+                        transition-opacity duration-200
+                        opacity-0 group-hover:opacity-100">
+                        {subsection.title}
+                      </div>
+
+                      {/* Subsection dot */}
+                      <Link
+                        href={subsection.path}
+                        className={`w-2 h-2 rounded-full transition-all duration-300
+                          ${activeSubsection === subsection.id
+                            ? `scale-225 ${subsection.color}`
+                            : 'bg-white/30 hover:bg-white/60'}`}
+                        aria-label={subsection.title}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {activeSection === section.id && (
-              <div className={`absolute right-full mr-2 w-6 h-0.5
-                transition-all duration-300 ${section.color}`} />
-            )}
-
-            <Link
-              href={section.path}
-              className={`w-3 h-3 rounded-full transition-all duration-300
-                ${activeSection === section.id
-                  ? `scale-125 ${section.color}`
-                  : 'bg-white/50 hover:bg-white/80'}`}
-              aria-label={section.title}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </nav>
   );
 }
 
 /*-|=================================================================|-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -16746,14 +19573,15 @@ Maintained all our existing functionality including:
 Added the ParallaxNavigation component : 12.17.2024
 ===========================================================================-*/
 'use client';
+import { isMultimediaSection, portfolioSections } from '@/data/portfolioData';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { SlArrowDown } from 'react-icons/sl';
 import { ParallaxNavigation } from '../ParallaxNavigation';
-import { portfolioSections, isMultimediaSection } from '@/data/portfolioData';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16764,10 +19592,19 @@ export default function ParallaxScroll() {
    const section3Ref = useRef<HTMLDivElement>(null);
    const lenisRef = useRef<Lenis | null>(null);
 
+
+   /*-= Marites: GSAP React Animation Explanation =-*/
    useEffect(() => {
 
+
+
+
+
+
+
+
       lenisRef.current = new Lenis({
-         duration: 1.2,
+         duration: 2,
          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
          orientation: 'vertical',
          gestureOrientation: 'vertical',
@@ -16787,29 +19624,38 @@ export default function ParallaxScroll() {
 
       if (!containerRef.current) return;
 
+
+
+
+
       const tl = gsap.timeline({
          scrollTrigger: {
             trigger: containerRef.current,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 1,
+            scrub: 2,
             pin: true,
+
          },
       });
-
       tl.to(section1Ref.current, {
          yPercent: -100,
          ease: 'none',
+         duration: 3,
       });
 
       tl.to(section2Ref.current, {
          yPercent: -100,
          ease: 'none',
+         delay: 0.5,
+         duration: 1.5,
       }, '>');
 
       tl.to(section3Ref.current, {
          yPercent: -100,
          ease: 'none',
+         delay: 0.5,
+         duration: 3,
       }, '>');
 
 
@@ -16817,6 +19663,7 @@ export default function ParallaxScroll() {
          lenisRef.current?.destroy();
          tl.kill();
          ScrollTrigger.getAll().forEach(t => t.kill());
+
       };
    }, []);
 
@@ -16834,14 +19681,14 @@ export default function ParallaxScroll() {
       <>
          <ParallaxNavigation />
          <div ref={containerRef} className="myMainContainer relative h-[400vh] w-full overflow-hidden bg-black">
-
-            {/* First Section =----------------------------------------------*/}
+            {/*-----= First Section ===--------------------------------*/}
             <div
                id={webSection.id}
                ref={section1Ref}
-               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
-               style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-               >
+
+
+               className="fixed top-0 right-0 h-screen bg-black z-30 m-0 w-screen left-1/2 -translate-x-1/2"
+            >
                <div className="relative h-full">
                   <Image
                      src={webSection.image}
@@ -16850,9 +19697,22 @@ export default function ParallaxScroll() {
                      className="object-cover"
                      priority
                   />
-                  <div className="absolute inset-0 bg-primary-800/70 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">{webSection.title}</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+                  <div className="absolute inset-0
+                     bg-primary-500/50
+                     dark:bg-gradient-to-b from-black to-black/10
+                     flex flex-col items-center justify-center text-white
+                     ">
+                     {/*--= Web Title =-------------------------------------=*/}
+                     {/* Hide title on mobile */}
+                     <h1 className="hidden md:block text-6xl font-garamond mb-4">
+                        {webSection.title}
+                     </h1>
+                     {/* Show mobile title */}
+                     <h1 className="md:hidden text-6xl font-garamond mb-4">
+                        {webSection.titleMobile || webSection.title} {/* Fallback to main title if no mobile title */}
+                     </h1>
+                     {/*=--------------------------------------------------=*/}
+                     <p className="text-2xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
                         {webSection.description}
                      </p>
                      <Link
@@ -16861,17 +19721,19 @@ export default function ParallaxScroll() {
                      >
                         View Projects
                      </Link>
+
+                     <p className='absolute bottom-4 text-4xl'><SlArrowDown /></p>
                   </div>
                </div>
             </div>
 
-            {/* Second Section =----------------------------------------------*/}
+            {/*-----= Second Section ===--------------------------------*/}
             <div
                id={uiSection.id}
                ref={section2Ref}
-               className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
+               className="fixed top-0 right-0 left-0 h-screen bg-black z-20"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-               >
+            >
                <div className="relative h-full">
                   <Image
                      src={uiSection.image}
@@ -16880,9 +19742,17 @@ export default function ParallaxScroll() {
                      className="object-cover"
                      priority
                   />
-                  <div className="absolute inset-0 bg-primary-800/70 flex flex-col items-center justify-center text-white">
-                     <h1 className="text-6xl font-garamond mb-4">{uiSection.title}</h1>
-                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-50">
+                  {/* dark:bg-gradient-to-b from-secondary-500/70 to-secondary-50/50 */}
+                  {/* bg-orange-500/10 */}
+                  <div className="absolute inset-0
+                     flex flex-col items-center justify-center text-white
+                     bg-primary-50/50
+                     dark:bg-gradient-to-b from-white/20 to-white/10
+                     ">
+                     <h1 className="text-6xl font-garamond
+                        bg-gradient-to-r from-indigo-500 to-pink-600 bg-clip-text text-transparent
+                        mb-4">{uiSection.title}</h1>
+                     <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans text-primary-700">
                         {uiSection.description}
                      </p>
                      <Link
@@ -16895,13 +19765,13 @@ export default function ParallaxScroll() {
                </div>
             </div>
 
-            {/* Third Section with Multiple Images =----------------------------------------------*/}
+            {/*-----= Third Section with Multiple Images ===--------------------------------*/}
             <div
                id={multimediaSection.id}
                ref={section3Ref}
                className="fixed top-0 right-0 left-0 h-[200vh] z-10"
                style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-               >
+            >
                {multimediaSection.subsections.map((item, index) => (
                   <div key={index} className="absolute top-0 right-0 left-0 h-screen bg-black"
                      style={{ top: `${index * 100}vh` }}>
@@ -16913,14 +19783,24 @@ export default function ParallaxScroll() {
                            className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/95 to-transparent flex flex-col items-center justify-center text-white">
-                           <h1 className="text-6xl font-garamond mb-4">{item.title}</h1>
+                           {/* <h1 className="text-6xl font-garamond mb-4">{item.title}</h1> */}
+                           {/*--= Third Section Title =-------------------------------------=*/}
+                           {/* Hide title on mobile */}
+                           <h1 className="hidden md:block text-6xl font-garamond mb-4">
+                              {item.title}
+                           </h1>
+                           {/* Show mobile title */}
+                           <h1 className="md:hidden text-6xl font-garamond mb-4">
+                              {item.titleMobile || item.title} {/* Fallback to main title if no mobile title */}
+                           </h1>
+                           {/*=--------------------------------------------------=*/}
                            <p className="text-xl mb-8 max-w-2xl text-center font-nunitosans">
                               {item.description}
                            </p>
                            <Link
                               href={item.path}
                               className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-nunitosans"
-                           >
+                              >
                               Learn More
                            </Link>
                         </div>
@@ -16928,10 +19808,8 @@ export default function ParallaxScroll() {
                   </div>
                ))}
             </div>
-
          </div>
       </>
-
    );
 }
 /*-|================================================================================|-*/
@@ -17432,6 +20310,385 @@ export default function ParallaxScroll() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# src/components/portfolio-components/SoftwareSkillsProfile.tsx
+
+```tsx
+import SoftwareSkills from "./SoftwareSkils";
+
+/* src/components/portfolio-components/VideoShowcase.tsx */
+export default function SoftwareSkillsProfile({ category }: { category?: string }) {
+   return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8 text-center">
+         <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">
+               {category === 'sound' ? 'Profile' :
+                  category === 'motion' ? 'Motion Graphics 1' :
+                     'Video Project 1'}
+            </h3>
+            <p className="text-gray-400">
+               {category === 'sound' ? 'Description of sound project 1' :
+                  category === 'motion' ? 'Description of motion graphics project 1' :
+                     'Description of video project 1'}
+            </p>
+         </div>
+         {/* Add more project cards following the same pattern */}
+         <div className="bg-gray-800 p-6 rounded-lg">
+            {/* <h3 className="text-xl font-bold mb-4">
+               {category === 'sound' ? 'Software Skills' :
+                  category === 'motion' ? 'Motion Graphics 1' :
+                     'Video Project 1'}
+            </h3>
+            <p className="text-gray-400">
+               {category === 'sound' ? 'Description of sound project 1' :
+                  category === 'motion' ? 'Description of motion graphics project 1' :
+                     'Description of video project 1'}
+            </p> */}
+            <SoftwareSkills />
+         </div>
+      </div>
+   );
+}
+```
+
+# src/components/portfolio-components/SoftwareSkils.tsx
+
+```tsx
+/*-= src/components/portfolio-components/SoftwareSkils.tsx =-*/
+/*--------------------------------------------------------------------------=|
+
+|=----------------------------------------------------------------------------*/
+import Image from "next/image";
+import Link from "next/link";
+
+const softwareLogos = [
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  { logo: "/assets/images/softwares/react.png",          label: "React", url:"https:
+  { logo: "/assets/images/softwares/Angular.png",        label: "Angular", url:"https:
+  { logo: "/assets/images/softwares/Wavemaker.png",      label: "Wavemaker", url:"https://www.wavemaker.com/" },
+  { logo: "/assets/images/softwares/HTML.png",           label: "HTML", url:"https://www.w3.org/TR/2011/WD-html5-20110405/" },
+  { logo: "/assets/images/softwares/CSS.png",            label: "CSS", url:"https://www.w3.org/Style/CSS/Overview.en.html" },
+  { logo: "/assets/images/softwares/LESS.png",           label: "Less", url:"https:
+  { logo: "/assets/images/softwares/SCSS.png",           label: "Sass", url:"https:
+  { logo: "/assets/images/softwares/Chakra.png",         label: "Chakra UI", url:"https:
+  { logo: "/assets/images/softwares/Tailwind.png",       label: "Tailwind", url:"https:
+  { logo: "/assets/images/softwares/Bootstrap.png",      label: "Bootstrap", url:"https:
+  { logo: "/assets/images/softwares/TypeScript.png",     label: "TypeScript", url:"https://www.typescriptlang.org/" },
+  { logo: "/assets/images/softwares/JavaScript.png",     label: "JavaScript", url:"https:
+  { logo: "/assets/images/softwares/JSON.png",           label: "JSON", url:"https://www.json.org/json-en.html" },
+  { logo: "/assets/images/softwares/NodeJS.png",         label: "NodeJS", url:"https:
+  { logo: "/assets/images/softwares/Figma.png",          label: "Figma", url:"https://www.figma.com/" },
+  { logo: "/assets/images/softwares/Firebase.png",       label: "Firebase", url:"https:
+  { logo: "/assets/images/softwares/VSCode.png",         label: "VSCode", url:"https:
+  { logo: "/assets/images/softwares/GIT.png",            label: "GIT", url:"https:
+  { logo: "/assets/images/softwares/Photoshop.png",      label: "Photoshop", url:"https://www.adobe.com/products/photoshop.html" },
+  { logo: "/assets/images/softwares/Illustrator.png",    label: "Illustrator", url:"https://www.adobe.com/products/illustrator.html" },
+  { logo: "/assets/images/softwares/Affinity-Designer.png",       label: "Designer", url:"https:
+  { logo: "/assets/images/softwares/Affinity-Photo.png",          label: "Photo", url:"https:
+  { logo: "/assets/images/softwares/GSAP.png",           label: "GSAP", url:"https:
+  { logo: "/assets/images/softwares/framer-motion.png",   label: "Motion", url:"https://www.framer.com/motion/?utm_source=google&utm_medium=adwords&utm_campaign=PerformanceMax-Framer_&gad_source=1&gclid=CjwKCAjwnei0BhB-EiwAA2xuBtDeC0PypIBbjN6lz46xIoG2KgNcr5a65dk8L58TdAADVEYxbmcAGRoCOwcQAvD_BwE" },
+  { logo: "/assets/images/softwares/Cinema-4D.png",       label: "Cinema4D", url:"https://www.maxon.net/en/cinema-4d" },
+  { logo: "/assets/images/softwares/Blender.png",        label: "Blender", url:"https://www.blender.org/" },
+  { logo: "/assets/images/softwares/DaVinci.png",        label: "DaVinci", url:"https://www.blackmagicdesign.com/products/davinciresolve" },
+  { logo: "/assets/images/softwares/Jira.png",           label: "Jira", url:"https://www.atlassian.com/" },
+  { logo: "/assets/images/softwares/MSOffice.png",       label: "MSOffice", url:"https://www.office.com/" },
+
+
+  { logo: "/assets/images/softwares/GIT.png",         label: "Claude", url: "https:
+  { logo: "/assets/images/softwares/GIT.png",         label: "ChatGPT", url: "https:
+  { logo: "/assets/images/softwares/GIT.png",         label: "Gemini", url: "https:
+  { logo: "/assets/images/softwares/Ellipses.png",    label: "and more...", url:"/" },
+];
+
+const SoftwareSkills = () => {
+  return (
+    <div className="px-4 py-8">
+      <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">
+        Software Skills
+      </h1>
+      <div className="flex flex-wrap justify-center gap-6">
+        {softwareLogos.map((logo, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <Link href={logo.url} target="_blank">
+              <div className="w-16 h-16 relative">
+                <Image
+                  src={logo.logo}
+                  alt={logo.label}
+                  layout="fill"
+                  objectFit="contain"
+                  className="rounded-full border border-gray-300 shadow-sm hover:shadow-md hover:scale-105 transition-transform"
+                />
+              </div>
+            </Link>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{logo.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SoftwareSkills;
 ```
 
 # src/components/portfolio-components/UIDesignGallery.tsx
@@ -17461,12 +20718,23 @@ export default function UIDesignGallery() {
 # src/components/portfolio-components/VideoShowcase.tsx
 
 ```tsx
- /* src/components/portfolio-components/VideoShowcase.tsx */
- export default function VideoShowcase() {
+/* src/components/portfolio-components/VideoShowcase.tsx */
+export default function VideoShowcase({ category }: { category?: string }) {
    return (
-     <div>
-       <h2>Video Projects</h2>
-       {/* Video content */}
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       <div className="bg-gray-800 p-6 rounded-lg">
+         <h3 className="text-xl font-bold mb-4">
+           {category === 'sound' ? 'Sound Project 1' :
+            category === 'motion' ? 'Motion Graphics 1' :
+            'Video Project 1'}
+         </h3>
+         <p className="text-gray-400">
+           {category === 'sound' ? 'Description of sound project 1' :
+            category === 'motion' ? 'Description of motion graphics project 1' :
+            'Description of video project 1'}
+         </p>
+       </div>
+       {/* Add more project cards following the same pattern */}
      </div>
    );
  }
@@ -17478,22 +20746,22 @@ export default function UIDesignGallery() {
 /* src/components/portfolio-components/WebDevShowcase.tsx */
 export default function WebDevShowcase() {
    return (
-     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-       <div className="bg-gray-800 p-6 rounded-lg">
-         <h3 className="text-xl font-bold mb-4">Project 1</h3>
-         <p className="text-gray-400">Description of project 1</p>
-       </div>
-       <div className="bg-gray-800 p-6 rounded-lg">
-         <h3 className="text-xl font-bold mb-4">Project 2</h3>
-         <p className="text-gray-400">Description of project 2</p>
-       </div>
-       <div className="bg-gray-800 p-6 rounded-lg">
-         <h3 className="text-xl font-bold mb-4">Project 3</h3>
-         <p className="text-gray-400">Description of project 3</p>
-       </div>
-     </div>
+      <div className="
+         grid grid-cols-1
+         md:grid-cols-2
+         lg:grid-cols-2
+         gap-8">
+         <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Project 1</h3>
+            <p className="text-gray-400">Description of project 1</p>
+         </div>
+         <div className="bg-gray-800 p-6 rounded-lg">
+            <h3 className="text-xl font-bold mb-4">Project 2</h3>
+            <p className="text-gray-400">Description of project 2</p>
+         </div>
+      </div>
    );
- }
+}
 ```
 
 # src/components/PostCard.tsx
@@ -19241,7 +22509,7 @@ export const navStyles = {
 
 ```ts
 /*-= src/data/portfolioData.ts =-*/
-/*-=========================================================================
+/*--------------------------------------------------------------------------=|
 Components that imports this data:
    typescriptCopy
    import { portfolioSections } from '@/data/portfolioData';
@@ -19253,7 +22521,7 @@ Refactor the data structure:
    Changes only need to be made once
    We maintain consistency across components
    TypeScript can properly type the data structure
-===========================================================================-*/
+|=----------------------------------------------------------------------------*/
 import { StaticImageData } from 'next/image';
 
 
@@ -19267,72 +22535,82 @@ import videoImage from '../../public/assets/images/third.webp';
 import motionImage from '../../public/assets/images/fourth.webp';
 import soundImage from '../../public/assets/images/fifth.webp';
 
-interface BaseSection {
-  id: string;
-  title: string;
-  description: string;
-  path: string;
-  color: string;
-  component?: {
-    name: string;
-    props?: Record<string, unknown>;
-  };
+interface TitleProps {
+   title: string;
+   titleMobile?: string;
+ }
+ interface BaseSection extends TitleProps {
+   id: string;
+   description: string;
+   path: string;
+   color: string;
+   component?: {
+      name: string;
+      props?: Record<string, unknown>;
+   };
 }
 
 interface PortfolioSection extends BaseSection {
-  image: StaticImageData;
+   image: StaticImageData;
 }
 
 interface MultimediaSection extends BaseSection {
-  subsections: PortfolioSection[];
+   subsections: PortfolioSection[];
 }
 
 export type Section = PortfolioSection | MultimediaSection;
 
 export const portfolioSections: Section[] = [
-  {
-    id: 'web',
-    title: 'SAAS Development',
-    description: 'Creating modern, responsive web applications with cutting-edge technologies.',
-    image: webDevImage,
-    path: '/portfolio/web-development',
-    color: 'bg-primary-500',
-    component: {
-      name: 'WebDevShowcase'
-    }
-  },
-  {
-    id: 'ui',
-    title: 'UI Design',
-    description: 'Crafting beautiful user interfaces that deliver exceptional experiences.',
-    image: uiDesignImage,
-    path: '/portfolio/ui-design',
-    color: 'bg-secondary-500',
-    component: {
-      name: 'UIDesignGallery'
-    }
-  },
-  {
-    id: 'multimedia',
-    title: 'Multimedia',
-    description: 'Multimedia production services',
-    path: '/portfolio/multimedia',
-    color: 'bg-success-500',
+   {
+      id: 'web',
+      title: 'SAAS Development',
+      titleMobile: 'SAAS Dev',
+      description: 'Creating modern, responsive web applications with cutting-edge technologies.',
+      image: webDevImage,
+      path: '/portfolio/web-development',
+      color: 'bg-primary-500',
+      component: {
+         name: 'WebDevShowcase'
+      }
+   },
+   {
+      id: 'ui',
+      title: 'UI Design',
+      titleMobile: 'UI',
+      description: 'Crafting beautiful user interfaces that deliver exceptional experiences.',
+      image: uiDesignImage,
+      path: '/portfolio/ui-design',
+      color: 'bg-secondary-500',
+      component: {
+         name: 'UIDesignGallery'
+      }
+   },
+   {
+      id: 'multimedia',
+      title: 'Blog Articles',
+      titleMobile: '',
+      description: 'Multimedia production services',
+
+
+      path: '',
+      color: 'bg-success-500',
       subsections: [
          {
-            id: 'video',
-            title: 'Video Editing',
+            id: 'blog',
+            title: 'Blog Articles',
+            titleMobile: 'Blog',
             description: 'Professional video editing and post-production services.',
             image: videoImage,
-            path: '/portfolio/multimedia/video',
+            path: '/blog',
             color: 'bg-success-500',
             component: {
-               name: 'VideoShowcase'
+               name: ''
             }
          },
          {
             id: 'motion',
             title: 'Motion Graphics',
+            titleMobile: 'Motion',
             description: 'Engaging motion graphics and visual effects.',
             image: motionImage,
             path: '/portfolio/multimedia/motion',
@@ -19343,13 +22621,14 @@ export const portfolioSections: Section[] = [
          },
          {
             id: 'sound',
-            title: 'Sound Design',
+            title: 'Software Skills & Profile',
+            titleMobile: 'Profile',
             description: 'Immersive audio experiences and sound engineering.',
             image: soundImage,
             path: '/portfolio/multimedia/sound',
             color: 'bg-success-500',
             component: {
-               name: 'VideoShowcase'
+               name: 'SoftwareSkillsProfile'
             }
          }
       ]
@@ -19360,6 +22639,11 @@ export const portfolioSections: Section[] = [
 export function isMultimediaSection(section: Section): section is MultimediaSection {
    return 'subsections' in section;
 }
+
+
+export const getResponsiveTitle = (title: { mobile: string; desktop: string }, isMobile: boolean): string => {
+   return isMobile ? title.mobile : title.desktop;
+ };
 
 
 

@@ -124,9 +124,10 @@ export default function ParallaxScroll() {
             <div
                id={webSection.id}
                ref={section1Ref}
+               data-component="WebSection"
                // className="fixed top-0 right-0 left-0 h-screen bg-black z-30"
                // style={{ margin: 0, width: '100vw', left: '50%', transform: 'translateX(-50%)' }}
-               className="fixed top-0 right-0 h-screen bg-black z-30 m-0 w-screen left-1/2 -translate-x-1/2"
+               className="fixed top-0 right-0 h-screen bg-black z-30 m-0 w-screen left-1/2 -translate-x-1/2 shadow-custom"
             >
                <div className="relative h-full">
                   <Image
@@ -147,7 +148,8 @@ export default function ParallaxScroll() {
                         {webSection.title}
                      </h1>
                      {/* Show mobile title */}
-                     <h1 className="md:hidden text-6xl font-garamond mb-4">
+                     <h1 className="md:hidden text-6xl font-garamond mb-4
+                        bg-gradient-to-r from-indigo-500 to-pink-600 bg-clip-text text-transparent">
                         {webSection.titleMobile || webSection.title} {/* Fallback to main title if no mobile title */}
                      </h1>
                      {/*=--------------------------------------------------=*/}

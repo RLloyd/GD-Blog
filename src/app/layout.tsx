@@ -24,7 +24,7 @@ export const PortfolioSection = ({ children }: { children: React.ReactNode }) =>
 );
 
 export const BlogSection = ({ children }: { children: React.ReactNode }) => (
-   <section className="blogSectionContainer relative w-full">
+   <section data-component="BlogSection" className="blogSectionContainer relative w-full">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
          {children}
       </div>

@@ -6,6 +6,7 @@ import { CategoryId } from "@/data/categories";
 import { GridSize } from "@/components/BlogDashboard-Old";
 import { unstable_noStore } from "next/cache";
 import BlogDashboard from "@/components/blog/dashboard";
+import BlogParallaxPage from "./parallax/page";
 
 // Define featured setup type
 type FeaturedSetup = {
@@ -66,10 +67,10 @@ export default async function BlogList() {
 				<h1 className='text-3xl font-bold'>Blog Posts</h1>
 			</div>
 
-			<BlogDashboard
-				posts={posts}
-				featuredSetup={featuredSetup}
-			/>
+			{/* <BlogDashboard posts={posts} featuredSetup={featuredSetup} /> */}
+
+         <BlogParallaxPage />
+
 		</div>
 	);
 }

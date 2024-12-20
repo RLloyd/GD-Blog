@@ -77,7 +77,7 @@ export const portfolioSections: Section[] = [
    },
    {
       id: 'multimedia',
-      title: 'Multimedia', // Default/desktop title
+      title: 'Blog Articles', // Default/desktop title
       titleMobile: '',   // Mobile title
       description: 'Multimedia production services',
       // path: '/blog',

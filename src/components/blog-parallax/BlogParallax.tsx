@@ -15,7 +15,8 @@ import Link from 'next/link';
 import Lenis from '@studio-freight/lenis';
 import { categories } from '@/data/categories';
 import { SlArrowDown } from 'react-icons/sl';
-import CircularSVG2 from '../circular-loader/CircularSVG2';
+import CircularSVG2 from '../circular-loader/CircularSVG2'; //test
+import BlogParallaxPostsSkeleton from './BlogParallaxPostsSkeleton';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,12 +35,14 @@ interface BlogParallaxProps {
 }
 
 export default function BlogParallax({ featuredPost, posts }: BlogParallaxProps) {
+   const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const featuredRef = useRef<HTMLDivElement>(null);
   const allPostsRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+   // Initialize Lenis and GSAP ScrollTrigger setup...
     lenisRef.current = new Lenis({
       duration: 1.8,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -47,6 +50,11 @@ export default function BlogParallax({ featuredPost, posts }: BlogParallaxProps)
       wheelMultiplier: 0.8,
       touchMultiplier: 1.5,
     });
+
+    // Simulate loading time for posts
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
 
     const raf = (time: number) => {
       lenisRef.current?.raf(time);
@@ -106,6 +114,7 @@ export default function BlogParallax({ featuredPost, posts }: BlogParallaxProps)
       window.removeEventListener('resize', handleResize);
       lenisRef.current?.destroy();
       clearTimeout(timeoutId);
+      clearTimeout(timer);
     };
   }, []);
 

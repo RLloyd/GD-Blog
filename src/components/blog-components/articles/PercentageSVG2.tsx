@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 // import "./PercentageSVG2.css";
 // import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
-import CircularSVG2 from "./CircularSVG2";
+import CircularSVG2 from "../../circular-loader/CircularSVG2";
 import { CodeBlock } from "../CodeBlock";
 
 interface ImageLoaderProps {
